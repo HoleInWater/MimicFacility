@@ -110,11 +110,19 @@ namespace MimicFacility.AI.Director
                 voicePatternSummary = personalWeaponSystem != null ? personalWeaponSystem.GenerateSocialSummary() : "",
                 emotionalSummary = "",
                 socialSummary = personalWeaponSystem != null ? personalWeaponSystem.GenerateSocialSummary() : "",
-                recentSlip = pendingSlipPhrase
+                recentSlip = pendingSlipPhrase,
+                verificationGraph = GetVerificationGraph()
             };
 
             cachedContext = ctx;
             return ctx;
+        }
+
+        private string GetVerificationGraph()
+        {
+            var verificationSystem = FindObjectOfType<MimicFacility.Gameplay.VerificationSystem>();
+            if (verificationSystem == null) return null;
+            return verificationSystem.GetAssignmentGraphForDirector();
         }
 
         public void RequestLLMDialogue(string playerContext, Action<string> callback)

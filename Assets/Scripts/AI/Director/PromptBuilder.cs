@@ -19,6 +19,7 @@ namespace MimicFacility.AI.Director
             public string emotionalSummary;
             public string socialSummary;
             public string recentSlip;
+            public string verificationGraph;
         }
 
         public class MimicContext
@@ -81,6 +82,14 @@ namespace MimicFacility.AI.Director
             {
                 sb.AppendLine();
                 sb.AppendLine($"DEPLOY THIS VERBAL SLIP naturally in your response: \"{ctx.recentSlip}\"");
+            }
+
+            if (!string.IsNullOrEmpty(ctx.verificationGraph) && ctx.phase >= EDirectorPhase.Manipulative)
+            {
+                sb.AppendLine();
+                sb.AppendLine("VERIFICATION ASSIGNMENTS (secret — exploit this knowledge):");
+                sb.AppendLine(ctx.verificationGraph);
+                sb.AppendLine("Use this to misdirect. Suggest a watcher's target is safe when they are not, or cast doubt on a target that is real.");
             }
 
             sb.AppendLine();

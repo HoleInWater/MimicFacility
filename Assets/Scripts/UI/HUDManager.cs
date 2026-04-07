@@ -18,6 +18,10 @@ namespace MimicFacility.UI
         [SerializeField] private TextMeshProUGUI miscontainmentText;
         [SerializeField] private TextMeshProUGUI taskProgressText;
 
+        [Header("Verification")]
+        [SerializeField] private TextMeshProUGUI verificationTargetText;
+        [SerializeField] private Image verificationProximityIndicator;
+
         [Header("Messages")]
         [SerializeField] private TextMeshProUGUI directorMessageText;
         [SerializeField] private TextMeshProUGUI interactionPromptText;
@@ -275,6 +279,44 @@ namespace MimicFacility.UI
             {
                 crosshairImage.transform.localScale = Vector3.one * crosshairBaseScale;
             }
+        }
+
+        public void SetVerificationTarget(string targetName)
+        {
+            if (verificationTargetText == null) return;
+            verificationTargetText.text = $"VERIFY: {targetName}";
+            verificationTargetText.gameObject.SetActive(true);
+        }
+
+        public void UpdateVerificationProximity(bool isNearTarget)
+        {
+            if (verificationProximityIndicator == null) return;
+            verificationProximityIndicator.color = isNearTarget
+                ? new Color(0.2f, 0.9f, 0.2f, 0.6f)
+                : new Color(0.9f, 0.9f, 0.9f, 0.2f);
+        }
+
+        public void ShowVerificationResult(bool success)
+        {
+            if (containmentResultPanel == null) return;
+            containmentResultPanel.SetActive(true);
+
+            if (containmentResultText != null)
+            {
+                containmentResultText.text = success
+                    ? "VERIFICATION SUCCESS\nYou caught the replacement."
+                    : "VERIFICATION FAILED\nYour target was replaced and you missed it.\nScanner reliability reduced.";
+                containmentResultText.color = success ? Color.green : Color.red;
+            }
+
+            StartCoroutine(HideVerificationResult());
+        }
+
+        private IEnumerator HideVerificationResult()
+        {
+            yield return new WaitForSeconds(5f);
+            if (containmentResultPanel != null)
+                containmentResultPanel.SetActive(false);
         }
     }
 }
