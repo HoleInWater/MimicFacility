@@ -41,19 +41,18 @@ namespace MimicFacility.Core
                 isConverted = false;
             }
         }
-
-        {
-            public static GameManager Instance { get; private set; }
+        
+        public static GameManager Instance { get; private set; }
     
-            public event Action OnGameStarted;
-            public event Action<string> OnGameEnded;
-            public event Action<int, PlayerData> OnPlayerJoined;
-            public event Action<int> OnPlayerLeft;
-            public event Action<EGamePhase> OnPhaseChanged;
+        public event Action OnGameStarted;
+        public event Action<string> OnGameEnded;
+        public event Action<int, PlayerData> OnPlayerJoined;
+        public event Action<int> OnPlayerLeft;
+        public event Action<EGamePhase> OnPhaseChanged;
     
-            [SerializeField] private int maxPlayers = 4;
-            [SerializeField] private EDifficulty difficulty = EDifficulty.Standard;
-            [SerializeField] private bool enableDeviceHorror = true;
+        [SerializeField] private int maxPlayers = 4;
+        [SerializeField] private EDifficulty difficulty = EDifficulty.Standard;
+        [SerializeField] private bool enableDeviceHorror = true;
     
             public int MaxPlayers => maxPlayers;
             public EDifficulty Difficulty => difficulty;
@@ -231,4 +230,3 @@ namespace MimicFacility.Core
             }
         }
     }
-}
