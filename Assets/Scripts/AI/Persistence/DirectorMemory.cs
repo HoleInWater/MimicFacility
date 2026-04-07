@@ -18,9 +18,9 @@ namespace MimicFacility.AI.Persistence
         public List<string> playerDisplayNames = new List<string>();
         public string lastEnding;
         public float totalPlaytimeSeconds;
-        public int accusationsMade;
+        public int containmentAttempts;
         public int questionsAnswered;
-        public int falsePositiveTotal;
+        public int miscontainmentTotal;
     }
 
     public class DirectorMemory : MonoBehaviour
@@ -118,14 +118,14 @@ namespace MimicFacility.AI.Persistence
             SaveMemory();
         }
 
-        public void RecordSessionEnd(int corruption, string ending, float playtime, int accusations, int questions)
+        public void RecordSessionEnd(int corruption, string ending, float playtime, int containments, int questions)
         {
             if (data == null) return;
 
             data.corruptionIndex = corruption;
             data.lastEnding = ending;
             data.totalPlaytimeSeconds += playtime;
-            data.accusationsMade += accusations;
+            data.containmentAttempts += containments;
             data.questionsAnswered += questions;
 
             SaveMemory();

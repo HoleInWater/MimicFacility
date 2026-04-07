@@ -21,7 +21,7 @@ namespace MimicFacility.Core
         public string endTime;
         public int roundsPlayed;
         public int mimicsContained;
-        public int falsePositives;
+        public int miscontainments;
         public int diagnosticTasksCompleted;
         public string ending;
         public int playerCount;
@@ -59,7 +59,7 @@ namespace MimicFacility.Core
                 playerCount = playerCount,
                 roundsPlayed = 0,
                 mimicsContained = 0,
-                falsePositives = 0,
+                miscontainments = 0,
                 diagnosticTasksCompleted = 0,
                 ending = "InProgress",
                 corruptionDelta = 0f
@@ -67,7 +67,7 @@ namespace MimicFacility.Core
             _sessionStartRealtime = Time.realtimeSinceStartup;
         }
 
-        public void EndSession(string ending, int roundsPlayed, int mimicsContained, int falsePositives, int tasksCompleted, float corruptionDelta)
+        public void EndSession(string ending, int roundsPlayed, int mimicsContained, int miscontainments, int tasksCompleted, float corruptionDelta)
         {
             if (_currentSession == null) return;
 
@@ -75,7 +75,7 @@ namespace MimicFacility.Core
             _currentSession.ending = ending;
             _currentSession.roundsPlayed = roundsPlayed;
             _currentSession.mimicsContained = mimicsContained;
-            _currentSession.falsePositives = falsePositives;
+            _currentSession.miscontainments = miscontainments;
             _currentSession.diagnosticTasksCompleted = tasksCompleted;
             _currentSession.corruptionDelta = corruptionDelta;
 

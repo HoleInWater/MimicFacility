@@ -12,7 +12,7 @@ namespace MimicFacility.Gameplay
         GearUse,
         FlashlightToggle,
         Communication,
-        AccusationBasics,
+        ContainmentBasics,
         TaskBasics,
         Complete
     }
@@ -108,8 +108,8 @@ namespace MimicFacility.Gameplay
                 "Hold V to use push-to-talk. Communicate with your team.",
                 () => Input.GetKeyDown(KeyCode.V)));
 
-            steps.Add(new TutorialStep(ETutorialStep.AccusationBasics,
-                "Suspect a mimic? Open the accusation panel with TAB to start a vote.",
+            steps.Add(new TutorialStep(ETutorialStep.ContainmentBasics,
+                "Suspect a mimic? Use the Audio Scanner to check, then the Containment Device to capture. Be careful — containing a real player stuns them.",
                 null));
 
             steps.Add(new TutorialStep(ETutorialStep.TaskBasics,

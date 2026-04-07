@@ -18,9 +18,9 @@ namespace MimicFacility.Core
         private int containedMimicCount;
         public int ContainedMimicCount => containedMimicCount;
 
-        [SyncVar(hook = nameof(OnFalsePositiveCountChanged))]
-        private int falsePositiveCount;
-        public int FalsePositiveCount => falsePositiveCount;
+        [SyncVar(hook = nameof(OnMiscontainmentCountChanged))]
+        private int miscontainmentCount;
+        public int MiscontainmentCount => miscontainmentCount;
 
         [SyncVar(hook = nameof(OnCurrentRoundChanged))]
         private int currentRound;
@@ -34,7 +34,7 @@ namespace MimicFacility.Core
         private int requiredTasksForExtraction = 3;
         public int RequiredTasksForExtraction => requiredTasksForExtraction;
 
-        [SerializeField] private int maxFalsePositives = 3;
+        [SerializeField] private int maxMiscontainments = 3;
 
         private readonly SyncDictionary<int, bool> playerAliveStatus = new SyncDictionary<int, bool>();
         public SyncDictionary<int, bool> PlayerAliveStatus => playerAliveStatus;
@@ -56,7 +56,7 @@ namespace MimicFacility.Core
         {
             activeMimicCount = 0;
             containedMimicCount = 0;
-            falsePositiveCount = 0;
+            miscontainmentCount = 0;
             currentRound = 0;
             diagnosticTasksCompleted = 0;
             _gameResolved = false;
@@ -99,9 +99,9 @@ namespace MimicFacility.Core
         }
 
         [Server]
-        public void IncrementFalsePositive()
+        public void IncrementMiscontainment()
         {
-            falsePositiveCount++;
+            miscontainmentCount++;
             CheckLoseCondition();
             BroadcastStateUpdate();
         }
@@ -171,10 +171,10 @@ namespace MimicFacility.Core
         {
             if (_gameResolved) return false;
 
-            if (falsePositiveCount >= maxFalsePositives)
+            if (miscontainmentCount >= maxMiscontainments)
             {
                 _gameResolved = true;
-                string reason = "Lose_TooManyFalsePositives";
+                string reason = "Lose_TooManyMiscontainments";
                 OnLoseConditionMet?.Invoke(reason);
                 RpcNotifyLose(reason);
                 GameManager.Instance?.EndGame(reason);
@@ -238,7 +238,7 @@ namespace MimicFacility.Core
 
         private void OnActiveMimicCountChanged(int oldVal, int newVal) => OnStateUpdated?.Invoke();
         private void OnContainedMimicCountChanged(int oldVal, int newVal) => OnStateUpdated?.Invoke();
-        private void OnFalsePositiveCountChanged(int oldVal, int newVal) => OnStateUpdated?.Invoke();
+        private void OnMiscontainmentCountChanged(int oldVal, int newVal) => OnStateUpdated?.Invoke();
         private void OnCurrentRoundChanged(int oldVal, int newVal) => OnStateUpdated?.Invoke();
         private void OnDiagnosticTasksChanged(int oldVal, int newVal) => OnStateUpdated?.Invoke();
         private void OnPlayerAliveStatusChanged(SyncIDictionary<int, bool>.Operation op, int key, bool item) => OnStateUpdated?.Invoke();

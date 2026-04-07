@@ -15,7 +15,7 @@ namespace MimicFacility.UI
         [SerializeField] private TextMeshProUGUI roundText;
         [SerializeField] private TextMeshProUGUI mimicCountText;
         [SerializeField] private TextMeshProUGUI containedCountText;
-        [SerializeField] private TextMeshProUGUI falsePositiveText;
+        [SerializeField] private TextMeshProUGUI miscontainmentText;
         [SerializeField] private TextMeshProUGUI taskProgressText;
 
         [Header("Messages")]
@@ -28,9 +28,9 @@ namespace MimicFacility.UI
         [SerializeField] private Image sporeExposureBar;
 
         [Header("Panels")]
-        [SerializeField] private GameObject accusationPanel;
-        [SerializeField] private GameObject votingPanel;
         [SerializeField] private GameObject taskPanel;
+        [SerializeField] private GameObject containmentResultPanel;
+        [SerializeField] private TextMeshProUGUI containmentResultText;
 
         [Header("Notifications")]
         [SerializeField] private TextMeshProUGUI notificationText;
@@ -98,8 +98,8 @@ namespace MimicFacility.UI
                 mimicCountText.text = $"Active Mimics: {state.ActiveMimicCount}";
             if (containedCountText != null)
                 containedCountText.text = $"Contained: {state.ContainedMimicCount}";
-            if (falsePositiveText != null)
-                falsePositiveText.text = $"False Positives: {state.FalsePositiveCount}";
+            if (miscontainmentText != null)
+                miscontainmentText.text = $"Miscontainments: {state.MiscontainmentCount}";
             if (taskProgressText != null)
                 taskProgressText.text = $"Tasks: {state.DiagnosticTasksCompleted}/{state.RequiredTasksForExtraction}";
         }
