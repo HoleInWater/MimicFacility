@@ -5,7 +5,7 @@ using UnityEngine.SceneManagement;
 
 namespace MimicFacility.Core
 {
-    public class GameManager : MonoBehavior
+    public class GameManager : MonoBehaviour
     {
         public enum EGamePhase
         {
