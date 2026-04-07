@@ -1,3 +1,0 @@
-// PLACEHOLDER: BP_MimicSwarm.uasset
-// Purpose: Swarm Mimic variant — small, fast, uses flocking behavior. Spawns from Trigger Word events.
-// This file will be replaced by the actual .uasset created in Unreal Editor.

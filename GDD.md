@@ -34,7 +34,7 @@ See [CREATIVE_MANIFESTO.md](CREATIVE_MANIFESTO.md) for the full design philosoph
 |-------|-------|
 | **Title** | MimicFacility |
 | **Genre** | Co-op Multiplayer Horror (1–4 players) |
-| **Engine** | Unreal Engine 5 |
+| **Engine** | Unity 2022.3+ (C#) |
 | **Target Platforms** | PC (Steam), consoles TBD |
 | **Perspective** | First-person |
 | **Session Length** | 30–60 minutes per run |
@@ -53,7 +53,7 @@ The signature mechanic of MimicFacility. During Round 1, an AI subsystem passive
 
 **How it works:**
 
-1. **Capture** — Unreal's VoIP system routes each player's microphone input through the `VoiceLearningSubsystem`. Audio is captured per-player in short segments (2–5 seconds).
+1. **Capture** — Unity's Microphone API routes each player's microphone input through the `VoiceLearningSystem`. Audio is captured per-player in short segments (2–5 seconds).
 2. **Processing** — Each segment is tagged with metadata: the speaking player's ID, timestamp, spatial location in the facility, and which other players were within earshot (this is critical for the Trust Verification mechanic).
 3. **Phrase Extraction** — Speech-to-text converts audio into transcribed phrases. The system logs:
    - Exact phrases spoken (e.g., "follow me," "over here," "what the hell is that")
@@ -157,7 +157,7 @@ Players have **no direct combat**. They cannot kill Mimics with weapons. Instead
   - Natural communication: jokes, reactions, light decisions about where to go.
   - One shared failure: minor, not dramatic. A puzzle that requires restarting, a wrong turn that wastes time. Someone was vulnerable, someone helped. This creates micro-debt between specific players.
   - Players form trust based on specific behavioral patterns — "I trust this person to react like THIS." That specificity is what the mimic later destroys.
-- **The AI is passively recording all voice chat.** Players are informed of this only through the in-character content warning before the session. The VoiceLearningSubsystem captures audio, maps social dynamics, logs emotional responses, and flags verbal slips.
+- **The AI is passively recording all voice chat.** Players are informed of this only through the in-character content warning before the session. The VoiceLearningSystem captures audio, maps social dynamics, logs emotional responses, and flags verbal slips.
 - Environmental lore: research terminals (requires access cards), cult artifacts, facility modifications that tell a story without words.
 - Round 1 ends when players reach a checkpoint or a timer expires. The Director announces the transition: *"The orientation phase is complete. What comes next is different."*
 
@@ -361,23 +361,23 @@ The Director's dialogue is generated dynamically using a **local LLM via Ollama 
 ```
 Player Microphone
     ↓
-Unreal VoIP Subsystem (per-player audio stream)
+Unity Microphone API (per-player audio stream)
     ↓
-VoiceLearningSubsystem (custom UGameInstanceSubsystem)
+VoiceLearningSystem (MonoBehaviour singleton)
     ├── Per-player audio buffer (circular, last 60s of raw PCM)
     ├── Speech-to-text processing (server-side, async)
-    ├── Phrase database (TMap<FString PlayerID, TArray<FVoicePhrase>>)
+    ├── Phrase database (Dictionary<string, List<VoicePhrase>>)
     └── Trigger Word selector (end of Round 1)
     ↓
 MimicVoiceComponent (attached to each Mimic actor)
     ├── Pulls phrases from the phrase database
     ├── Applies synthesis distortion (pitch shift, timing artifacts)
-    └── Plays via proximity-based audio (Unreal audio attenuation)
+    └── Plays via proximity-based audio (Unity AudioSource attenuation)
 ```
 
 **Data flow notes:**
-- Voice capture happens on the **server** (dedicated or listen server host). Client voice data is already transmitted via Unreal's VoIP replication.
-- Speech-to-text runs **asynchronously** on the server to avoid frame hitches. Results are stored in the `VoiceLearningSubsystem`.
+- Voice capture happens on the **server** (listen server host). Client voice data is transmitted via Mirror Networking.
+- Speech-to-text runs **asynchronously** on the server to avoid frame hitches. Results are stored in the `VoiceLearningSystem`.
 - Trigger Word selection is a server-authoritative operation — clients are never told their trigger words directly.
 - Voice playback on Mimics uses spatialized audio so players can localize the source.
 
@@ -401,13 +401,13 @@ y_L,R(t) = [ 1/(1+kd²) · e^(-α·d_occ) · x(t - r·sin(θ)/c) · (c+v_r)/(c+v
 | `h_L,R(t, θ, φ)` | Head-Related Transfer Function (HRTF) convolution per ear — provides 3D directionality |
 | `Σᵢ x(t - dᵢ/c)` | Reflection summation — delayed copies from nearby surfaces create reverb |
 
-**Implementation:** `SpatialAudioProcessor` (C++ class in `Source/MimicFacility/Audio/`) evaluates this equation per audio source per frame, outputting per-ear volume, ITD, Doppler multiplier, and reflection data that are applied to Unreal AudioComponents.
+**Implementation:** `SpatialAudioProcessor` (C# class in `Assets/Scripts/Audio/`) evaluates this equation per audio source per frame, outputting per-ear volume, ITD, Doppler multiplier, and reflection data that are applied to Unity AudioSources.
 
 **Design intent:** This equation is critical for the horror experience. Players must be able to localize Mimic voices in 3D space — hearing a teammate's voice coming from the wrong direction is one of the primary detection cues. The occlusion term ensures that voices through walls sound muffled, and the reflection term gives the facility its claustrophobic reverb character.
 
 ### 7.2 Mimic AI — Behavior Tree Structure
 
-Mimics use Unreal's **Behavior Tree** system with **Environment Query System (EQS)** for spatial reasoning.
+Mimics use a custom **Behavior Tree** system with spatial queries for reasoning.
 
 ```
 BT_MimicBehaviorTree
@@ -418,12 +418,12 @@ BT_MimicBehaviorTree
 │   │   └── Task: Spawn New Mimic
 │   ├── Sequence: Infiltration
 │   │   ├── Decorator: Players Nearby?
-│   │   ├── Task: Match Group Movement (EQS: nearest player cluster)
+│   │   ├── Task: Match Group Movement (query: nearest player cluster)
 │   │   ├── Task: Play Voice Phrase (periodic, random interval 15–45s)
 │   │   └── Task: Respond to Trust Challenge (if addressed)
 │   ├── Sequence: Stalking
-│   │   ├── Decorator: Isolated Player Detected? (EQS: player alone)
-│   │   ├── Task: Follow at Distance (EQS: maintain 10–20m)
+│   │   ├── Decorator: Isolated Player Detected? (query: player alone)
+│   │   ├── Task: Follow at Distance (query: maintain 10–20m)
 │   │   └── Task: Play Lure Phrase ("Hey, come check this out")
 │   └── Sequence: Aggression
 │       ├── Decorator: Identified by Player?
@@ -433,20 +433,20 @@ BT_MimicBehaviorTree
 ```
 
 **Blackboard Variables (BB_MimicBlackboard):**
-- `TargetPlayer` (AActor*) — current focus player
+- `TargetPlayer` (GameObject) — current focus player
 - `MimicState` (enum: Infiltrating, Stalking, Aggressive, Reproducing)
-- `VoiceProfileID` (FString) — which player's voice this Mimic uses
+- `VoiceProfileID` (string) — which player's voice this Mimic uses
 - `LastTriggerWordTime` (float) — cooldown tracking
-- `SpawnLocation` (FVector) — where this Mimic was created
+- `SpawnLocation` (Vector3) — where this Mimic was created
 - `IsIdentified` (bool) — has a player formally identified this Mimic
 
 ### 7.3 Director AI — State Machine + local LLM (via Ollama sidecar)
 
 ```
-DirectorAI (ADirectorAI : AActor)
+DirectorAI (DirectorAI : MonoBehaviour)
 ├── State Machine (enum: Observing, Misleading, Escalating, Withdrawing)
 ├── Game State Monitor
-│   ├── Polls MimicFacilityGameState every 5s
+│   ├── Polls GameManager every 5s
 │   ├── Tracks: player count, mimic count, round number, player stress metric
 │   └── Evaluates state transition conditions
 ├── Dialogue Manager
@@ -464,25 +464,25 @@ DirectorAI (ADirectorAI : AActor)
 
 ### 7.4 Multiplayer Networking
 
-**Recommended approach: Dedicated Server**
+**Recommended approach: Mirror Networking (listen server)**
 
 | Aspect | Strategy |
 |--------|----------|
-| **Server model** | Dedicated server preferred; listen server as fallback for casual play |
+| **Server model** | Mirror Networking listen server (host player acts as server) |
 | **Authority** | Server-authoritative for all Mimic state, Director state, round management, and voice processing |
-| **Player movement** | Client-predicted with server reconciliation (standard UE5 CharacterMovementComponent) |
-| **Mimic replication** | Mimics are server-spawned actors. Visual appearance, voice playback, and state replicated to all clients |
-| **Voice data** | Captured on server from VoIP stream. Never sent back to clients as raw data — only played through Mimic actors |
+| **Player movement** | Client-predicted with server reconciliation (Mirror NetworkTransform) |
+| **Mimic replication** | Mimics are server-spawned NetworkIdentity objects. Visual appearance, voice playback, and state synced to all clients |
+| **Voice data** | Captured on server from audio stream. Never sent back to clients as raw data — only played through Mimic objects |
 | **Trigger Words** | Server-only. Clients never receive trigger word lists. Server detects triggers from speech-to-text results |
-| **Director** | Runs entirely on server. Dialogue output replicated as audio/text to clients |
-| **Session management** | UE5 Online Subsystem (Steam or EOS). Session browser + invite codes |
+| **Director** | Runs entirely on server. Dialogue output synced as audio/text to clients |
+| **Session management** | Mirror Transport (Steam via Steamworks.NET or KCP). Session browser + invite codes |
 | **Tick rate** | 30Hz (sufficient for horror pacing, reduces bandwidth) |
 
-**Replication strategy for Mimic state:**
-- `bReplicates = true` on all Mimic actors
-- Mimic visual skin (which player it copies) replicated on spawn via `OnRep_MimicSkin`
-- Mimic behavior state replicated via `DOREPLIFETIME` for state enum
-- Voice playback triggered via reliable multicast RPC from server to all clients in range
+**Sync strategy for Mimic state:**
+- `NetworkIdentity` on all Mimic objects
+- Mimic visual skin (which player it copies) synced on spawn via `[SyncVar]` with hook
+- Mimic behavior state synced via `[SyncVar]` for state enum
+- Voice playback triggered via `[ClientRpc]` from server to all clients in range
 
 ### 7.5 Session Data
 
@@ -499,7 +499,7 @@ DirectorAI (ADirectorAI : AActor)
 - Player progression (cosmetics, unlocks) persists via save file, but no gameplay-affecting data carries over
 
 **Storage format:**
-- In-memory during session (`TMap` / `TArray` structures in `MimicFacilityGameState`)
+- In-memory during session (`Dictionary` / `List` structures in `GameManager`)
 - Optional post-game export to JSON for developer analytics (disabled in shipping builds)
 
 ---

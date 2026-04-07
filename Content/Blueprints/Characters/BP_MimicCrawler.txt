@@ -1,3 +1,0 @@
-// PLACEHOLDER: BP_MimicCrawler.uasset
-// Purpose: Ceiling Crawler Mimic variant — overrides movement to use ceiling-mounted pathfinding and ambush logic.
-// This file will be replaced by the actual .uasset created in Unreal Editor.

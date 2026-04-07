@@ -1,3 +1,0 @@
-// PLACEHOLDER: BT_DirectorBehaviorTree.uasset
-// Purpose: Behavior Tree for The Director AI — manages state transitions between Observing, Misleading, Escalating, Withdrawing.
-// This file will be replaced by the actual .uasset created in Unreal Editor.

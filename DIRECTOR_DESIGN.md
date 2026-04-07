@@ -335,13 +335,13 @@ There is no correct response:
 
 ## 2. The Device Horror Layer
 
-> **CRITICAL:** Every trick below is a pure illusion rendered within Unreal Engine 5. No actual access to the player's system, files, microphone outside of voice chat, or personal data is ever made or attempted. All "system" sounds, UI elements, and notifications are game-rendered assets designed to resemble real OS elements.
+> **CRITICAL:** Every trick below is a pure illusion rendered within Unity. No actual access to the player's system, files, microphone outside of voice chat, or personal data is ever made or attempted. All "system" sounds, UI elements, and notifications are game-rendered assets designed to resemble real OS elements.
 
 ### Trick 1: The Notification Sound
 
 **Player experience:** A sound plays that exactly matches the player's operating system notification sound (Windows ding, Discord ping, or Steam message chime). The player alt-tabs to check. Nothing is there.
 
-**Implementation:** At session start, the game detects the OS (Windows/Linux/Mac) via `FPlatformMisc`. It selects a pre-recorded audio file matching common notification sounds for that platform. The sound is played through a non-spatialized audio channel with no attenuation (so it sounds like it came from outside the game) during a moment of tension. Triggered once per session, maximum.
+**Implementation:** At session start, the game detects the OS (Windows/Linux/Mac) via `Application.platform`. It selects a pre-recorded audio file matching common notification sounds for that platform. The sound is played through a non-spatialized AudioSource with no spatial blend (so it sounds like it came from outside the game) during a moment of tension. Triggered once per session, maximum.
 
 **Emotional target:** Boundary violation. The player's real-world space no longer feels safe.
 
@@ -413,7 +413,7 @@ There is no correct response:
 
 **Player experience:** If the player has multiple monitors, a dark gray rectangle briefly appears on their second monitor (or the non-game monitor) for 200ms. It looks like a window opened and closed.
 
-**Implementation:** UE5 can enumerate displays via `FDisplayMetrics`. A borderless, frameless `SWindow` is created on the secondary display at 10% opacity, filled with dark gray, held for 200ms, then destroyed. This is a Slate window — entirely within UE5's rendering system. It contains no text and no interactable elements. It is just a shape.
+**Implementation:** Unity can enumerate displays via `Display.displays`. A borderless window is created on the secondary display at 10% opacity, filled with dark gray, held for 200ms, then destroyed. This is rendered entirely within Unity's display system. It contains no text and no interactable elements. It is just a shape.
 
 **Emotional target:** The game escaped its window. It was on the other screen. For just a moment, the boundary between game and desktop did not exist.
 

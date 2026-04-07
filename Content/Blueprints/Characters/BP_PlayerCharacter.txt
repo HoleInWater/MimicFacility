@@ -1,3 +1,0 @@
-// PLACEHOLDER: BP_PlayerCharacter.uasset
-// Purpose: Blueprint for the player character — handles first-person camera, movement, gear slots, and voice chat input.
-// This file will be replaced by the actual .uasset created in Unreal Editor.

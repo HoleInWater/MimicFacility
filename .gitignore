@@ -1,49 +1,79 @@
-# Unreal Engine 5 .gitignore
+# Unity .gitignore
 
-# Compiled binaries
-Binaries/
-Intermediate/
-DerivedDataCache/
-Build/
+# Library and build cache
+[Ll]ibrary/
+[Tt]emp/
+[Oo]bj/
+[Bb]uild/
+[Bb]uilds/
+[Ll]ogs/
+[Uu]ser[Ss]ettings/
 
-# Saved data (local user settings, autosaves, etc.)
-Saved/
+# MemoryCaptures
+[Mm]emoryCaptures/
 
-# Visual Studio files
-.vs/
+# Recordings
+[Rr]ecordings/
+
+# Asset meta data should be tracked with git-lfs
+# But still ignore certain generated files
+*.pidb.meta
+*.pdb.meta
+*.mdb.meta
+
+# Unity3D generated meta files
+*.pidb
+*.unityproj
 *.sln
 *.suo
-*.vcxproj
-*.vcxproj.filters
-*.vcxproj.user
+*.tmp
+*.user
+*.userprefs
+*.pidb
+*.booproj
+*.svd
+*.pdb
+*.mdb
+*.opendb
+*.VC.db
 
-# JetBrains Rider
+# Unity3D generated file on crash reports
+sysinfo.txt
+
+# Builds
+*.apk
+*.aab
+*.unitypackage
+*.app
+
+# Crashlytics generated file
+crashlytics-build.properties
+
+# Visual Studio / JetBrains
+.vs/
 .idea/
 *.DotSettings.user
+ExportedObj/
+.consulo/
+*.csproj
+*.unityproj
+*.sln
 
 # macOS
 .DS_Store
+*.swp
+*.lock
+profile
 
 # Windows
 Thumbs.db
 Desktop.ini
 
-# Unreal-specific caches
-*.VC.db
-*.opensdf
-*.opendb
-*.sdf
-*.ipch
-*.pdb
-*.pch
+# Gradle (if Android build)
+.gradle/
 
-# Built data
-*.uasset.bak
-*.umap.bak
-
-# Crashpad / logs
-CrashReportClient/
-*.log
+# TextMeshPro
+Assets/TextMesh*Pro/
 
 # Packaging output
 Releases/
@@ -52,3 +82,8 @@ PackagedBuilds/
 # Environment / secrets
 .env
 *.env.local
+
+# Ollama / AI model cache (don't commit models)
+Models/
+*.gguf
+*.bin

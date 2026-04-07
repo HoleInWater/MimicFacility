@@ -1,3 +1,0 @@
-// PLACEHOLDER: MainFacility.umap
-// Purpose: Primary gameplay map — the Kessler-Voss facility with all major areas (Intake Wing, Research Labs, The Garden, Server Room, Deep Levels).
-// This file will be replaced by the actual .umap created in Unreal Editor.

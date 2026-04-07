@@ -13,7 +13,7 @@
 1. [Research Report](#1-research-report)
    - [1A. Local LLM Selection](#1a-local-llm-selection)
    - [1B. Local Voice Cloning Selection](#1b-local-voice-cloning-selection)
-   - [1C. UE5 Integration Layer](#1c-ue5-integration-layer)
+   - [1C. Unity Integration Layer](#1c-unity-integration-layer)
    - [1D. Peer-to-Peer Multiplayer](#1d-peer-to-peer-multiplayer-no-dedicated-server)
 2. [System Architecture Diagram](#2-system-architecture-diagram)
 3. [Implementation Roadmap](#3-implementation-roadmap)
@@ -32,8 +32,8 @@
 |---|---|
 | **Repo** | `https://github.com/ggml-org/llama.cpp` |
 | **License** | MIT |
-| **What it does** | C/C++ inference engine for GGUF-format LLMs. No Python runtime. Supports CUDA, Vulkan, Metal, CPU fallback. Partial GPU offloading (split layers between CPU and GPU), KV cache quantization, grammar-constrained output, OpenAI-compatible HTTP server (`llama-server`), and a shared library (`libllama`) that can be embedded directly into a C++ application — including UE5 plugins. |
-| **Why it fits** | Native C++, zero Python dependency, partial offload lets us share VRAM with UE5 rendering, and the HTTP server mode gives us the Ollama sidecar option. |
+| **What it does** | C/C++ inference engine for GGUF-format LLMs. No Python runtime. Supports CUDA, Vulkan, Metal, CPU fallback. Partial GPU offloading (split layers between CPU and GPU), KV cache quantization, grammar-constrained output, OpenAI-compatible HTTP server (`llama-server`), and a shared library (`libllama`) that can be embedded directly into a C# application — including Unity plugins. |
+| **Why it fits** | Native C++, zero Python dependency, partial offload lets us share VRAM with Unity rendering, and the HTTP server mode gives us the Ollama sidecar option. |
 
 #### Model Comparison (Q4_K_M Quantization)
 
@@ -54,11 +54,11 @@
 
 #### VRAM Budget Reality
 
-UE5 consumes 2–4+ GB VRAM for rendering depending on scene complexity. On a 6GB RTX 3060, that leaves 2–4 GB for the LLM:
+Unity consumes 1–3+ GB VRAM for rendering depending on scene complexity. On a 6GB RTX 3060, that leaves 3–5 GB for the LLM:
 
-- **7–8B models will NOT fully fit in GPU alongside UE5 on a 6GB card.** You must use partial offload (e.g., 15–20 of ~32 layers on GPU, rest on CPU), which roughly halves throughput.
-- **TinyLlama and Phi-3 Mini fit comfortably** alongside UE5 on both GPUs.
-- On the 8GB RTX 4060, 7B models can fit with tight margins if UE5 rendering is modest.
+- **7–8B models will NOT fully fit in GPU alongside Unity on a 6GB card.** You must use partial offload (e.g., 15–20 of ~32 layers on GPU, rest on CPU), which roughly halves throughput.
+- **TinyLlama and Phi-3 Mini fit comfortably** alongside Unity on both GPUs.
+- On the 8GB RTX 4060, 7B models can fit with tight margins if Unity rendering is modest.
 
 #### Latency Analysis for Game AI
 
@@ -75,9 +75,9 @@ Our responses need to be **under 30 words** (Director) or **under 15 words** (Mi
 
 | Role | Model | Rationale |
 |---|---|---|
-| **Primary (Tier 2+)** | **Phi-3 Mini 3.8B** (MIT) | Best balance of intelligence, VRAM (2.4 GB), and speed. Fits alongside UE5 on 6GB cards. MIT licensed. Generates convincing short-form dialogue. |
+| **Primary (Tier 2+)** | **Phi-3 Mini 3.8B** (MIT) | Best balance of intelligence, VRAM (2.4 GB), and speed. Fits alongside Unity on 6GB cards. MIT licensed. Generates convincing short-form dialogue. |
 | **Low-spec fallback (Tier 1)** | **TinyLlama 1.1B** (Apache 2.0) | 0.8 GB VRAM. Runs on CPU-only machines at acceptable speed. Quality is noticeably lower — Director will sound more generic, Mimic will be less convincing. |
-| **High-end option (Tier 3)** | **Qwen 2.5 7B** (Apache 2.0) | Best raw dialogue quality. Apache 2.0. Only viable on 12GB+ VRAM cards where it can fully offload alongside UE5. |
+| **High-end option (Tier 3)** | **Qwen 2.5 7B** (Apache 2.0) | Best raw dialogue quality. Apache 2.0. Only viable on 12GB+ VRAM cards where it can fully offload alongside Unity. |
 
 **Also consider:** Qwen 2.5 3B (~2 GB Q4_K_M, Apache 2.0) as a middle ground between Phi-3 and TinyLlama.
 
@@ -94,7 +94,7 @@ Our responses need to be **under 30 words** (Director) or **under 15 words** (Mi
 - Run **locally** on the player's machine alongside a game engine AND a local LLM
 - Latency: **under 2 seconds** from text input to audio output start
 - License: **MIT or Apache 2.0** (open-source game requirement)
-- VRAM budget: **1–2 GB** (remainder after UE5 + LLM)
+- VRAM budget: **1–2 GB** (remainder after Unity + LLM)
 
 #### Tool Comparison
 
@@ -115,7 +115,7 @@ Our responses need to be **under 30 words** (Director) or **under 15 words** (Mi
 - ~2 GB VRAM for the model; can run on CPU with degraded speed
 - Supports streaming output, meaning audio can start playing before full generation completes
 - Quality from 30 seconds of reference audio is high — captures speaker identity, pitch, and cadence
-- Python-based, but can be wrapped as a sidecar process with a simple socket/pipe interface to UE5
+- Python-based, but can be wrapped as a sidecar process with a simple socket/pipe interface to Unity
 - **Risk:** Newer project — API may change. Pin to a specific release.
 
 **OpenVoice v2 (MyShell)** — BACKUP OPTION
@@ -128,7 +128,7 @@ Our responses need to be **under 30 words** (Director) or **under 15 words** (Mi
 **Coqui TTS / XTTS v2** — LICENSE PROBLEM
 - Excellent voice cloning quality, but the XTTS v2 model weights are **MPL-2.0** (code) with model weights under restrictive terms
 - Coqui AI (the company) shut down in late 2023. Repo is community-maintained with minimal updates.
-- VRAM usage (3–5 GB) is too high for our budget alongside LLM + UE5
+- VRAM usage (3–5 GB) is too high for our budget alongside LLM + Unity
 - **Excluded** due to unmaintained status and VRAM footprint
 
 **F5-TTS** — LICENSE PROBLEM
@@ -168,32 +168,32 @@ Chatterbox loads each WAV as a reference speaker profile
     ↓
 Round 2+: LLM generates text → Chatterbox synthesizes in cloned voice
     ↓
-PCM audio returned to UE5 → played through Mimic's AudioComponent
+PCM audio returned to Unity → played through Mimic's AudioSource
 ```
 
 ---
 
-### 1C. UE5 Integration Layer
+### 1C. Unity Integration Layer
 
 #### Plugin Comparison
 
 | Plugin | Repo | Approach | Pros | Cons |
 |---|---|---|---|---|
-| **Llama-Unreal** | `https://github.com/getnamo/Llama-Unreal` | Embeds `libllama` directly in UE5 process | Lowest latency (~0ms IPC overhead), single process, Blueprint nodes | GPU resource contention — llama and UE5 renderer share CUDA context. Model crash = game crash. Harder to update llama.cpp independently. |
+| **LLMUnity** | `https://github.com/undreamai/LLMUnity` | Embeds `libllama` directly in Unity process | Lowest latency (~0ms IPC overhead), single process, Prefabs | GPU resource contention — llama and Unity renderer share CUDA context. Model crash = game crash. Harder to update llama.cpp independently. |
 | **Ollama (sidecar)** | `https://github.com/ollama/ollama` | Separate process, REST API at `localhost:11434` | Crash isolation, easy model swapping, managed VRAM, automatic model loading/unloading, mature project | ~1–5ms HTTP overhead per request, requires Ollama installed separately or bundled, second process to manage |
-| **unreal-ollama** | `https://github.com/MuddyTerrain/unreal-ollama` | UE5 plugin that wraps Ollama's REST API | Simplifies Blueprint integration with Ollama | Thin wrapper — limited community, depends on Ollama |
-| **AIChatPlus** | Unreal Fab Marketplace | Commercial plugin, supports llama.cpp offline | Polished UI, multiple backend support | Paid marketplace plugin — conflicts with our zero-budget constraint. Also less transparent than open-source options. |
+| **unreal-ollama** | `https://github.com/MuddyTerrain/unreal-ollama` | Unity plugin that wraps Ollama's REST API | Simplifies Prefabs integration with Ollama | Thin wrapper — limited community, depends on Ollama |
+| **AIChatPlus** | Unity Asset Store | Commercial plugin, supports llama.cpp offline | Polished UI, multiple backend support | Paid marketplace plugin — conflicts with our zero-budget constraint. Also less transparent than open-source options. |
 
 #### In-Process vs Sidecar: The Tradeoff
 
-| Factor | In-Process (Llama-Unreal) | Sidecar (Ollama) |
+| Factor | In-Process (LLMUnity) | Sidecar (Ollama) |
 |---|---|---|
 | **Latency** | Lowest — direct function call | +1–5ms HTTP roundtrip (negligible for our 1–2s generation time) |
-| **VRAM management** | Must manually coordinate with UE5 renderer. Risk of OOM crashes. | Ollama manages its own VRAM allocation. Can unload models when not needed. |
+| **VRAM management** | Must manually coordinate with Unity renderer. Risk of OOM crashes. | Ollama manages its own VRAM allocation. Can unload models when not needed. |
 | **Crash isolation** | LLM crash = game crash | LLM crash = reconnect and retry. Game stays running. |
 | **Deployment** | Single executable, model files bundled | Must ship Ollama or a custom `llama-server` alongside the game |
-| **Development speed** | Requires C++ plugin development, rebuild UE5 to update | Test models via CLI, swap models without recompiling, REST API is language-agnostic |
-| **GPU contention** | llama.cpp and UE5 fight over the same CUDA context. Frame drops during inference. | Separate process, separate CUDA context. OS mediates GPU sharing. Less frame impact. |
+| **Development speed** | Requires C# plugin development, rebuild Unity to update | Test models via CLI, swap models without recompiling, REST API is language-agnostic |
+| **GPU contention** | llama.cpp and Unity fight over the same CUDA context. Frame drops during inference. | Separate process, separate CUDA context. OS mediates GPU sharing. Less frame impact. |
 
 #### Recommendation: Ollama Sidecar
 
@@ -201,9 +201,9 @@ PCM audio returned to UE5 → played through Mimic's AudioComponent
 
 1. **Crash isolation is critical for a horror game.** A crash during a tense moment destroys the experience. Sidecar means the game keeps running even if the LLM hits an edge case.
 
-2. **GPU resource contention is the #1 risk.** UE5's renderer and llama.cpp's CUDA kernels sharing a CUDA context causes frame stutters. Separate processes = separate CUDA contexts = the OS GPU scheduler mediates access more gracefully.
+2. **GPU resource contention is the #1 risk.** Unity's renderer and llama.cpp's CUDA kernels sharing a CUDA context causes frame stutters. Separate processes = separate CUDA contexts = the OS GPU scheduler mediates access more gracefully.
 
-3. **Development velocity.** We can test and swap models via `ollama run phi3` without touching C++ or recompiling. REST API is trivial to call from UE5 via `FHttpModule`.
+3. **Development velocity.** We can test and swap models via `ollama run phi3` without touching C# or recompiling. REST API is trivial to call from Unity via `UnityWebRequest`.
 
 4. **Ollama handles model lifecycle.** It loads models on first request, unloads after timeout, manages VRAM automatically. We don't have to build any of this.
 
@@ -212,18 +212,18 @@ PCM audio returned to UE5 → played through Mimic's AudioComponent
 ```
 Game Launch
     ↓
-UE5 spawns Ollama as a child process (or detects existing instance)
+Unity spawns Ollama as a child process (or detects existing instance)
     ↓
 Ollama listens on localhost:11434
     ↓
-UE5 sends HTTP POST to /api/generate with system prompt + game context
+Unity sends HTTP POST to /api/generate with system prompt + game context
     ↓
 Ollama streams tokens back
     ↓
-UE5 accumulates response, sends complete text to TTS sidecar
+Unity accumulates response, sends complete text to TTS sidecar
 ```
 
-**UE5 HTTP client code location:** `Source/MimicFacility/AI/DirectorAI.cpp` — the `EvaluateGameState()` method will fire async HTTP requests to Ollama.
+**Unity HTTP client code location:** `Source/MimicFacility/AI/DirectorAI.cs` — the `EvaluateGameState()` method will fire async HTTP requests to Ollama.
 
 **Fallback:** If Ollama fails to start or respond, Director uses pre-written fallback dialogue pool (already implemented). Mimic falls silent (still visually threatening).
 
@@ -231,41 +231,41 @@ UE5 accumulates response, sends complete text to TTS sidecar
 
 ### 1D. Peer-to-Peer Multiplayer (No Dedicated Server)
 
-#### UE5 Listen Server Model
+#### Mirror Networking Listen Server Model
 
-In a Listen Server setup, **one player's machine acts as both the server and a client**:
+In a Mirror Networking listen server setup, **one player's machine acts as both the server and a client**:
 
 ```
 Player 1's Machine (HOST)
-├── UE5 Game Server (authoritative game state)
-├── UE5 Game Client (Player 1's view)
+├── Unity Game Server (authoritative game state)
+├── Unity Game Client (Player 1's view)
 ├── Ollama LLM Process (sidecar)
 └── Chatterbox TTS Process (sidecar)
 
 Player 2–4's Machines (CLIENTS)
-└── UE5 Game Client only (no AI processes)
+└── Unity Game Client only (no AI processes)
 ```
 
 - The host runs the authoritative game simulation, all AI systems, and voice processing.
-- Clients connect via Steam P2P relay. They send input, receive replicated game state.
+- Clients connect via Steam P2P relay through Mirror Networking. They send input, receive replicated game state.
 - There is **no dedicated server cost** — the host player's machine is the server.
 
-#### Steam Online Subsystem (OSS) for P2P
+#### Steamworks.NET + Mirror for P2P
 
 | Component | Role |
 |---|---|
 | **Steam Networking Sockets** | Encrypted P2P connections with automatic NAT traversal via Steam relay servers. No port forwarding required. |
 | **Steam Lobbies** | Session discovery — players create/join lobbies. Host creates a lobby, friends join via invite or lobby browser. |
-| **Steam Voice** | Built-in voice chat. We intercept this on the host side for the VoiceLearningSubsystem. |
+| **Unity's Microphone API** | Voice capture for the VoiceLearningSubsystem. We capture microphone input on the host side. |
 | **Steam Matchmaking** | Optional — for public game finding. Initially we'll use invite-only lobbies. |
 
-**Setup in UE5:**
-- Enable `OnlineSubsystemSteam` plugin (already in our `.uproject`)
-- Set `DefaultPlatformService=Steam` in `DefaultEngine.ini`
-- Use `IOnlineSubsystem::Get()` for session creation/joining
+**Setup in Unity:**
+- Install Mirror Networking package and Steamworks.NET via NuGet/Unity Package Manager
+- Configure Mirror's `NetworkManager` with the `SteamworksTransport`
+- Use `SteamMatchmaking` for session creation/joining
 - Steam handles NAT punchthrough and relay fallback automatically
 
-**Reference:** `https://github.com/willroberts/ue5-multiplayer-plugin` — A minimal UE5 plugin demonstrating Steam OSS integration with session management Blueprints. Useful as a reference for our lobby system implementation.
+**Reference:** `https://github.com/vis2k/Mirror` — Mirror Networking for Unity, with Steamworks transport support. Useful as a reference for our lobby system implementation.
 
 #### AI Audio Distribution: Host to Clients
 
@@ -275,7 +275,7 @@ Player 2–4's Machines (CLIENTS)
 
 ```
 Host: LLM → text → TTS → PCM audio → compress → send to clients via RPC
-Clients: receive compressed audio → decompress → play through AudioComponent
+Clients: receive compressed audio → decompress → play through AudioSource
 ```
 
 - Pros: Clients hear identical audio. No AI resources needed on client machines.
@@ -305,9 +305,9 @@ Mimic dialogue:      Audio rendered on host → compressed → streamed to clien
 - Mimic voice is unique per session (cloned from a specific player) — only the host has the reference audio profiles, so audio must come from the host.
 - Bandwidth: only Mimic audio streams from host (~32 kbps Opus-encoded per active Mimic, max 2–3 concurrent).
 
-**UE5 implementation:**
-- Director: `UFUNCTION(NetMulticast, Reliable)` sends the text string. Each client feeds it to local Piper TTS.
-- Mimic: `UFUNCTION(NetMulticast, Unreliable)` sends compressed audio chunks. Clients decompress and play via a dynamic `UAudioComponent`. Unreliable is fine — dropped packets cause minor audio glitches, not game-breaking desyncs.
+**Unity implementation:**
+- Director: `[ClientRpc]` public method sends the text string. Each client feeds it to local Piper TTS.
+- Mimic: `[ClientRpc(channel = Channels.Unreliable)]` public method sends compressed audio chunks. Clients decompress and play via a dynamic `AudioSource`. Unreliable is fine — dropped packets cause minor audio glitches, not game-breaking desyncs.
 
 ---
 
@@ -319,7 +319,7 @@ Mimic dialogue:      Audio rendered on host → compressed → streamed to clien
 ╠══════════════════════════════════════════════════════════════════════╣
 ║                                                                      ║
 ║  ┌─────────────────────────────────────────────────────────────┐     ║
-║  │                    UNREAL ENGINE 5                          │     ║
+║  │                    UNITY ENGINE                             │     ║
 ║  │                                                             │     ║
 ║  │  ┌──────────┐   ┌──────────────┐   ┌──────────────────┐   │     ║
 ║  │  │ Player   │   │ VoiceLearning│   │ MimicFacility    │   │     ║
@@ -380,11 +380,11 @@ Mimic dialogue:      Audio rendered on host → compressed → streamed to clien
 ║  ║  │ compressed audio   │    │ → Local Piper TTS (CPU, 50MB) │ ║  ║
 ║  ║  │ → decompress       │    │ → Fixed "Director voice"       │ ║  ║
 ║  ║  │ → play via         │    │ → play via facility speakers   │ ║  ║
-║  ║  │   AudioComponent   │    │   AudioComponent               │ ║  ║
+║  ║  │   AudioSource      │    │   AudioSource                  │ ║  ║
 ║  ║  └────────────────────┘    └────────────────────────────────┘ ║  ║
 ║  ║                                                               ║  ║
 ║  ║  NO LLM. NO CHATTERBOX. NO VOICE CLONING.                   ║  ║
-║  ║  Clients only run UE5 + lightweight Piper TTS for Director.  ║  ║
+║  ║  Clients only run Unity + lightweight Piper TTS for Director.  ║  ║
 ║  ╚═══════════════════════════════════════════════════════════════╝  ║
 ╚══════════════════════════════════════════════════════════════════════╝
 ```
@@ -393,7 +393,7 @@ Mimic dialogue:      Audio rendered on host → compressed → streamed to clien
 
 | Component | Host | Clients |
 |---|---|---|
-| UE5 Game (rendering, input, physics) | Yes | Yes |
+| Unity Game (rendering, input, physics) | Yes | Yes |
 | Authoritative Game State | Yes | No (replicated) |
 | Voice Capture (VoiceLearningSubsystem) | Yes | No |
 | Ollama / LLM | Yes | No |
@@ -407,22 +407,22 @@ Mimic dialogue:      Audio rendered on host → compressed → streamed to clien
 
 ## 3. Implementation Roadmap
 
-### Milestone 1: Local LLM Talking in UE5 (Director Proof of Concept)
+### Milestone 1: Local LLM Talking in Unity (Director Proof of Concept)
 
-**Goal:** The Director speaks dynamically generated dialogue through facility speakers in a PIE session.
+**Goal:** The Director speaks dynamically generated dialogue through facility speakers in a Play Mode session.
 
 | Task | Tool/Repo | Complexity |
 |---|---|---|
 | Install Ollama, pull Phi-3 Mini model | `https://github.com/ollama/ollama` | Low |
-| Create `OllamaClient` C++ class — async HTTP POST to `localhost:11434/api/generate` | UE5 `FHttpModule` | Medium |
+| Create `OllamaClient` C# class — async HTTP POST to `localhost:11434/api/generate` | Unity `UnityWebRequest` | Medium |
 | Write Director system prompt (see Section 5) | N/A | Low |
-| Build `PromptBuilder` — assembles game state context into prompt | New C++ class | Medium |
-| Wire `DirectorAI::EvaluateGameState()` to call `OllamaClient` | Existing `DirectorAI.cpp` | Medium |
+| Build `PromptBuilder` — assembles game state context into prompt | New C# class | Medium |
+| Wire `DirectorAI::EvaluateGameState()` to call `OllamaClient` | Existing `DirectorAI.cs` | Medium |
 | Route LLM response text to `MimicFacilityHUD::ShowDirectorMessage()` | Existing HUD | Low |
 | Add Piper TTS sidecar for Director voice synthesis | `https://github.com/rhasspy/piper` | Medium |
-| Play Director audio through spatialized facility speaker AudioComponents | UE5 audio system | Medium |
+| Play Director audio through spatialized facility speaker AudioSources | Unity audio system | Medium |
 
-**Demo at end:** Play a PIE session. Walk through the facility. The Director speaks dynamic, contextually aware dialogue through in-world speakers. Responses generate in <2 seconds. Director reacts to round state changes.
+**Demo at end:** Play a Play Mode session. Walk through the facility. The Director speaks dynamic, contextually aware dialogue through in-world speakers. Responses generate in <2 seconds. Director reacts to round state changes.
 
 ---
 
@@ -432,14 +432,14 @@ Mimic dialogue:      Audio rendered on host → compressed → streamed to clien
 
 | Task | Tool/Repo | Complexity |
 |---|---|---|
-| Implement VoIP audio capture in `VoiceLearningSubsystem` — route Unreal voice chat to WAV buffer | UE5 VoIP / `IVoiceCapture` | High |
+| Implement audio capture in `VoiceLearningSubsystem` — route Unity's Microphone API input to WAV buffer | Unity `Microphone` API | High |
 | Save 30-second WAV files per player to temp directory | Standard file I/O | Low |
 | Set up Chatterbox as a sidecar process with socket/pipe interface | `https://github.com/resemble-ai/chatterbox` | Medium |
-| Create `VoiceCloneClient` C++ class — sends text + speaker reference to Chatterbox | New C++ class | Medium |
-| Receive PCM audio back from Chatterbox, wrap in `USoundWaveProcedural` | UE5 procedural audio | High |
+| Create `VoiceCloneClient` C# class — sends text + speaker reference to Chatterbox | New C# class | Medium |
+| Receive PCM audio back from Chatterbox, wrap in `AudioClip` | Unity procedural audio | High |
 | Test: at end of Round 1, play back "Hello, I am your copy" in each player's cloned voice | Integration test | Medium |
 
-**Demo at end:** 2-player PIE session. Both players talk freely for 2 minutes. Round 1 ends. A test sound plays back a phrase in each player's cloned voice. Voice similarity is evaluatable.
+**Demo at end:** 2-player Play Mode session. Both players talk freely for 2 minutes. Round 1 ends. A test sound plays back a phrase in each player's cloned voice. Voice similarity is evaluatable.
 
 ---
 
@@ -450,7 +450,7 @@ Mimic dialogue:      Audio rendered on host → compressed → streamed to clien
 | Task | Tool/Repo | Complexity |
 |---|---|---|
 | Write Mimic system prompt (see Section 5) | N/A | Low |
-| Create `MimicDialogueManager` — decides when Mimics speak and which player to impersonate | New C++ class | Medium |
+| Create `MimicDialogueManager` — decides when Mimics speak and which player to impersonate | New C# class | Medium |
 | Wire Mimic LLM requests through `OllamaClient` with Mimic-specific prompts | Existing `OllamaClient` | Medium |
 | Route LLM output text through Chatterbox with the target player's voice profile | Existing `VoiceCloneClient` | Medium |
 | Play cloned audio through `AMimicBase::VoicePlaybackComponent` with spatial audio | Existing component + `SpatialAudioProcessor` | Medium |
@@ -467,14 +467,14 @@ Mimic dialogue:      Audio rendered on host → compressed → streamed to clien
 
 | Task | Tool/Repo | Complexity |
 |---|---|---|
-| Implement Steam lobby creation/joining with `OnlineSubsystemSteam` | UE5 Steam OSS | High |
-| Listen server setup — host runs AI sidecars, clients connect via Steam relay | UE5 networking | High |
-| Implement Mimic audio streaming from host to clients (compressed audio via multicast RPC) | UE5 networking + Opus codec | High |
-| Implement Director text replication + client-side Piper TTS | UE5 replication + Piper | Medium |
+| Implement Steam lobby creation/joining with Steamworks.NET | Steamworks.NET + Mirror | High |
+| Mirror Networking listen server setup — host runs AI sidecars, clients connect via Steam relay | Mirror Networking | High |
+| Implement Mimic audio streaming from host to clients (compressed audio via ClientRpc) | Mirror Networking + Opus codec | High |
+| Implement Director text replication + client-side Piper TTS | Mirror SyncVar/ClientRpc + Piper | Medium |
 | Full round lifecycle: R1 (explore + capture) → R2 (Mimics appear) → R3+ (escalation) | `RoundManager` | Medium |
 | Director state machine responds to real game events (mimic kills, player separation, trigger words) | `DirectorAI` | Medium |
-| Trust Challenge UI flow (`WBP_TrustChallenge`) | UE5 UMG | Medium |
-| Performance profiling — ensure AI systems don't drop frames below 30fps | UE5 profiler | Medium |
+| Trust Challenge UI flow (`TrustChallengeUI`) | Unity UI Toolkit | Medium |
+| Performance profiling — ensure AI systems don't drop frames below 30fps | Unity Profiler | Medium |
 | Hardware tier auto-detection and model selection (see Section 4) | New startup system | Medium |
 
 **Demo at end:** Full 30-minute session with 2–4 players over Steam. Round 1 captures voices. Round 2 spawns Mimics that speak in cloned voices. Director manipulates. Trust erodes. Playable horror experience.
@@ -485,7 +485,7 @@ Mimic dialogue:      Audio rendered on host → compressed → streamed to clien
 
 The game auto-detects hardware at startup and selects AI configuration:
 
-```cpp
+```csharp
 // Pseudocode for tier detection
 if (VRAM >= 12GB && RAM >= 32GB)
     Tier = 3; // High-end
@@ -507,8 +507,8 @@ else
 | **AI Response Latency** | 3–5 seconds (CPU inference at ~15–20 tok/s) |
 | **Degraded Features** | No voice cloning, slower Director responses, generic Mimic voice, reduced horror impact |
 
-**Total VRAM budget:** ~2 GB (UE5 on low settings) + 0 GB (AI) = **2 GB**
-**Total RAM budget:** ~4 GB (UE5) + ~2 GB (TinyLlama) + ~0.5 GB (Piper) = **~6.5 GB**
+**Total VRAM budget:** ~1.5 GB (Unity on low settings) + 0 GB (AI) = **1.5 GB**
+**Total RAM budget:** ~3 GB (Unity) + ~2 GB (TinyLlama) + ~0.5 GB (Piper) = **~5.5 GB**
 
 ### Tier 2 — Recommended (16GB RAM, 6–8GB VRAM)
 
@@ -522,8 +522,8 @@ else
 | **AI Response Latency** | 0.6–1.0 seconds |
 | **Full Features** | Voice cloning active, fast Director responses, convincing Mimic voice |
 
-**Total VRAM budget:** ~3 GB (UE5 medium) + 2.4 GB (LLM) + 1 GB (TTS) = **~6.4 GB** (fits 6GB card)
-**Total RAM budget:** ~6 GB (UE5) + ~1 GB (overflow) + ~0.5 GB (Piper) = **~7.5 GB**
+**Total VRAM budget:** ~2 GB (Unity medium) + 2.4 GB (LLM) + 1 GB (TTS) = **~5.4 GB** (fits 6GB card)
+**Total RAM budget:** ~4 GB (Unity) + ~1 GB (overflow) + ~0.5 GB (Piper) = **~5.5 GB**
 
 ### Tier 3 — High-End (32GB RAM, 12GB+ VRAM)
 
@@ -537,8 +537,8 @@ else
 | **AI Response Latency** | 0.8–1.2 seconds (larger model, but more VRAM = no partial offload) |
 | **Full Features** | Best dialogue quality, best voice cloning, highest paranoia factor |
 
-**Total VRAM budget:** ~4 GB (UE5 high) + 4.7 GB (LLM) + 2 GB (TTS) = **~10.7 GB** (fits 12GB card)
-**Total RAM budget:** ~8 GB (UE5) + ~1 GB (overflow) + ~0.5 GB (Piper) = **~9.5 GB**
+**Total VRAM budget:** ~3 GB (Unity high) + 4.7 GB (LLM) + 2 GB (TTS) = **~9.7 GB** (fits 12GB card)
+**Total RAM budget:** ~6 GB (Unity) + ~1 GB (overflow) + ~0.5 GB (Piper) = **~7.5 GB**
 
 ### Tier Summary Table
 

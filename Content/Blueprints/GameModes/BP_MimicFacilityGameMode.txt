@@ -1,3 +1,0 @@
-// PLACEHOLDER: BP_MimicFacilityGameMode.uasset
-// Purpose: Game Mode Blueprint — sets default pawn, HUD, game state, and player state classes. Entry point for match logic.
-// This file will be replaced by the actual .uasset created in Unreal Editor.

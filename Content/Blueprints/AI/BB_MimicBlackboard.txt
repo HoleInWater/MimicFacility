@@ -1,3 +1,0 @@
-// PLACEHOLDER: BB_MimicBlackboard.uasset
-// Purpose: Blackboard data asset for Mimic AI — stores TargetPlayer, MimicState, VoiceProfileID, IsIdentified, etc.
-// This file will be replaced by the actual .uasset created in Unreal Editor.
