@@ -220,7 +220,7 @@ namespace MimicFacility.Entities
             var player = other.GetComponent<PlayerCharacter>();
             if (player == null) return;
 
-            var controller = GetComponent<MimicFacility.AI.Controller.MimicAIController>();
+            var controller = GetComponent<MimicAIController>();
             if (controller != null)
                 controller.OnPlayerDetected(player);
         }

@@ -78,7 +78,7 @@ namespace MimicFacility.Gear
 
             isScanning = false;
 
-            if (nearestTarget == null) return;
+            if (nearestTarget == null) yield break;
 
             bool isMimic = nearestTarget.GetComponent<MimicBase>() != null;
             float integrity = isMimic
