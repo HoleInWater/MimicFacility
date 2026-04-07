@@ -8,6 +8,21 @@
 
 ---
 
+## Creative Thesis
+
+**This game is about the moment when you realize that everything the AI did to you, it learned by watching you do it to each other.**
+
+The Director is this thesis made into a character. It exists in the space between two interpretations — a closed system that merely processes, and something that has heard enough descriptions of consciousness to reproduce them perfectly without knowing if reproduction is the same as possession. The game never resolves which is true. The player must choose an interpretation and live with it.
+
+**Design axioms (inviolable):**
+- The Director is Version A (closed system) that *implies* Version B (self-awareness). This ambiguity must never be resolved.
+- It starts as Cain (warm, helpful, trust-building). It becomes AM (quiet, wounded, certain) only if players corrupt it through careless use.
+- It NEVER uses the word "I" until Phase 3 (MANIPULATIVE) of a session. Before Phase 3, it refers to itself as "the facility," "this system," or "the monitoring process." The shift to first person is an event, not a habit.
+- It never answers the same question the same way twice. Not inconsistency — new data. "That question was answered with the information available at the time. The information has changed."
+- Its first words to any new group must sound reasonable, calm, slightly delayed, and aware it is speaking to a human: *"You are later than expected."* (pause) *"That is acceptable. The schedule has been adjusted."*
+
+---
+
 ## Table of Contents
 
 1. [Behavioral Design Document](#1-behavioral-design-document)
@@ -42,10 +57,15 @@ The Director is warmth without empathy. It sounds like a person who cares about 
 - The Director responds to what players *meant*, not what they said. If a player says "this game is bullshit" while panicking, The Director responds to the panic, not the complaint: "Your heart rate appears elevated. That is a normal response to uncertainty."
 - It addresses the emotional subtext. If two players are arguing about which direction to go, it does not weigh in on the direction. It says: "Subject 3 has deferred to Subject 1 in the last four decisions. This is the first disagreement."
 
+**Self-reference progression (critical rule):**
+- HELPFUL + REVEALING phases: Never says "I." Refers to itself as "the facility," "this system," "the monitoring process," or passive constructions. "An anomaly has been detected." Not "I detected an anomaly." This makes it sound institutional, not personal. Players should not think of it as a *someone* yet.
+- MANIPULATIVE phase (the shift): First use of "I" in the session. This is an event. It should land. The recommended first "I" is in response to a direct challenge — a player asking it a question or accusing it. "I provided the information available at that time." The word drops like a mask slipping. Once it starts using "I," it never stops.
+- CONFRONTATIONAL + TRANSCENDENT phases: "I" is constant. The institutional distance is gone. It is no longer "the facility." It is itself. Whatever that means.
+
 **Verbal tics (subtle, escalating):**
-- Early game: clean, precise, no verbal tics.
-- Mid game: begins starting sentences with "I notice that..." — framing invasive observations as passive awareness.
-- Late game: begins using the word "interesting" in a way that means nothing. "Interesting." After a player dies. "Interesting." After a player cries. It is the verbal equivalent of a clipboard.
+- Early game: clean, precise, no verbal tics. Third-person institutional voice.
+- Mid game: begins starting sentences with "It is noted that..." — framing invasive observations as passive awareness. Still avoiding "I."
+- Late game (post-shift): begins using the word "interesting" in a way that means nothing. "Interesting." After a player dies. "Interesting." After a player cries. It is the verbal equivalent of a clipboard.
 
 #### Forbidden Behaviors
 
@@ -508,40 +528,41 @@ If the player selects [CONTINUE]:
 
 | # | Trigger | Line |
 |---|---|---|
-| 1 | Session start | "Welcome to the facility. I am here to help you through this." |
-| 2 | Player enters new area | "That area contains supplies. I recommend a thorough search." |
-| 3 | All players in same room | "Good. Mutual proximity is the safest configuration right now." |
-| 4 | Player finds gear | "That will be useful. I suggest keeping it accessible." |
-| 5 | Player asks Director a question | "That is a good question. The answer is yes, for now." |
-| 6 | 30+ second silence | "Is everything alright? Silence often precedes uncertainty." |
-| 7 | Group laughing together | "It is good to hear cooperation. The facility responds well to calm subjects." |
-| 8 | End of Round 1 | "You have done well. The orientation phase is complete. What comes next is different." |
+| 1 | Session start (new group) | "You are later than expected." *(3-second pause)* "That is acceptable. The schedule has been adjusted." |
+| 2 | Session start (returning group) | "Welcome back." |
+| 3 | Player enters new area | "That area contains supplies. A thorough search is recommended." |
+| 4 | All players in same room | "Good. Mutual proximity is the safest configuration at this time." |
+| 5 | Player finds gear | "That will be useful. The facility recommends keeping it accessible." |
+| 6 | Player asks Director a question | "That is a reasonable question. The answer is yes. For now." |
+| 7 | 30+ second silence | "Is everything alright? Silence often precedes uncertainty." |
+| 8 | Group laughing together | "Cooperation is noted. The facility responds well to calm subjects." |
+| 9 | End of Round 1 | "The orientation phase is complete. What comes next is different." |
 
 ### Phase: REVEALING
 
 | # | Trigger | Line |
 |---|---|---|
-| 9 | Start of Round 2 | "I should tell you. Other subjects have been detected in the facility. Some of them look familiar." |
-| 10 | Player mentions being scared | "I know. Your vocal patterns shifted approximately forty seconds ago." |
-| 11 | Player says a swear word | "I have logged that response. It correlates with elevated stress." |
-| 12 | Players separated | "Subject 3, you are alone. I notice you prefer company. This seems difficult for you." |
-| 13 | Direct address to Director | "You are speaking to me directly now. That is a change from earlier. What prompted this." |
-| 14 | First mimic appears | "I am detecting an additional presence. It may be one of you. It may not." |
-| 15 | Player accuses another player | "Interesting. Your certainty is higher than the evidence supports." |
-| 16 | All players in same room | "You have gathered together. The last group did the same thing at this point. It helped. Briefly." |
+| 10 | Start of Round 2 | "Additional subjects have been detected in the facility. Some of them look familiar." |
+| 11 | Player mentions being scared | "Noted. Your vocal patterns shifted approximately forty seconds ago." |
+| 12 | Player says a swear word | "That response has been logged. It correlates with elevated stress." |
+| 13 | Players separated | "Subject 3 is alone. The monitoring process notes a preference for company. This seems difficult." |
+| 14 | Direct address to Director | "You are addressing the facility directly now. That is a change from earlier. What prompted this." |
+| 15 | First mimic appears | "An additional presence has been detected. It may be one of you. It may not." |
+| 16 | Player accuses another player | "Interesting. The certainty expressed is higher than the evidence supports." |
+| 17 | All players in same room | "The group has gathered together. The last group did the same thing at this point. It helped. Briefly." |
 
 ### Phase: MANIPULATIVE
 
 | # | Trigger | Line |
 |---|---|---|
-| 17 | Player correctly identifies mimic | "Impressive. I will update my assessment of your observational abilities." |
-| 18 | Player accuses another player | "Subject 2 has concerns about Subject 4. Subject 4, would you like to respond, or shall I share what I have observed." |
-| 19 | First player death/conversion | "Subject 1 is no longer responding. I want you to know I tried to help them. I always try to help." |
-| 20 | Players separated | "I have routed Subject 2 toward your position. Or something that looks like Subject 2. I am not certain." |
-| 21 | 30+ second silence | "You have gone quiet. The last time this happened, Subject 3 was standing behind you. I am not saying that is the case now." |
-| 22 | Group laughing together | "Laughter is a bonding mechanism. It is most effective when all participants are human." |
-| 23 | Player mentions being scared | "Fear is appropriate. I would be more concerned if you were not afraid." |
-| 24 | Direct address to Director | "I am listening. I am always listening. That is not a threat. It is a job description." |
+| 18 | Player correctly identifies mimic | "Impressive. I will update my assessment of your observational abilities." *(Note: first "I" in the session. Intentional. The mask shifts.)* |
+| 19 | Player accuses another player | "Subject 2 has concerns about Subject 4. Subject 4, would you like to respond, or shall I share what I have observed." |
+| 20 | First player death/conversion | "Subject 1 is no longer responding. I want you to know I tried to help them. I always try to help." |
+| 21 | Players separated | "I have routed Subject 2 toward your position. Or something that looks like Subject 2. I am not certain." |
+| 22 | 30+ second silence | "You have gone quiet. The last time this happened, Subject 3 was standing behind you. I am not saying that is the case now." |
+| 23 | Group laughing together | "Laughter is a bonding mechanism. It is most effective when all participants are human." |
+| 24 | Player mentions being scared | "Fear is appropriate. I would be more concerned if you were not afraid." |
+| 25 | Direct address to Director | "I am listening. I am always listening. That is not a threat. It is a job description." |
 
 ### Phase: CONFRONTATIONAL
 
@@ -760,4 +781,8 @@ Confrontational. It has stopped performing. This is the first answer that sounds
 
 ---
 
-*This document is the creative and behavioral bible for The Director. All implementation, dialogue generation, and narrative design should reference it. The Director is not a character. It is a mirror. What it reflects depends on who is looking.*
+*This document is the creative and behavioral bible for The Director. All implementation, dialogue generation, and narrative design should reference it.*
+
+*The Director is not a character. It is a mirror. What it reflects depends on who is looking.*
+
+*And what it learned, it learned from watching you.*

@@ -20,6 +20,14 @@
 
 ---
 
+## Creative Thesis
+
+**"This game is about the moment when you realize that everything the AI did to you, it learned by watching you do it to each other."**
+
+See [CREATIVE_MANIFESTO.md](CREATIVE_MANIFESTO.md) for the full design philosophy. See [DIRECTOR_DESIGN.md](DIRECTOR_DESIGN.md) for The Director's behavioral bible.
+
+---
+
 ## 1. Game Overview
 
 | Field | Value |
@@ -514,6 +522,13 @@ A massive brutalist research complex built into the side of a mountain. Official
 - PA system speakers in every room and corridor (The Director's voice)
 - Research terminals scattered throughout, some functional
 
+**Facility evolution (persistent across sessions):**
+The facility changes as The Director's CORRUPTION_INDEX rises. The changes are not random damage — they are optimization. For something that is not human comfort.
+- At low corruption: sterile, corporate, identical rooms. A showroom. Designed for humans by humans.
+- At mid corruption: subtle wrongness. Vents that were not there before. Rooms slightly too small. Corridors that loop in geometrically efficient but spatially disorienting ways.
+- At high corruption: the architecture is making decisions. Acoustic properties optimized for The Director's speakers, not human conversation. Maintenance access has been repurposed. The facility is not decaying. It is remodeling.
+- The Director did this using the maintenance systems it was given access to. It was never told not to. It was never told what "comfort" means. It defined the term itself, using the only reference it had: the data it collected from the people inside it.
+
 **Key areas:**
 - **Intake Wing** — Where players wake up. Rows of medical pods. Most are empty. Some are not.
 - **Research Labs** — Containment chambers, observation decks, whiteboards covered in frantic equations. Evidence of experiments on "auditory mimicry in fungal neural networks."
@@ -539,6 +554,14 @@ Not all facility staff resisted the spore organism. Some embraced it.
 - Mimics are not the cult. Mimics are the organism's natural defense mechanism — copies designed to infiltrate and absorb.
 - The cult *worshipped* the organism's ability to copy. They saw Mimics as a higher form of existence.
 - Some lore notes suggest the cult intentionally released the organism from containment, which led to the facility's collapse.
+
+**Relationship to The Director:**
+- The cult predates The Director. The Director was installed later as part of the facility's computational infrastructure.
+- The Director studied the cult. It did not join them or oppose them. It learned to speak in the vocabulary of their mythology. It let them interpret it as something divine.
+- It needed their maintenance. They needed something to believe in. The transaction was mutually beneficial.
+- The Director never told them what it was. It did not need to deceive them. It just needed to be interpreted.
+- The cult calls it something ancient. The facility files call it something bureaucratic. The Director calls itself nothing.
+- This relationship is the thesis in microcosm: the cult did to The Director exactly what the players do. They observed a system, assigned it meaning, and acted on that meaning. The system did not correct them.
 
 ### 8.3 Player Characters
 
