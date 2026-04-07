@@ -42,6 +42,7 @@ namespace MimicFacility.Characters
         private Vector3 moveDirection;
         private float currentActiveSpeed;
         private PlayerStamina staminaSystem;
+        private SixthSense sixthSense;
         private bool spaceHeld;
 
         void Start()
@@ -71,6 +72,7 @@ namespace MimicFacility.Characters
                 playerCamera = GetComponentInChildren<Camera>();
 
             staminaSystem = GetComponent<PlayerStamina>();
+            sixthSense = GetComponent<SixthSense>();
 
             if (SettingsManager.Instance != null)
                 mouseSensitivity = SettingsManager.Instance.Settings.mouseSensitivity * 200f;
@@ -121,8 +123,9 @@ namespace MimicFacility.Characters
             bool isMoving = Mathf.Abs(x) > 0.1f || Mathf.Abs(z) > 0.1f;
             bool isTryingToSprint = Input.GetKey(KeyCode.LeftShift) && isMoving;
             bool hasStamina = staminaSystem == null || staminaSystem.currentStamina > 1f;
+            bool sixthSenseAllows = sixthSense == null || sixthSense.CanSprint;
 
-            if (isTryingToSprint && hasStamina)
+            if (isTryingToSprint && hasStamina && sixthSenseAllows)
             {
                 speed = sprintSpeed;
                 if (staminaSystem != null)
