@@ -106,7 +106,7 @@ namespace MimicFacility.Entities
             Transform best = null;
             Animator bestAnim = null;
 
-            foreach (var player in FindObjectsOfType<PlayerMovement>())
+            foreach (var player in FindObjectsOfType<PlayerCharacter>())
             {
                 float dist = Vector3.Distance(transform.position, player.transform.position);
                 if (dist < closest && dist < mirrorRange)

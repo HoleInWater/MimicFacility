@@ -77,7 +77,7 @@ namespace MimicFacility.Entities
             Vector3 avoidDir = Vector3.zero;
             int count = 0;
 
-            foreach (var player in FindObjectsOfType<PlayerMovement>())
+            foreach (var player in FindObjectsOfType<PlayerCharacter>())
             {
                 float dist = Vector3.Distance(transform.position, player.transform.position);
                 if (dist < avoidPlayerRadius)
@@ -154,7 +154,7 @@ namespace MimicFacility.Entities
             Transform mostIsolated = null;
             float maxIsolation = 0f;
 
-            var players = FindObjectsOfType<PlayerMovement>();
+            var players = FindObjectsOfType<PlayerCharacter>();
             if (players.Length <= 1) return players.Length == 1 ? players[0].transform : null;
 
             foreach (var player in players)

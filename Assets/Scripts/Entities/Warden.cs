@@ -84,7 +84,7 @@ namespace MimicFacility.Entities
         private void CountPlayersInZone()
         {
             playersInZone = 0;
-            foreach (var player in FindObjectsOfType<PlayerMovement>())
+            foreach (var player in FindObjectsOfType<PlayerCharacter>())
             {
                 float dist = Vector3.Distance(transform.position, player.transform.position);
                 if (dist <= detectionRange)
@@ -187,8 +187,8 @@ namespace MimicFacility.Entities
         [Server]
         private void IsolatePlayers()
         {
-            var playersInRange = new List<PlayerMovement>();
-            foreach (var player in FindObjectsOfType<PlayerMovement>())
+            var playersInRange = new List<PlayerCharacter>();
+            foreach (var player in FindObjectsOfType<PlayerCharacter>())
             {
                 float dist = Vector3.Distance(transform.position, player.transform.position);
                 if (dist <= detectionRange)

@@ -164,7 +164,7 @@ namespace MimicFacility.Entities
             }
             else
             {
-                foreach (var player in FindObjectsOfType<PlayerMovement>())
+                foreach (var player in FindObjectsOfType<PlayerCharacter>())
                 {
                     float dist = Vector3.Distance(transform.position, player.transform.position);
                     if (dist > 8f && dist < 20f)

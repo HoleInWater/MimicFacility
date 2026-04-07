@@ -58,7 +58,7 @@ namespace MimicFacility.Entities
             float closest = float.MaxValue;
             Transform best = null;
 
-            foreach (var player in FindObjectsOfType<PlayerMovement>())
+            foreach (var player in FindObjectsOfType<PlayerCharacter>())
             {
                 float dist = Vector3.Distance(transform.position, player.transform.position);
                 if (dist < closest && dist < seekRange)

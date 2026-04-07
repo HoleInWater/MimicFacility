@@ -100,9 +100,9 @@ namespace MimicFacility.Entities
         {
             bool anyoneWatching = false;
 
-            foreach (var player in FindObjectsOfType<PlayerMovement>())
+            foreach (var player in FindObjectsOfType<PlayerCharacter>())
             {
-                Camera cam = player.playerCamera;
+                Camera cam = player.GetComponentInChildren<Camera>();
                 if (cam == null) continue;
 
                 Vector3 dirToStalker = (transform.position - cam.transform.position).normalized;
@@ -169,7 +169,7 @@ namespace MimicFacility.Entities
             float closest = float.MaxValue;
             Transform best = null;
 
-            foreach (var player in FindObjectsOfType<PlayerMovement>())
+            foreach (var player in FindObjectsOfType<PlayerCharacter>())
             {
                 float dist = Vector3.Distance(transform.position, player.transform.position);
                 if (dist < closest)
