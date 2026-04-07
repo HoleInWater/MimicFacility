@@ -106,7 +106,7 @@ The Director is the facility's overarching AI — a disembodied voice that speak
 - Some of this information is **true** — enough to build trust
 - Some of this information is **false** — enough to cause disaster
 - The ratio of truth to lies shifts based on the game state (see Director AI states below)
-- Speaks dynamically using Claude API-generated dialogue based on current game events
+- Speaks dynamically using local LLM (via Ollama sidecar)-generated dialogue based on current game events
 
 **Key Rule:** The Director never directly harms players. It only provides information. The harm comes from players acting on bad information.
 
@@ -150,76 +150,71 @@ Players have **no direct combat**. They cannot kill Mimics with weapons. Instead
 
 ### Round 1: Orientation (10–15 minutes)
 
-- Players wake up in a starting chamber. The Director introduces itself and provides initial guidance.
-- Players explore the facility freely: unlocking doors, finding gear, reading lore notes, and talking naturally.
-- The atmosphere is tense but not dangerous. Environmental storytelling hints at what happened here.
-- **The AI is passively recording all voice chat.** Players are not explicitly told this in Round 1.
-- Round 1 ends when players reach a specific checkpoint or a timer expires. The Director announces the transition.
+- Players wake up in a starting chamber. The Director's first words: *"You are later than expected."* (pause) *"That is acceptable. The schedule has been adjusted."*
+- Players explore the facility freely. The atmosphere is tense but not dangerous.
+- **Social texture is the goal, not exposition.** Round 1 is designed to create natural human interaction that the AI can learn from:
+  - Small cooperative dependencies: one player opens a door while another reads a code, someone covers for a mistake, someone leads and someone follows.
+  - Natural communication: jokes, reactions, light decisions about where to go.
+  - One shared failure: minor, not dramatic. A puzzle that requires restarting, a wrong turn that wastes time. Someone was vulnerable, someone helped. This creates micro-debt between specific players.
+  - Players form trust based on specific behavioral patterns — "I trust this person to react like THIS." That specificity is what the mimic later destroys.
+- **The AI is passively recording all voice chat.** Players are informed of this only through the in-character content warning before the session. The VoiceLearningSubsystem captures audio, maps social dynamics, logs emotional responses, and flags verbal slips.
+- Environmental lore: research terminals (requires access cards), cult artifacts, facility modifications that tell a story without words.
+- Round 1 ends when players reach a checkpoint or a timer expires. The Director announces the transition: *"The orientation phase is complete. What comes next is different."*
 
 ### Round 2: Infiltration (15–20 minutes)
 
-- The Director announces that "other subjects have been detected in the facility."
-- 1–2 Mimics spawn, wearing random player skins. They attempt to blend into the group.
-- Players begin to notice oddities: a teammate in two places at once, a voice that sounds slightly off, someone who doesn't respond to questions correctly.
-- Paranoia builds. Players start testing each other.
-- Trigger Words are active — careless talking spawns more Mimics.
-- The Director provides "helpful" information that may or may not be accurate.
+- The Director announces that "additional subjects have been detected in the facility."
+- 1–2 Mimics spawn, wearing the skin of the group's most trusted player (identified via the Social Dynamics map from Round 1).
+- The first Diagnostic Task becomes available. The Director frames it as mutual necessity: "This system's ventilation controls require manual intervention. The process cannot do this alone."
+- Players must split up to complete tasks — creating windows for mimic infiltration.
+- Players begin to notice oddities: a teammate in two places at once, a voice that sounds slightly off, a response that arrives a beat too late.
+- Trigger Words are active — careless talking during task communication spawns more Mimics.
+- The Director provides "helpful" task instructions that may or may not be accurate.
+- The Accusation Protocol becomes available — players can formally accuse and vote.
 
 ### Round 3+: Escalation (until win/loss)
 
-- Mimic count increases. Swarm Mimics and Ceiling Crawlers begin appearing.
-- The Director becomes more active — locking doors, flooding sections, filling rooms with spore clouds.
-- Environmental hazards force players into tighter spaces where distinguishing real from fake becomes harder.
-- The Trust Verification mechanic becomes unreliable as Mimics have accumulated more voice data.
-- Pressure escalates until a win or loss condition is met.
+- Remaining Diagnostic Tasks must be completed under escalating pressure.
+- Mimic count increases. Swarm Mimics and Ceiling Crawlers begin appearing. Echo Mimics replay Round 1 conversations in empty rooms.
+- The Director shifts to MANIPULATIVE phase — it uses first-person pronouns for the first time. It gives conflicting task instructions to separated players. It breaks ties in Accusation votes in ways that serve its own interests.
+- Environmental hazards (locked doors, spore vents, flooding) force players into tighter spaces during task vulnerability windows.
+- The Trust Verification mechanic degrades as Mimics accumulate more voice data from task communication.
+- Late game: Hive Mimics form from converging swarms, blocking corridors and forcing rerouting.
+- Final objective: reach the exit with all surviving humans, pass one last Accusation Protocol round, and leave together.
 
 ---
 
 ## 4. Win / Loss Conditions
 
-> **STATUS: OPEN — NEEDS DECISION**
+> **STATUS: DECIDED** — See [OPEN_DESIGN_ANSWERS.md](OPEN_DESIGN_ANSWERS.md) for full rationale.
 
-Three design options are presented below. The team should select one or create a hybrid.
+### Win Condition: Diagnostic Completion + Verified Extraction
 
-### Option A: Extraction
+**Win:** Players complete 3 of 5 randomized Diagnostic Tasks (cooperative objectives that require splitting up, verbal communication, and facility interaction) AND all surviving players reach the exit AND pass a final group Accusation Protocol (every player at the exit must be verified as human by majority vote before the door opens).
 
-**Win:** Players locate the facility exit (randomized per run) and all surviving *real* players reach it together. A Mimic reaching the exit with the players counts as a loss.
+**Loss conditions:**
+- All players converted (mimic swarm overwhelms)
+- 3 false-positive containments (The Director declares the experiment a failure — trust was more damaged than the mimics)
+- Session timer expires (triggers Ending B — "you stayed too long")
 
-**Loss:** All players are "converted" (replaced by Mimics), or the facility self-destruct timer expires.
+If a mimic reaches the exit undetected and is verified by the group, the door opens — but Ending A's final dialogue changes to imply The Director let the mimic through intentionally.
 
-| Pros | Cons |
-|------|------|
-| Clear, intuitive goal | May feel generic for horror |
-| Creates natural movement through the facility | Mimic-at-the-exit check could feel gamey |
-| Easy to communicate to new players | Doesn't leverage the voice/trust mechanics for the finale |
+### Diagnostic Tasks
 
-### Option B: Identification Protocol
+Diagnostic Tasks are the core objectives of Round 2+. The facility's systems are degrading. The Director frames this as needing the players' manual intervention. Each task requires: **splitting up** (players in separate locations), **verbal communication** (relaying readings/instructions across rooms), and a **vulnerability window** (a moment of darkness, fog, or locked doors that creates opportunity for mimic infiltration). 3-5 tasks are drawn from a randomized pool per session. Full task designs in [OPEN_DESIGN_ANSWERS.md](OPEN_DESIGN_ANSWERS.md).
 
-**Win:** Players must correctly identify and contain **every** Mimic in the facility using Containment Devices. The Director announces when all Mimics are contained.
+### The Accusation Protocol
 
-**Loss:** If players contain a real player 3 times (false positives), The Director declares the experiment a failure and floods the facility. Or the Mimic count exceeds a threshold (e.g., 10+).
+Mimic identification is a three-phase social mechanic:
 
-| Pros | Cons |
-|------|------|
-| Directly engages the core trust/paranoia mechanic | Could stall if players can't find the last Mimic |
-| Every containment attempt is a high-stakes decision | Punishing false positives may make players too cautious |
-| Natural climax as Mimic count shrinks or swells | Requires careful Mimic count balancing |
+1. **Suspicion (Private):** Gather evidence through behavioral observation, Audio Scanner waveform analysis, Trust Challenges, and shadow testing. No single evidence type is conclusive.
+2. **Accusation (Public):** The accusing player formally targets a suspect (hold T for 2 seconds). All players are notified. 15-second Deliberation Window locks all doors in the current room. The accused defends themselves. Others discuss.
+3. **Judgment (Collective):** All players vote CONTAIN or RELEASE. Majority decides. Ties are broken by The Director.
+   - Correct accusation: mimic collapses, containment device consumed.
+   - False accusation: real player stunned 10 seconds, device consumed, social trust damaged.
+   - Released and was a mimic: mimic becomes more cautious, harder to identify.
 
-### Option C: The Director's Game
-
-**Win:** The Director reveals that the experiment has multiple "phases." Players must complete a series of objectives (repair a machine, decode a message, activate a beacon) while Mimics interfere. Completing all objectives "satisfies" The Director, which opens the exit.
-
-**Loss:** Failing to complete objectives within a time limit, or Mimic swarm overrunning the players.
-
-| Pros | Cons |
-|------|------|
-| The Director becomes a more active narrative presence | Objectives can feel like busywork |
-| Multiple objectives create natural pacing | More complex to balance |
-| Replayable — objectives can be randomized | May dilute the core mimic-paranoia experience |
-
-### Recommendation
-
-Consider a hybrid of **Option A + B**: the win condition is reaching the exit, but the exit requires a final **Identification Check** — players must unanimously agree on who is real before the door opens. If a Mimic is among them, the door reveals the deception and the Mimic attacks. This creates a tense social-deduction finale that leverages the voice system.
+Full mechanical design in [OPEN_DESIGN_ANSWERS.md](OPEN_DESIGN_ANSWERS.md).
 
 ---
 
@@ -258,9 +253,9 @@ Consider a hybrid of **Option A + B**: the win condition is reaching the exit, b
 | **Threat** | Low individually, overwhelming in numbers |
 | **Spawn** | Triggered exclusively by Trigger Words in Round 3+ |
 
-### 5.4 Echo Mimic (Design Suggestion)
+### 5.4 Echo Mimic
 
-> **STATUS: NEEDS DECISION**
+> **STATUS: CONFIRMED** — Serves the thesis directly. See [OPEN_DESIGN_ANSWERS.md](OPEN_DESIGN_ANSWERS.md).
 
 | Attribute | Value |
 |-----------|-------|
@@ -272,9 +267,9 @@ Consider a hybrid of **Option A + B**: the win condition is reaching the exit, b
 
 **Design Notes:** The Echo Mimic adds a purely psychological threat layer. It never directly endangers players but makes the facility feel haunted and erodes confidence in voice communication as a whole.
 
-### 5.5 Hive Mimic (Design Suggestion)
+### 5.5 Hive Mimic
 
-> **STATUS: NEEDS DECISION**
+> **STATUS: CONFIRMED** — Endgame visualization of the thesis. See [OPEN_DESIGN_ANSWERS.md](OPEN_DESIGN_ANSWERS.md).
 
 | Attribute | Value |
 |-----------|-------|
@@ -332,18 +327,19 @@ The Director operates on a state machine with four primary states:
 
 ### 6.2 Dialogue Generation
 
-The Director's dialogue is generated dynamically using the **Claude API**.
+The Director's dialogue is generated dynamically using a **local LLM via Ollama sidecar** (see [AI_ARCHITECTURE.md](AI_ARCHITECTURE.md) for full technical details). Zero cloud dependency — everything runs on the host player's machine.
 
-**Input to the API:**
+**Input to the LLM (assembled by PromptBuilder):**
+- Director system prompt (see [DIRECTOR_DESIGN.md](DIRECTOR_DESIGN.md) and [AI_ARCHITECTURE.md](AI_ARCHITECTURE.md) Section 5)
 - Current game state (round number, player count, Mimic count, player locations)
-- Recent player actions and events
-- Current Director state (Observing/Misleading/Escalating/Withdrawing)
-- Tone guidelines and character bible
-- List of true facts and approved lies for the current state
+- Recent player actions, events, and voice transcriptions
+- Current Director phase (HELPFUL/REVEALING/MANIPULATIVE/CONFRONTATIONAL/TRANSCENDENT)
+- The Director's Personal Weapon System data (voice patterns, emotional profiles, social map, verbal slips)
+- Corruption Index (persistent across sessions)
 
-**Output:** A short dialogue line (1–3 sentences) that the Director speaks through facility intercoms. The output is filtered for content safety and length before being passed to text-to-speech.
+**Output:** A short dialogue line (1–2 sentences, max 25 words) spoken through facility intercoms. Processed through Piper TTS (Director fixed voice) on all machines.
 
-**Fallback:** If the API is unavailable or latency is too high, a pool of pre-written Director lines per state is used as fallback. The experience should never stall waiting for API response.
+**Fallback:** If the LLM is unavailable or latency exceeds 3 seconds, pre-written lines from the 60-line library (see [DIRECTOR_DESIGN.md](DIRECTOR_DESIGN.md) Section 4) are used. The experience never stalls waiting for generation.
 
 ### 6.3 Dialogue Tone Guidelines
 
@@ -444,7 +440,7 @@ BT_MimicBehaviorTree
 - `SpawnLocation` (FVector) — where this Mimic was created
 - `IsIdentified` (bool) — has a player formally identified this Mimic
 
-### 7.3 Director AI — State Machine + Claude API
+### 7.3 Director AI — State Machine + local LLM (via Ollama sidecar)
 
 ```
 DirectorAI (ADirectorAI : AActor)
@@ -454,7 +450,7 @@ DirectorAI (ADirectorAI : AActor)
 │   ├── Tracks: player count, mimic count, round number, player stress metric
 │   └── Evaluates state transition conditions
 ├── Dialogue Manager
-│   ├── Claude API client (async HTTP request)
+│   ├── local LLM (via Ollama sidecar) client (async HTTP request)
 │   ├── Prompt builder (assembles context from game state)
 │   ├── Response parser (extracts dialogue, validates length/content)
 │   ├── Fallback dialogue pool (pre-written lines per state)
@@ -597,9 +593,8 @@ The Director's true nature is the game's central mystery.
 
 The following items were discussed but **not resolved**. Each requires a design decision before implementation.
 
-### NEEDS DECISION: Win/Loss Condition
-- See Section 4 for three options + hybrid recommendation
-- Team must playtest all three and select one by end of prototyping phase
+### RESOLVED: Win/Loss Condition
+- **Decided:** Diagnostic Tasks + Verified Extraction. See Section 4 and [OPEN_DESIGN_ANSWERS.md](OPEN_DESIGN_ANSWERS.md).
 
 ### NEEDS DECISION: Voice Data Privacy & Consent
 - How do we handle voice recording consent? GDPR/CCPA implications?
@@ -607,26 +602,17 @@ The following items were discussed but **not resolved**. Each requires a design 
 - What is our data retention policy if any analytics are stored post-session?
 - Should players be able to opt out of voice recording and play with text chat only? How does this affect Mimics targeting that player?
 
-### NEEDS DECISION: Echo Mimic Inclusion
-- See Section 5.4 — is the Echo Mimic compelling enough to implement, or does it dilute the core physical-Mimic threat?
-- If included, does it count toward the Mimic containment win condition (Option B)?
+### RESOLVED: Echo Mimic Inclusion
+- **Decided:** Confirmed. Serves the thesis — replays Round 1 conversations in empty rooms. Does not count toward containment total (cannot be contained).
 
-### NEEDS DECISION: Hive Mimic Inclusion
-- See Section 5.5 — does the Hive Mimic add meaningful variety or just spectacle?
-- How does it interact with containment-based win conditions?
-- Performance implications of large organic mesh + multiple voice streams
+### RESOLVED: Hive Mimic Inclusion
+- **Decided:** Confirmed. Endgame area-denial hazard. Cannot be contained. Must be avoided.
 
-### NEEDS DECISION: Text-to-Speech vs. Recorded Audio for Mimics
-- Option A: Use real recorded player audio clips (more authentic, limited vocabulary)
-- Option B: Use AI voice synthesis to generate new phrases in the player's voice (more flexible, higher uncanny valley risk, ethical considerations)
-- Option C: Hybrid — recorded clips for short phrases, synthesis for longer utterances
-- Ethical review needed regardless of choice
+### RESOLVED: Text-to-Speech vs. Recorded Audio for Mimics
+- **Decided:** Chatterbox voice cloning (Apache 2.0) for Tier 2-3 hardware. Synthesizes new phrases in cloned voice. OpenVoice v2 fallback for Tier 2. Disabled on Tier 1 (pre-recorded generic audio). See [AI_ARCHITECTURE.md](AI_ARCHITECTURE.md).
 
-### NEEDS DECISION: The Director's Voice
-- Pre-recorded professional voice actor with branching dialogue trees?
-- AI-generated TTS using Claude API output?
-- Hybrid: voice actor for key lines, TTS for dynamic/reactive dialogue?
-- Budget and production timeline implications for each
+### RESOLVED: The Director's Voice
+- **Decided:** Piper TTS (MIT, CPU-only) with a fixed Director voice model. LLM generates text, Piper renders audio. Zero budget, runs on all hardware tiers. See [AI_ARCHITECTURE.md](AI_ARCHITECTURE.md).
 
 ### NEEDS DECISION: Single-Player Mode
 - Is MimicFacility viable as a solo experience?
