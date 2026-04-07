@@ -50,7 +50,7 @@ namespace MimicFacility.Core
         public event Action<int> OnPlayerLeft;
         public event Action<EGamePhase> OnPhaseChanged;
     
-        [SerializeField] private int maxPlayers = 4;
+        [SerializeField] private int maxPlayers = 12;
         [SerializeField] private EDifficulty difficulty = EDifficulty.Standard;
         [SerializeField] private bool enableDeviceHorror = true;
     

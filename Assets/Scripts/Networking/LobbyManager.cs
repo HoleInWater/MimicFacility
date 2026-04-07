@@ -24,7 +24,7 @@ namespace MimicFacility.Networking
         public event Action OnGameStarting;
 
         [SerializeField] private int minPlayersToStart = 2;
-        [SerializeField] private int maxPlayers = 4;
+        [SerializeField] private int maxPlayers = 12;
         [SerializeField] private float countdownDuration = 5f;
 
         private readonly SyncList<LobbyPlayerData> _lobbyPlayers = new SyncList<LobbyPlayerData>();

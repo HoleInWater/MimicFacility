@@ -35,7 +35,7 @@ namespace MimicFacility.Networking
         public override void Awake()
         {
             base.Awake();
-            maxConnections = 4;
+            maxConnections = 12;
         }
 
         public override void Start()
