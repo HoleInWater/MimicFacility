@@ -97,8 +97,7 @@ namespace MimicFacility.Gameplay
         [ClientRpc]
         private void RpcNotifyAssignment(int watcherConnectionId, string targetName)
         {
-            if (NetworkClient.connection == null) return;
-            if (NetworkClient.connection.connectionId != watcherConnectionId) return;
+            if (!IsLocalWatcher(watcherConnectionId)) return;
 
             OnAssignmentReceived?.Invoke(targetName);
         }
@@ -158,8 +157,7 @@ namespace MimicFacility.Gameplay
         [ClientRpc]
         private void RpcNotifyDetectionSuccess(int watcherConnectionId)
         {
-            if (NetworkClient.connection == null) return;
-            if (NetworkClient.connection.connectionId != watcherConnectionId) return;
+            if (!IsLocalWatcher(watcherConnectionId)) return;
 
             OnStatusChanged?.Invoke(watcherConnectionId, EVerificationStatus.DetectionSuccess);
         }
@@ -167,8 +165,7 @@ namespace MimicFacility.Gameplay
         [ClientRpc]
         private void RpcNotifyDetectionFailed(int watcherConnectionId)
         {
-            if (NetworkClient.connection == null) return;
-            if (NetworkClient.connection.connectionId != watcherConnectionId) return;
+            if (!IsLocalWatcher(watcherConnectionId)) return;
 
             OnStatusChanged?.Invoke(watcherConnectionId, EVerificationStatus.DetectionFailed);
         }
@@ -265,6 +262,20 @@ namespace MimicFacility.Gameplay
                     return ps.DisplayName;
             }
             return $"Subject-{connectionId}";
+        }
+
+        private bool IsLocalWatcher(int watcherConnectionId)
+        {
+            var localPlayer = NetworkClient.localPlayer;
+            if (localPlayer == null) return false;
+            foreach (var ps in FindObjectsOfType<MimicPlayerState>())
+            {
+                if (ps.netId == localPlayer.netId &&
+                    ps.connectionToClient != null &&
+                    ps.connectionToClient.connectionId == watcherConnectionId)
+                    return true;
+            }
+            return false;
         }
 
         private void ShuffleList<T>(List<T> list)

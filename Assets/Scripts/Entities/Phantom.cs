@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 using Mirror;
+using MimicFacility.Characters;
 
 namespace MimicFacility.Entities
 {

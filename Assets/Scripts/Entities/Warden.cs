@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
+using MimicFacility.Characters;
 using MimicFacility.Facility;
 
 namespace MimicFacility.Entities

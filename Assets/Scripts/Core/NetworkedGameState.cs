@@ -48,7 +48,7 @@ namespace MimicFacility.Core
 
         public override void OnStartClient()
         {
-            playerAliveStatus.Callback += OnPlayerAliveStatusChanged;
+            playerAliveStatus.OnChange += OnPlayerAliveStatusChanged;
         }
 
         [Server]
@@ -241,6 +241,6 @@ namespace MimicFacility.Core
         private void OnMiscontainmentCountChanged(int oldVal, int newVal) => OnStateUpdated?.Invoke();
         private void OnCurrentRoundChanged(int oldVal, int newVal) => OnStateUpdated?.Invoke();
         private void OnDiagnosticTasksChanged(int oldVal, int newVal) => OnStateUpdated?.Invoke();
-        private void OnPlayerAliveStatusChanged(SyncIDictionary<int, bool>.Operation op, int key, bool item) => OnStateUpdated?.Invoke();
+        private void OnPlayerAliveStatusChanged(SyncDictionary<int, bool>.Operation op, int key, bool item) => OnStateUpdated?.Invoke();
     }
 }

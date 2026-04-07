@@ -1,5 +1,6 @@
 using UnityEngine;
 
+using MimicFacility.Core;
 namespace MimicFacility.Horror
 {
     public class NotificationSpoofSystem : MonoBehaviour

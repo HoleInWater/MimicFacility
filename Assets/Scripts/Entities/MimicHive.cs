@@ -5,6 +5,7 @@ using UnityEngine;
 using Mirror;
 using MimicFacility.AI.Voice;
 using MimicFacility.Core;
+using MimicFacility.Characters;
 
 namespace MimicFacility.Entities
 {
