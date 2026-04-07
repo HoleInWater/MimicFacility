@@ -5,7 +5,7 @@ using MimicFacility.Characters;
 using MimicFacility.Core;
 using MimicFacility.AI.Voice;
 
-namespace MimicFacility.AI.Controller
+namespace MimicFacility.Entities
 {
     public class MimicAIController : MonoBehaviour
     {

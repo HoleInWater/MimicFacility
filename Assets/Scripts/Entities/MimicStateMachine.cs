@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using MimicFacility.Characters;
 
-namespace MimicFacility.AI.Controller
+namespace MimicFacility.Entities
 {
     public interface IMimicState
     {

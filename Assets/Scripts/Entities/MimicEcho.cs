@@ -6,7 +6,7 @@ using Mirror;
 using MimicFacility.AI.Voice;
 using MimicFacility.Core;
 
-namespace MimicFacility.Characters
+namespace MimicFacility.Entities
 {
     [Serializable]
     public class EchoPhrase

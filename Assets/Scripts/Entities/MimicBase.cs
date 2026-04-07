@@ -5,7 +5,7 @@ using UnityEngine.AI;
 using Mirror;
 using MimicFacility.Core;
 
-namespace MimicFacility.Characters
+namespace MimicFacility.Entities
 {
     public enum EMimicState
     {

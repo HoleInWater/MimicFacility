@@ -1,7 +1,7 @@
 # MimicFacility
 
 ![Status](https://img.shields.io/badge/Status-In%20Development-orange)
-![Engine](https://img.shields.io/badge/Unity-2022.3+-blue)
+![Engine](https://img.shields.io/badge/Unity_6-6000.0+-blue)
 ![License](https://img.shields.io/badge/License-MIT-green)
 
 ## Overview
@@ -12,7 +12,7 @@
 
 | Layer | Technology |
 |-------|-----------|
-| Engine | Unity 2022.3+ (C#) |
+| Engine | Unity 6 (6000.0+) (C#) |
 | AI / Director Dialogue | Local LLM via Ollama sidecar (Phi-3 Mini, TinyLlama, Qwen 2.5) |
 | Voice Cloning | Chatterbox (Apache 2.0) local sidecar |
 | Director TTS | Piper TTS (MIT, CPU-only) |
@@ -65,7 +65,7 @@ MimicFacility/
 
 ## Getting Started
 
-1. Install **Unity 2022.3 LTS** or newer via Unity Hub
+1. Install **Unity 6 (6000.0)** or newer via Unity Hub
 2. Clone this repository
 3. Open the project folder in Unity Hub → "Add project from disk"
 4. Wait for Unity to import all assets and compile scripts

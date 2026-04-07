@@ -4,7 +4,7 @@ using UnityEngine;
 using Mirror;
 using MimicFacility.Core;
 
-namespace MimicFacility.Characters
+namespace MimicFacility.Entities
 {
     public class MimicCrawler : MimicBase
     {
