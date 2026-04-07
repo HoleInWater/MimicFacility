@@ -1,4 +1,4 @@
-// MimicFacilityCharacter.h — Player character class with first-person camera, gear slots, and voice chat integration.
+// MimicFacilityCharacter.h — Player character with first-person camera, movement, gear slots, and voice chat integration.
 // Copyright (c) 2026 HoleInWater. All rights reserved.
 
 #pragma once
@@ -8,13 +8,8 @@
 #include "MimicFacilityCharacter.generated.h"
 
 class UCameraComponent;
-class UInputComponent;
+class AGearBase;
 
-/**
- * AMimicFacilityCharacter
- * The player-controlled character. Handles first-person movement, gear inventory,
- * voice chat input routing, and interaction with facility objects.
- */
 UCLASS(config=Game)
 class MIMICFACILITY_API AMimicFacilityCharacter : public ACharacter
 {
@@ -30,7 +25,33 @@ public:
 	virtual void Tick(float DeltaTime) override;
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
 
+	UFUNCTION(BlueprintCallable, Category = "Gear")
+	void EquipGear(AGearBase* Gear);
+
+	UFUNCTION(BlueprintCallable, Category = "Gear")
+	AGearBase* GetEquippedGear() const { return EquippedGear; }
+
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera")
 	TObjectPtr<UCameraComponent> FirstPersonCamera;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Gear")
+	TObjectPtr<AGearBase> EquippedGear;
+
+	// Movement input handlers
+	void MoveForward(float Value);
+	void MoveRight(float Value);
+	void LookUpRate(float Value);
+	void LookRightRate(float Value);
+
+	// Action input handlers
+	void OnInteract();
+	void OnUseGear();
+	void OnToggleFlashlight();
+
+	UPROPERTY(EditDefaultsOnly, Category = "Movement")
+	float BaseLookUpRate;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Movement")
+	float BaseTurnRate;
 };

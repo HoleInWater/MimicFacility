@@ -7,34 +7,21 @@
 #include "Subsystems/GameInstanceSubsystem.h"
 #include "VoiceLearningSubsystem.generated.h"
 
-/**
- * FVoicePhrase
- * A single captured phrase from a player's voice chat.
- */
 USTRUCT(BlueprintType)
 struct FVoicePhrase
 {
 	GENERATED_BODY()
 
-	/** Transcribed text of the phrase. */
 	UPROPERTY(BlueprintReadOnly)
 	FString Text;
 
-	/** Timestamp within the session when this phrase was captured. */
 	UPROPERTY(BlueprintReadOnly)
 	float SessionTimestamp;
 
-	/** IDs of other players who were within earshot when this phrase was spoken. */
 	UPROPERTY(BlueprintReadOnly)
 	TArray<FString> WitnessPlayerIDs;
 };
 
-/**
- * UVoiceLearningSubsystem
- * Game instance subsystem that passively captures player voice chat during Round 1,
- * processes it into phrase data, selects Trigger Words, and provides voice profiles
- * to Mimic actors for playback in Round 2+.
- */
 UCLASS()
 class MIMICFACILITY_API UVoiceLearningSubsystem : public UGameInstanceSubsystem
 {
@@ -44,18 +31,32 @@ public:
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
 	virtual void Deinitialize() override;
 
-	/** Get all captured phrases for a specific player. */
 	UFUNCTION(BlueprintCallable, Category = "Voice")
 	TArray<FVoicePhrase> GetPhrasesForPlayer(const FString& PlayerID) const;
 
-	/** Get the assigned trigger words for a specific player. */
 	UFUNCTION(BlueprintCallable, Category = "Voice")
 	TArray<FString> GetTriggerWords(const FString& PlayerID) const;
 
-protected:
-	/** Per-player phrase database. */
-	TMap<FString, TArray<FVoicePhrase>> PhraseDatabase;
+	// Test/debug methods for manual data injection
+	UFUNCTION(BlueprintCallable, Category = "Voice|Debug")
+	void DebugAddPhrase(const FString& PlayerID, const FString& PhraseText, const TArray<FString>& Witnesses);
 
-	/** Per-player trigger word assignments (selected at end of Round 1). */
+	UFUNCTION(BlueprintCallable, Category = "Voice|Debug")
+	void DebugSetTriggerWords(const FString& PlayerID, const TArray<FString>& Words);
+
+	UFUNCTION(BlueprintCallable, Category = "Voice")
+	void SelectTriggerWordsForAllPlayers();
+
+	UFUNCTION(BlueprintCallable, Category = "Voice")
+	bool CheckTriggerWord(const FString& PlayerID, const FString& SpokenWord) const;
+
+	UFUNCTION(BlueprintPure, Category = "Voice")
+	int32 GetPhraseCount(const FString& PlayerID) const;
+
+	UFUNCTION(BlueprintCallable, Category = "Voice")
+	void ClearAllData();
+
+protected:
+	TMap<FString, TArray<FVoicePhrase>> PhraseDatabase;
 	TMap<FString, TArray<FString>> TriggerWordAssignments;
 };

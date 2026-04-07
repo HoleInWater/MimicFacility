@@ -1,4 +1,4 @@
-// MimicAIController.h — AI Controller for Mimic actors. Runs the Mimic behavior tree and manages blackboard data.
+// MimicAIController.h — AI Controller for Mimic actors. Handles behavior tree and basic navigation.
 // Copyright (c) 2026 HoleInWater. All rights reserved.
 
 #pragma once
@@ -7,14 +7,9 @@
 #include "AIController.h"
 #include "MimicAIController.generated.h"
 
-class UBehaviorTreeComponent;
-class UBlackboardComponent;
+class UBehaviorTree;
+class UNavigationSystemV1;
 
-/**
- * AMimicAIController
- * Controls Mimic actors using Unreal's Behavior Tree and Blackboard systems.
- * Handles target selection, state transitions, and voice playback triggers.
- */
 UCLASS()
 class MIMICFACILITY_API AMimicAIController : public AAIController
 {
@@ -26,9 +21,22 @@ public:
 protected:
 	virtual void BeginPlay() override;
 	virtual void OnPossess(APawn* InPawn) override;
+	virtual void Tick(float DeltaTime) override;
 
-protected:
-	/** Behavior tree asset to run for this Mimic. */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "AI")
 	TObjectPtr<UBehaviorTree> MimicBehaviorTree;
+
+	// Simple patrol fallback when no behavior tree is assigned
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI|Patrol")
+	float PatrolRadius;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI|Patrol")
+	float PatrolWaitTime;
+
+private:
+	void MoveToRandomPatrolPoint();
+
+	FVector OriginLocation;
+	FTimerHandle PatrolTimerHandle;
+	bool bIsPatrolling;
 };

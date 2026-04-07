@@ -1,4 +1,4 @@
-// MimicFacilityGameMode.h — Primary game mode. Sets default pawn, HUD, game state, and player state classes.
+// MimicFacilityGameMode.h — Primary game mode. Wires up all systems and manages player registration.
 // Copyright (c) 2026 HoleInWater. All rights reserved.
 
 #pragma once
@@ -7,12 +7,9 @@
 #include "GameFramework/GameModeBase.h"
 #include "MimicFacilityGameMode.generated.h"
 
-/**
- * AMimicFacilityGameMode
- * The primary game mode for MimicFacility. Server-authoritative.
- * Configures default classes for pawn, HUD, game state, and player state.
- * Owns the round management lifecycle.
- */
+class ARoundManager;
+class ADirectorAI;
+
 UCLASS()
 class MIMICFACILITY_API AMimicFacilityGameMode : public AGameModeBase
 {
@@ -21,6 +18,24 @@ class MIMICFACILITY_API AMimicFacilityGameMode : public AGameModeBase
 public:
 	AMimicFacilityGameMode();
 
+	UFUNCTION(BlueprintCallable, Category = "GameMode")
+	ARoundManager* GetRoundManager() const { return RoundManagerInstance; }
+
+	UFUNCTION(BlueprintCallable, Category = "GameMode")
+	ADirectorAI* GetDirectorAI() const { return DirectorInstance; }
+
+	virtual void PostLogin(APlayerController* NewPlayer) override;
+
 protected:
 	virtual void BeginPlay() override;
+	virtual void InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage) override;
+
+private:
+	UPROPERTY()
+	TObjectPtr<ARoundManager> RoundManagerInstance;
+
+	UPROPERTY()
+	TObjectPtr<ADirectorAI> DirectorInstance;
+
+	int32 NextSubjectNumber;
 };

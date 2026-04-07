@@ -1,4 +1,4 @@
-// MimicFacilityPlayerState.h — Per-player replicated state: subject number, gear inventory, alive/converted status.
+// MimicFacilityPlayerState.h — Per-player replicated state: subject number, gear, alive/converted status.
 // Copyright (c) 2026 HoleInWater. All rights reserved.
 
 #pragma once
@@ -7,11 +7,6 @@
 #include "GameFramework/PlayerState.h"
 #include "MimicFacilityPlayerState.generated.h"
 
-/**
- * AMimicFacilityPlayerState
- * Replicated per-player state. Tracks subject number, current gear loadout,
- * and whether the player is still alive or has been converted by a Mimic.
- */
 UCLASS()
 class MIMICFACILITY_API AMimicFacilityPlayerState : public APlayerState
 {
@@ -20,12 +15,24 @@ class MIMICFACILITY_API AMimicFacilityPlayerState : public APlayerState
 public:
 	AMimicFacilityPlayerState();
 
+	UFUNCTION(BlueprintCallable, Category = "Player")
+	void SetSubjectNumber(int32 Number);
+
+	UFUNCTION(BlueprintPure, Category = "Player")
+	int32 GetSubjectNumber() const { return SubjectNumber; }
+
+	UFUNCTION(BlueprintCallable, Category = "Player")
+	void MarkConverted();
+
+	UFUNCTION(BlueprintPure, Category = "Player")
+	bool IsConverted() const { return bIsConverted; }
+
 protected:
-	/** Subject number (1–4) assigned to this player. */
+	virtual void BeginPlay() override;
+
 	UPROPERTY(Replicated, BlueprintReadOnly, Category = "Player")
 	int32 SubjectNumber;
 
-	/** Whether this player has been converted (eliminated) by a Mimic. */
 	UPROPERTY(Replicated, BlueprintReadOnly, Category = "Player")
 	bool bIsConverted;
 

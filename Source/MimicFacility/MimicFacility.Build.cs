@@ -20,8 +20,7 @@ public class MimicFacility : ModuleRules
 			"NavigationSystem",
 			"UMG",
 			"OnlineSubsystem",
-			"OnlineSubsystemUtils",
-			"Voice"
+			"OnlineSubsystemUtils"
 		});
 
 		PrivateDependencyModuleNames.AddRange(new string[]

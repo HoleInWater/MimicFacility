@@ -7,10 +7,8 @@
 #include "GameFramework/Character.h"
 #include "MimicBase.generated.h"
 
-/**
- * EMimicState
- * Behavioral states for Mimic AI.
- */
+class UAudioComponent;
+
 UENUM(BlueprintType)
 enum class EMimicState : uint8
 {
@@ -20,11 +18,6 @@ enum class EMimicState : uint8
 	Reproducing     UMETA(DisplayName = "Reproducing")
 };
 
-/**
- * AMimicBase
- * Base Mimic actor. All Mimic variants (Crawler, Swarm, etc.) inherit from this class.
- * Provides voice profile binding, skin replication, and shared Mimic logic.
- */
 UCLASS()
 class MIMICFACILITY_API AMimicBase : public ACharacter
 {
@@ -39,18 +32,33 @@ protected:
 public:
 	virtual void Tick(float DeltaTime) override;
 
+	UFUNCTION(BlueprintCallable, Category = "Mimic")
+	void SetMimicState(EMimicState NewState);
+
+	UFUNCTION(BlueprintCallable, Category = "Mimic")
+	EMimicState GetMimicState() const { return CurrentState; }
+
+	UFUNCTION(BlueprintCallable, Category = "Mimic")
+	void SetVoiceProfile(const FString& PlayerID);
+
+	UFUNCTION(BlueprintCallable, Category = "Mimic")
+	void MarkIdentified();
+
+	UFUNCTION(BlueprintPure, Category = "Mimic")
+	bool IsIdentified() const { return bIsIdentified; }
+
 protected:
-	/** The ID of the player whose appearance and voice this Mimic copies. */
 	UPROPERTY(ReplicatedUsing = OnRep_MimicSkin, BlueprintReadOnly, Category = "Mimic")
 	FString VoiceProfileID;
 
-	/** Current behavioral state of this Mimic. */
 	UPROPERTY(Replicated, BlueprintReadOnly, Category = "Mimic")
 	EMimicState CurrentState;
 
-	/** Whether a player has formally identified this Mimic. */
 	UPROPERTY(Replicated, BlueprintReadOnly, Category = "Mimic")
 	bool bIsIdentified;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Mimic")
+	TObjectPtr<UAudioComponent> VoicePlaybackComponent;
 
 	UFUNCTION()
 	void OnRep_MimicSkin();

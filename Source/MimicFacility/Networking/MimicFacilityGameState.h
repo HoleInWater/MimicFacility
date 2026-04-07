@@ -1,4 +1,4 @@
-// MimicFacilityGameState.h — Replicated game state holding session-wide data: Mimic count, round info, voice data references.
+// MimicFacilityGameState.h — Replicated game state: Mimic counts, round info, session-wide tracking.
 // Copyright (c) 2026 HoleInWater. All rights reserved.
 
 #pragma once
@@ -7,12 +7,6 @@
 #include "GameFramework/GameStateBase.h"
 #include "MimicFacilityGameState.generated.h"
 
-/**
- * AMimicFacilityGameState
- * Server-authoritative game state replicated to all clients.
- * Tracks active Mimic count, current round, and session-level data
- * used by the Director AI for state evaluation.
- */
 UCLASS()
 class MIMICFACILITY_API AMimicFacilityGameState : public AGameStateBase
 {
@@ -21,18 +15,47 @@ class MIMICFACILITY_API AMimicFacilityGameState : public AGameStateBase
 public:
 	AMimicFacilityGameState();
 
+	// Getters
+	UFUNCTION(BlueprintPure, Category = "GameState")
+	int32 GetActiveMimicCount() const { return ActiveMimicCount; }
+
+	UFUNCTION(BlueprintPure, Category = "GameState")
+	int32 GetContainedMimicCount() const { return ContainedMimicCount; }
+
+	UFUNCTION(BlueprintPure, Category = "GameState")
+	int32 GetFalsePositiveCount() const { return FalsePositiveCount; }
+
+	UFUNCTION(BlueprintPure, Category = "GameState")
+	int32 GetCurrentRound() const { return CurrentRound; }
+
+	// Modifiers (server only)
+	UFUNCTION(BlueprintCallable, Category = "GameState")
+	void AddActiveMimic();
+
+	UFUNCTION(BlueprintCallable, Category = "GameState")
+	void RemoveActiveMimic();
+
+	UFUNCTION(BlueprintCallable, Category = "GameState")
+	void IncrementContained();
+
+	UFUNCTION(BlueprintCallable, Category = "GameState")
+	void IncrementFalsePositive();
+
+	UFUNCTION(BlueprintCallable, Category = "GameState")
+	void SetCurrentRound(int32 Round);
+
 protected:
-	/** Total number of active Mimics in the facility. */
 	UPROPERTY(Replicated, BlueprintReadOnly, Category = "GameState")
 	int32 ActiveMimicCount;
 
-	/** Total number of Mimics that have been contained this session. */
 	UPROPERTY(Replicated, BlueprintReadOnly, Category = "GameState")
 	int32 ContainedMimicCount;
 
-	/** Number of false-positive containment attempts (used a device on a real player). */
 	UPROPERTY(Replicated, BlueprintReadOnly, Category = "GameState")
 	int32 FalsePositiveCount;
+
+	UPROPERTY(Replicated, BlueprintReadOnly, Category = "GameState")
+	int32 CurrentRound;
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 };

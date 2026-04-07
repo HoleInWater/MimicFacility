@@ -7,11 +7,6 @@
 #include "MimicBase.h"
 #include "MimicCrawler.generated.h"
 
-/**
- * AMimicCrawler
- * Mimic variant that clings to ceilings and ventilation shafts.
- * Mimics directional sound to lure players, then drops for ambush.
- */
 UCLASS()
 class MIMICFACILITY_API AMimicCrawler : public AMimicBase
 {
@@ -27,7 +22,11 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 protected:
-	/** Whether this crawler is currently attached to the ceiling. */
-	UPROPERTY(Replicated, BlueprintReadOnly, Category = "Mimic|Crawler")
+	UPROPERTY(Replicated, EditAnywhere, BlueprintReadOnly, Category = "Mimic|Crawler")
 	bool bIsCeilingMounted;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mimic|Crawler")
+	float DropAttackRange;
+
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 };

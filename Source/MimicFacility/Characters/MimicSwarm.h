@@ -7,11 +7,6 @@
 #include "MimicBase.h"
 #include "MimicSwarm.generated.h"
 
-/**
- * AMimicSwarm
- * Small, partially-formed Mimic that uses flocking/horde behavior.
- * Low individual threat, overwhelming in numbers. Spawns exclusively from Trigger Word activation.
- */
 UCLASS()
 class MIMICFACILITY_API AMimicSwarm : public AMimicBase
 {
@@ -27,7 +22,9 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 protected:
-	/** Reference to other swarm members for flocking calculations. */
-	UPROPERTY(BlueprintReadOnly, Category = "Mimic|Swarm")
-	TArray<TObjectPtr<AMimicSwarm>> FlockMembers;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mimic|Swarm")
+	float FlockingRadius;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mimic|Swarm")
+	float SwarmSpeed;
 };

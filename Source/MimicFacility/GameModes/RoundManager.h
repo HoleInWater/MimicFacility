@@ -1,4 +1,4 @@
-// RoundManager.h — Manages round transitions, Mimic spawning schedules, and escalation pacing.
+// RoundManager.h — Manages round transitions, Mimic spawning, and escalation pacing.
 // Copyright (c) 2026 HoleInWater. All rights reserved.
 
 #pragma once
@@ -7,10 +7,6 @@
 #include "GameFramework/Actor.h"
 #include "RoundManager.generated.h"
 
-/**
- * ERoundPhase
- * The current phase of gameplay.
- */
 UENUM(BlueprintType)
 enum class ERoundPhase : uint8
 {
@@ -20,11 +16,8 @@ enum class ERoundPhase : uint8
 	GameOver            UMETA(DisplayName = "Game Over")
 };
 
-/**
- * ARoundManager
- * Server-authoritative actor that controls round transitions, triggers Mimic spawns
- * at the start of each round, and manages escalation timers and thresholds.
- */
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnRoundChanged, int32, NewRound, ERoundPhase, NewPhase);
+
 UCLASS()
 class MIMICFACILITY_API ARoundManager : public AActor
 {
@@ -39,18 +32,39 @@ protected:
 public:
 	virtual void Tick(float DeltaTime) override;
 
-	/** Advance to the next round phase. */
 	UFUNCTION(BlueprintCallable, Category = "Rounds")
 	void AdvanceRound();
 
+	UFUNCTION(BlueprintPure, Category = "Rounds")
+	ERoundPhase GetCurrentPhase() const { return CurrentPhase; }
+
+	UFUNCTION(BlueprintPure, Category = "Rounds")
+	int32 GetRoundNumber() const { return RoundNumber; }
+
+	UPROPERTY(BlueprintAssignable, Category = "Rounds")
+	FOnRoundChanged OnRoundChanged;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Rounds")
+	float Round1Duration;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Rounds")
+	float RoundDuration;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Rounds")
+	int32 MimicsPerRound;
+
 protected:
-	/** Current round phase. */
 	UPROPERTY(Replicated, BlueprintReadOnly, Category = "Rounds")
 	ERoundPhase CurrentPhase;
 
-	/** Current round number (1, 2, 3, ...). */
 	UPROPERTY(Replicated, BlueprintReadOnly, Category = "Rounds")
 	int32 RoundNumber;
 
+	UPROPERTY(BlueprintReadOnly, Category = "Rounds")
+	float RoundTimer;
+
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
+private:
+	void SpawnMimicsForRound();
 };
