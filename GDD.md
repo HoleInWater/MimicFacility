@@ -377,6 +377,30 @@ MimicVoiceComponent (attached to each Mimic actor)
 - Trigger Word selection is a server-authoritative operation — clients are never told their trigger words directly.
 - Voice playback on Mimics uses spatialized audio so players can localize the source.
 
+### 7.1.1 3D Audio Master Equation
+
+All spatialized audio in MimicFacility (Mimic voice playback, Director intercom, ambient facility sounds) is processed through a custom 3D audio pipeline based on the following master equation (see `Mimix.pdf` for the formal specification):
+
+```
+y_L,R(t) = [ 1/(1+kd²) · e^(-α·d_occ) · x(t - r·sin(θ)/c) · (c+v_r)/(c+v_s) ]
+            * h_L,R(t, θ, φ) + Σᵢ x(t - dᵢ/c)
+```
+
+**Components:**
+
+| Term | Purpose |
+|------|---------|
+| `1/(1+kd²)` | Inverse-square distance attenuation with tunable falloff constant `k` |
+| `e^(-α·d_occ)` | Occlusion absorption — exponential decay through walls/obstacles |
+| `x(t - r·sin(θ)/c)` | Interaural time delay (ITD) — models sound arriving at each ear at different times based on head geometry |
+| `(c+v_r)/(c+v_s)` | Doppler pitch shift — source/listener relative velocity |
+| `h_L,R(t, θ, φ)` | Head-Related Transfer Function (HRTF) convolution per ear — provides 3D directionality |
+| `Σᵢ x(t - dᵢ/c)` | Reflection summation — delayed copies from nearby surfaces create reverb |
+
+**Implementation:** `SpatialAudioProcessor` (C++ class in `Source/MimicFacility/Audio/`) evaluates this equation per audio source per frame, outputting per-ear volume, ITD, Doppler multiplier, and reflection data that are applied to Unreal AudioComponents.
+
+**Design intent:** This equation is critical for the horror experience. Players must be able to localize Mimic voices in 3D space — hearing a teammate's voice coming from the wrong direction is one of the primary detection cues. The occlusion term ensures that voices through walls sound muffled, and the reflection term gives the facility its claustrophobic reverb character.
+
 ### 7.2 Mimic AI — Behavior Tree Structure
 
 Mimics use Unreal's **Behavior Tree** system with **Environment Query System (EQS)** for spatial reasoning.
