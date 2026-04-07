@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.AI;
 using Mirror;
 using MimicFacility.Core;
+using MimicFacility.Characters;
 
 namespace MimicFacility.Entities
 {
