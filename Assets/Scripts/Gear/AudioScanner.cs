@@ -3,6 +3,7 @@ using System.Collections;
 using UnityEngine;
 using Mirror;
 using MimicFacility.Characters;
+using MimicFacility.Entities;
 using MimicFacility.Gameplay;
 
 namespace MimicFacility.Gear
