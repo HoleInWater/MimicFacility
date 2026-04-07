@@ -1,22 +1,20 @@
-// DirectorAI.h — The Director: omniscient facility AI that observes, misleads, and manipulates players.
+// DirectorAI.h — The Director: facility AI with LLM integration, corruption tracking, personal weapon system.
 // Copyright (c) 2026 HoleInWater. All rights reserved.
 
 #pragma once
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "LLM/PromptBuilder.h"
 #include "DirectorAI.generated.h"
 
-UENUM(BlueprintType)
-enum class EDirectorState : uint8
-{
-	Observing       UMETA(DisplayName = "Observing"),
-	Misleading      UMETA(DisplayName = "Misleading"),
-	Escalating      UMETA(DisplayName = "Escalating"),
-	Withdrawing     UMETA(DisplayName = "Withdrawing")
-};
+class UOllamaClient;
+class UPromptBuilder;
+class UCorruptionTracker;
+class UDirectorMemory;
+class UPersonalWeaponSystem;
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnDirectorStateChanged, EDirectorState, OldState, EDirectorState, NewState);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnDirectorStateChanged, EDirectorPhase, OldPhase, EDirectorPhase, NewPhase);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnDirectorSpeak, const FString&, DialogueLine);
 
 UCLASS()
@@ -33,35 +31,83 @@ protected:
 public:
 	virtual void Tick(float DeltaTime) override;
 
+	// Phase control
 	UFUNCTION(BlueprintCallable, Category = "Director")
-	void SetDirectorState(EDirectorState NewState);
+	void SetPhase(EDirectorPhase NewPhase);
 
-	UFUNCTION(BlueprintCallable, Category = "Director")
-	EDirectorState GetDirectorState() const { return CurrentState; }
+	UFUNCTION(BlueprintPure, Category = "Director")
+	EDirectorPhase GetCurrentPhase() const { return CurrentPhase; }
 
+	// Speech
 	UFUNCTION(BlueprintCallable, Category = "Director")
 	void Speak(const FString& DialogueLine);
 
-	UPROPERTY(BlueprintAssignable, Category = "Director")
-	FOnDirectorStateChanged OnDirectorStateChanged;
+	UFUNCTION(BlueprintCallable, Category = "Director")
+	void RequestLLMDialogue(const FString& EventContext);
 
-	UPROPERTY(BlueprintAssignable, Category = "Director")
+	UFUNCTION(BlueprintCallable, Category = "Director")
+	void SpeakFallbackLine(const FString& EventContext);
+
+	// Subsystems
+	UFUNCTION(BlueprintPure, Category = "Director")
+	UCorruptionTracker* GetCorruptionTracker() const { return CorruptionTracker; }
+
+	UFUNCTION(BlueprintPure, Category = "Director")
+	UDirectorMemory* GetMemory() const { return Memory; }
+
+	UFUNCTION(BlueprintPure, Category = "Director")
+	UPersonalWeaponSystem* GetWeaponSystem() const { return WeaponSystem; }
+
+	UFUNCTION(BlueprintPure, Category = "Director")
+	UOllamaClient* GetLLMClient() const { return LLMClient; }
+
+	// Initialization
+	UFUNCTION(BlueprintCallable, Category = "Director")
+	void InitializeForSession(const TArray<FString>& PlayerIDs, const TArray<FString>& DisplayNames);
+
+	// Delegates
+	UPROPERTY(BlueprintAssignable)
+	FOnDirectorStateChanged OnPhaseChanged;
+
+	UPROPERTY(BlueprintAssignable)
 	FOnDirectorSpeak OnDirectorSpeak;
 
-protected:
-	UPROPERTY(BlueprintReadOnly, Category = "Director")
-	EDirectorState CurrentState;
-
-	FTimerHandle StateEvaluationTimer;
-
-	UFUNCTION()
-	void EvaluateGameState();
-
-	// Fallback dialogue pools per state
-	TArray<FString> GetFallbackDialogue(EDirectorState State) const;
-
-	float TimeSinceLastDialogue;
-
+	// Config
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Director")
 	float DialogueInterval;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Director")
+	FString LLMModelName;
+
+protected:
+	UPROPERTY()
+	EDirectorPhase CurrentPhase;
+
+	UPROPERTY()
+	TObjectPtr<UOllamaClient> LLMClient;
+
+	UPROPERTY()
+	TObjectPtr<UPromptBuilder> PromptBuilder;
+
+	UPROPERTY()
+	TObjectPtr<UCorruptionTracker> CorruptionTracker;
+
+	UPROPERTY()
+	TObjectPtr<UDirectorMemory> Memory;
+
+	UPROPERTY()
+	TObjectPtr<UPersonalWeaponSystem> WeaponSystem;
+
+private:
+	void EvaluateGameState();
+	void OnLLMResponse(const FString& Response);
+	void OnLLMError(const FString& Error);
+
+	FDirectorContext BuildCurrentContext() const;
+	TArray<FString> GetFallbackLines(EDirectorPhase Phase) const;
+
+	FTimerHandle StateEvaluationTimer;
+	float TimeSinceLastDialogue;
+	bool bHasSpokenFirstLine;
+	bool bFirstPersonUsed;
 };
