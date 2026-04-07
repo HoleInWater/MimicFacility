@@ -139,7 +139,7 @@ namespace MimicFacility.Networking
             {
                 GameManager.Instance.UnregisterPlayer(connId);
 
-                if (GameManager.Instance.CurrentPhase == EGamePhase.Playing)
+                if (GameManager.Instance.CurrentPhase == GameManager.EGamePhase.Playing)
                 {
                     var gameState = FindObjectOfType<NetworkedGameState>();
                     if (gameState != null)
@@ -166,7 +166,7 @@ namespace MimicFacility.Networking
             OnClientDisconnected?.Invoke();
 
             if (GameManager.Instance != null)
-                GameManager.Instance.TransitionToPhase(EGamePhase.MainMenu);
+                GameManager.Instance.TransitionToPhase(GameManager.EGamePhase.MainMenu);
         }
 
         public override void OnServerReady(NetworkConnectionToClient conn)
@@ -209,7 +209,7 @@ namespace MimicFacility.Networking
             StartHost();
 
             if (GameManager.Instance != null)
-                GameManager.Instance.TransitionToPhase(EGamePhase.Lobby);
+                GameManager.Instance.TransitionToPhase(GameManager.EGamePhase.Lobby);
         }
 
         public void JoinGame(string address)
