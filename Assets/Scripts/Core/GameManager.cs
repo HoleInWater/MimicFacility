@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-namespace MimicFacility.Core
+public namespace GameManager : MonoBehavior;
 {
     public enum EGamePhase
     {
