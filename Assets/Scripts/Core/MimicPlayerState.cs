@@ -196,7 +196,7 @@ namespace MimicFacility.Core
             target.gameObject.SendMessage("ServerInteract", this, SendMessageOptions.DontRequireReceiver);
         }
 
-        private PlayerData GetPlayerData()
+        private GameManager.PlayerData GetPlayerData()
         {
             if (connectionToClient == null || GameManager.Instance == null) return null;
             return GameManager.Instance.GetPlayer(connectionToClient.connectionId);
