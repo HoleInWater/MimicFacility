@@ -161,6 +161,9 @@ namespace MimicFacility.Core
             RpcOnConverted();
         }
 
+        [Server]
+        public void MarkConverted() => Convert();
+
         [Command]
         public void CmdRequestEquipGear(NetworkIdentity gearIdentity, bool primary)
         {
