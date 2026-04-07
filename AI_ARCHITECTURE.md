@@ -126,11 +126,10 @@ Our responses need to be **under 30 words** (Director) or **under 15 words** (Mi
 - **Best for Tier 1 (low-spec) hardware** where Chatterbox is too heavy
 
 **Coqui TTS / XTTS v2** — LICENSE PROBLEM
-- Excellent voice cloning quality, but the XTTS v2 model weights are **AGPL licensed**
-- AGPL requires any application distributing or running the model to release its full source code under AGPL
-- While MimicFacility is open-source, AGPL is viral and would impose AGPL on the entire project
-- VRAM usage (2–4 GB) is also too high for our budget
-- **Excluded** due to license incompatibility
+- Excellent voice cloning quality, but the XTTS v2 model weights are **MPL-2.0** (code) with model weights under restrictive terms
+- Coqui AI (the company) shut down in late 2023. Repo is community-maintained with minimal updates.
+- VRAM usage (3–5 GB) is too high for our budget alongside LLM + UE5
+- **Excluded** due to unmaintained status and VRAM footprint
 
 **F5-TTS** — LICENSE PROBLEM
 - CC-BY-NC-SA — non-commercial license. **Cannot be used in a distributable game**, even a free one, as "non-commercial" is ambiguous for game distribution.
@@ -152,6 +151,7 @@ Our responses need to be **under 30 words** (Director) or **under 15 words** (Mi
 | **Primary voice cloner** | **Chatterbox** (Apache 2.0) | Best quality from 30s reference, designed for this exact use case, permissive license |
 | **Low-spec fallback** | **OpenVoice v2** (MIT) | Lower VRAM, still provides voice tone matching, MIT license |
 | **Director fixed voice** | **Piper TTS** (MIT) | CPU-only fallback for Director on Tier 1 hardware. Pre-trained voice, no cloning needed |
+| **Streaming orchestration** | **RealtimeTTS** (`https://github.com/KoljaB/RealtimeTTS`, MIT) | Middleware that streams LLM output token-by-token into TTS with automatic sentence boundary detection. Minimizes perceived latency by starting audio playback before the full LLM response is complete. Wraps Chatterbox/Piper as interchangeable engines. |
 
 #### Voice Cloning Pipeline
 
