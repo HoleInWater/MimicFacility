@@ -1,0 +1,3 @@
+// PLACEHOLDER: EQS_MimicPathing.uasset
+// Purpose: Environment Query System asset for Mimic spatial reasoning — finds player clusters, isolated targets, ambush positions.
+// This file will be replaced by the actual .uasset created in Unreal Editor.

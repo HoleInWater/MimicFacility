@@ -1,0 +1,3 @@
+// PLACEHOLDER: BP_RoundManager.uasset
+// Purpose: Round Manager Blueprint — controls round transitions, triggers Mimic spawns, manages escalation timers.
+// This file will be replaced by the actual .uasset created in Unreal Editor.

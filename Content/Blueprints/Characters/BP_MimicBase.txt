@@ -1,0 +1,3 @@
+// PLACEHOLDER: BP_MimicBase.uasset
+// Purpose: Base Blueprint for all Mimic types — handles skin duplication, voice playback component, and behavior tree assignment.
+// This file will be replaced by the actual .uasset created in Unreal Editor.

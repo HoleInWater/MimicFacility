@@ -1,0 +1,3 @@
+// PLACEHOLDER: BT_MimicBehaviorTree.uasset
+// Purpose: Behavior Tree for Mimic AI — drives infiltration, stalking, aggression, and reproduction states.
+// This file will be replaced by the actual .uasset created in Unreal Editor.

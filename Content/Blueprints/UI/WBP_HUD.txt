@@ -1,0 +1,3 @@
+// PLACEHOLDER: WBP_HUD.uasset
+// Purpose: Main HUD Widget Blueprint — displays gear inventory, round indicator, proximity alerts, and Director messages.
+// This file will be replaced by the actual .uasset created in Unreal Editor.

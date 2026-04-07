@@ -1,0 +1,3 @@
+// PLACEHOLDER: TestLevel.umap
+// Purpose: Development test level — simple enclosed space for testing Mimic AI, voice systems, and networking without full facility geometry.
+// This file will be replaced by the actual .umap created in Unreal Editor.

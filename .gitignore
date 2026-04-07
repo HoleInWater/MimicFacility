@@ -1,0 +1,54 @@
+# Unreal Engine 5 .gitignore
+
+# Compiled binaries
+Binaries/
+Intermediate/
+DerivedDataCache/
+Build/
+
+# Saved data (local user settings, autosaves, etc.)
+Saved/
+
+# Visual Studio files
+.vs/
+*.sln
+*.suo
+*.vcxproj
+*.vcxproj.filters
+*.vcxproj.user
+
+# JetBrains Rider
+.idea/
+*.DotSettings.user
+
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
+Desktop.ini
+
+# Unreal-specific caches
+*.VC.db
+*.opensdf
+*.opendb
+*.sdf
+*.ipch
+*.pdb
+*.pch
+
+# Built data
+*.uasset.bak
+*.umap.bak
+
+# Crashpad / logs
+CrashReportClient/
+*.log
+
+# Packaging output
+Releases/
+PackagedBuilds/
+
+# Environment / secrets
+.env
+*.env.local
