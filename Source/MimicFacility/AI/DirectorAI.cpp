@@ -7,6 +7,7 @@
 #include "Persistence/CorruptionTracker.h"
 #include "Persistence/DirectorMemory.h"
 #include "Weapons/PersonalWeaponSystem.h"
+#include "Facility/FacilityControlSystem.h"
 #include "Networking/MimicFacilityGameState.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -31,6 +32,8 @@ void ADirectorAI::BeginPlay()
 	CorruptionTracker = NewObject<UCorruptionTracker>(this);
 	Memory = NewObject<UDirectorMemory>(this);
 	WeaponSystem = NewObject<UPersonalWeaponSystem>(this);
+	FacilityControl = Cast<UFacilityControlSystem>(
+		AddComponentByClass(UFacilityControlSystem::StaticClass(), false, FTransform::Identity, false));
 
 	PromptBuilder->SetModel(LLMModelName);
 

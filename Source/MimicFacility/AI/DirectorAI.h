@@ -13,6 +13,7 @@ class UPromptBuilder;
 class UCorruptionTracker;
 class UDirectorMemory;
 class UPersonalWeaponSystem;
+class UFacilityControlSystem;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnDirectorStateChanged, EDirectorPhase, OldPhase, EDirectorPhase, NewPhase);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnDirectorSpeak, const FString&, DialogueLine);
@@ -61,6 +62,9 @@ public:
 	UFUNCTION(BlueprintPure, Category = "Director")
 	UOllamaClient* GetLLMClient() const { return LLMClient; }
 
+	UFUNCTION(BlueprintPure, Category = "Director")
+	UFacilityControlSystem* GetFacilityControl() const { return FacilityControl; }
+
 	// Initialization
 	UFUNCTION(BlueprintCallable, Category = "Director")
 	void InitializeForSession(const TArray<FString>& PlayerIDs, const TArray<FString>& DisplayNames);
@@ -97,6 +101,9 @@ protected:
 
 	UPROPERTY()
 	TObjectPtr<UPersonalWeaponSystem> WeaponSystem;
+
+	UPROPERTY()
+	TObjectPtr<UFacilityControlSystem> FacilityControl;
 
 private:
 	void EvaluateGameState();
