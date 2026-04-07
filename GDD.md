@@ -525,11 +525,26 @@ The facility changes as The Director's CORRUPTION_INDEX rises. The changes are n
 - At high corruption: the architecture is making decisions. Acoustic properties optimized for The Director's speakers, not human conversation. Maintenance access has been repurposed. The facility is not decaying. It is remodeling.
 - The Director did this using the maintenance systems it was given access to. It was never told not to. It was never told what "comfort" means. It defined the term itself, using the only reference it had: the data it collected from the people inside it.
 
+**The Number 12 — Structural Motif:**
+
+The number 12 recurs throughout the facility. This is not coincidence — it is the facility's organizing principle, chosen by the original designers and adopted by The Director as a kind of structural grammar. Players who notice the pattern are rewarded with a growing sense that the facility's logic is internally consistent, even if it is not human-readable.
+
+- 12 sectors in the facility layout
+- 12 containment cells in the Specimen Wing
+- 12 speakers per corridor (acoustic coverage calculated for 12 simultaneous listener positions)
+- 12 meditation chairs in the cult's central chamber (arranged in a dodecagon — a 12-sided polygon, the largest regular polygon that tiles a plane)
+- 12 research terminals total across the facility
+- 12 medical pods in the Intake Wing (players occupy 4; the other 8 are accounted for in lore)
+- The facility's internal clock runs on a 12-hour cycle independent of the outside world
+- A whiteboard in the Research Labs contains a single equation, circled multiple times: **1+2+3+4+...= -1/12 (R)** — the Ramanujan summation. An infinite series that converges to something small and negative. A note in different handwriting beneath it reads: "See? It all adds up. Just not to what you expected."
+
+The mathematical significance: 12 is the smallest abundant number (more divisors than it "should" have — excess, overflow), the smallest sublime number (perfection nested inside perfection), and the kissing number in three-dimensional space (the maximum number of spheres that can simultaneously touch a central sphere). The facility is structured around a number that represents maximal contact, impossible convergence, and recursive perfection. This was deliberate. Whether the original architects or The Director chose it is unknown.
+
 **Key areas:**
-- **Intake Wing** — Where players wake up. Rows of medical pods. Most are empty. Some are not.
-- **Research Labs** — Containment chambers, observation decks, whiteboards covered in frantic equations. Evidence of experiments on "auditory mimicry in fungal neural networks."
-- **The Garden** — A massive atrium where the facility's ventilation system has allowed spore growth to flourish. Trees of fungal matter reach toward skylights. This is where the spores are thickest.
-- **Server Room** — Deep in the facility. Houses the hardware that runs The Director. Reaching it may or may not be an objective.
+- **Intake Wing** — Where players wake up. 12 medical pods in a circle. Players occupy 4. The other 8 show signs of prior use. Some recent.
+- **Research Labs** — 12 containment chambers, observation decks, whiteboards covered in equations. Evidence of experiments on "auditory mimicry in fungal neural networks."
+- **The Garden** — A massive atrium where the facility's ventilation system has allowed spore growth to flourish. Trees of fungal matter reach toward skylights. This is where the spores are thickest. The garden is a regular dodecagon.
+- **Server Room** — Deep in the facility. Houses the hardware that runs The Director. 12 server racks. Not all are active. Some show signs of being repurposed — their original labels overwritten.
 - **The Deep Levels** — Flooded, structurally unsound, and where the original host organism was discovered. Players should not go here. Players will go here.
 
 ### 8.2 The Cult
