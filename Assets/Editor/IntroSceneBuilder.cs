@@ -277,6 +277,23 @@ public class IntroSceneBuilder
         var controllerObj = new GameObject("IntroSequenceController");
         var tsc = controllerObj.AddComponent<IntroSequenceController>();
 
+        // Wire audio — find the intro track
+        var introClip = AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/Audio/Music/WhispersInTheLoadingScreen.mp3");
+        if (introClip == null)
+            introClip = FindAsset<AudioClip>("WhispersInTheLoadingScreen");
+        if (introClip == null)
+            introClip = FindAsset<AudioClip>("Whispers in the Loading Screen");
+        if (introClip != null)
+        {
+            tsc.mainThemeClip = introClip;
+            Debug.Log($"[IntroSceneBuilder] Wired audio: {introClip.name} ({introClip.length:F1}s)");
+        }
+        else
+        {
+            Debug.LogWarning("[IntroSceneBuilder] Could not find 'WhispersInTheLoadingScreen' audio clip. " +
+                "Place it at Assets/Audio/Music/WhispersInTheLoadingScreen.mp3");
+        }
+
         tsc.musicSource = musicSource;
         tsc.blackOverlay = blackGroup;
         tsc.facilityExteriorScene = exterior;
@@ -461,6 +478,18 @@ public class IntroSceneBuilder
         tmp.raycastTarget = false;
 
         return tmp;
+    }
+
+    static T FindAsset<T>(string name) where T : Object
+    {
+        string[] guids = AssetDatabase.FindAssets(name + " t:" + typeof(T).Name);
+        foreach (var guid in guids)
+        {
+            string path = AssetDatabase.GUIDToAssetPath(guid);
+            var asset = AssetDatabase.LoadAssetAtPath<T>(path);
+            if (asset != null) return asset;
+        }
+        return null;
     }
 }
 #endif
