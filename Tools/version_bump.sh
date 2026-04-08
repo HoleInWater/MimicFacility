@@ -150,32 +150,8 @@ for (( i = 0; i < ${#SEGMENTS[@]}; i++ )); do
     NEW_SEGMENTS+="${SEGMENTS[$i]}"
 done
 
-# Trim trailing .0 segments that are all zero beyond the shallowest change
-# but keep at least up to the shallowest changed depth + 1
-MIN_KEEP=$((SHALLOWEST_DEPTH + 1))
-IFS='.' read -ra FINAL_SEGS <<< "$NEW_SEGMENTS"
-
-LAST_NONZERO=0
-for (( i = 0; i < ${#FINAL_SEGS[@]}; i++ )); do
-    if [[ ${FINAL_SEGS[$i]} -ne 0 ]]; then
-        LAST_NONZERO=$i
-    fi
-done
-
-KEEP_UP_TO=$LAST_NONZERO
-if [[ $MIN_KEEP -gt $((KEEP_UP_TO + 1)) ]]; then
-    KEEP_UP_TO=$((MIN_KEEP - 1))
-fi
-
-TRIMMED=""
-for (( i = 0; i <= KEEP_UP_TO; i++ )); do
-    if [[ $i -gt 0 ]]; then
-        TRIMMED+="."
-    fi
-    TRIMMED+="${FINAL_SEGS[$i]}"
-done
-
-NEW_VERSION="$CURRENT_PHASE-$TRIMMED"
+# Always show all segments — no trimming
+NEW_VERSION="$CURRENT_PHASE-$NEW_SEGMENTS"
 
 echo ""
 echo "Shallowest change at depth: $SHALLOWEST_DEPTH"

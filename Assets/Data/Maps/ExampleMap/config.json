@@ -1,0 +1,14 @@
+{
+    "MapName": "Example Facility",
+    "RequiredSystems": [
+        "GameManager",
+        "SettingsManager",
+        "InputManager",
+        "RoundManager",
+        "GameState",
+        "DirectorAI",
+        "SpatialAudio"
+    ],
+    "BakeNavMesh": true,
+    "LightingPreset": "Horror_Dim"
+}

@@ -142,19 +142,26 @@ namespace MimicFacility.UI
             for (int i = 0; i < pixels.Length; i++)
                 pixels[i] = Color.clear;
 
-            // "MIMIC" — 5 letters, each gets a section
-            float letterWidth = textureWidth / 5.5f;
-            float startX = textureWidth * 0.05f;
+            // "MIMIC" — 5 letters centered on texture
+            float letterW = textureWidth / 7f;
+            float iWidth = letterW * 0.4f;
+            float gap = letterW * 0.15f;
+
+            // Total width: M + gap + I + gap + M + gap + I + gap + C
+            float totalW = letterW + gap + iWidth + gap + letterW + gap + iWidth + gap + letterW;
+            float startX = (textureWidth - totalW) / 2f;
+
             float topY = textureHeight * 0.85f;
             float botY = textureHeight * 0.15f;
             float letterH = topY - botY;
-            float strokeW = letterWidth * 0.18f;
+            float strokeW = letterW * 0.18f;
 
-            DrawM(pixels, startX, botY, letterWidth, letterH, strokeW);
-            DrawI(pixels, startX + letterWidth * 1.1f, botY, letterWidth * 0.4f, letterH, strokeW);
-            DrawM(pixels, startX + letterWidth * 1.6f, botY, letterWidth, letterH, strokeW);
-            DrawI(pixels, startX + letterWidth * 2.7f, botY, letterWidth * 0.4f, letterH, strokeW);
-            DrawC(pixels, startX + letterWidth * 3.2f, botY, letterWidth, letterH, strokeW);
+            float cx = startX;
+            DrawM(pixels, cx, botY, letterW, letterH, strokeW); cx += letterW + gap;
+            DrawI(pixels, cx, botY, iWidth, letterH, strokeW);  cx += iWidth + gap;
+            DrawM(pixels, cx, botY, letterW, letterH, strokeW); cx += letterW + gap;
+            DrawI(pixels, cx, botY, iWidth, letterH, strokeW);  cx += iWidth + gap;
+            DrawC(pixels, cx, botY, letterW, letterH, strokeW);
 
             // Glow pass — blur bright pixels outward
             var glowed = new Color[pixels.Length];
