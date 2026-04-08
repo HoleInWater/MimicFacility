@@ -219,21 +219,101 @@ namespace MimicFacility.UI
             if (cameraController != null)
                 cameraController.SetPhase(IntroCameraController.Phase.TitleHold);
 
+            // Kill credits
             if (activeCreditCoroutine != null)
                 StopCoroutine(activeCreditCoroutine);
             yield return Fade(creditTextGroup, creditTextGroup != null ? creditTextGroup.alpha : 0f, 0f, 0.3f);
 
-            if (titleText != null)
+            // ── Stage 1: Sudden blackout ──────────────────────────────
+            if (blackOverlay != null)
             {
-                titleText.text = "";
-                StartCoroutine(TypewriterTitle("MIMIC", titleDrawDuration));
+                blackOverlay.alpha = 1f;
+                yield return new WaitForSecondsRealtime(0.6f);
             }
 
-            yield return Fade(titleGroup, 0f, 1f, titleDrawDuration);
+            // ── Stage 2: Static burst — rapid black/white flicker ─────
+            if (blackOverlay != null)
+            {
+                for (int i = 0; i < 8; i++)
+                {
+                    blackOverlay.alpha = Random.Range(0.3f, 1f);
+                    yield return new WaitForSecondsRealtime(0.04f);
+                    blackOverlay.alpha = Random.Range(0f, 0.2f);
+                    yield return new WaitForSecondsRealtime(0.03f);
+                }
+                blackOverlay.alpha = 1f;
+                yield return new WaitForSecondsRealtime(0.15f);
+            }
 
-            if (cameraController != null) cameraController.TriggerShake(3f);
+            // ── Stage 3: Title SLAMS in at full opacity ───────────────
+            if (titleGroup != null) titleGroup.alpha = 1f;
 
-            yield return new WaitForSeconds(postTitleHold);
+            // Trigger the MimicTitleRenderer draw animation
+            var titleRenderer = titleGroup != null
+                ? titleGroup.GetComponentInChildren<MimicTitleRenderer>()
+                : null;
+            if (titleRenderer != null)
+                titleRenderer.StartDrawing(titleDrawDuration);
+
+            // Smash cut — black drops away instantly
+            if (blackOverlay != null)
+                blackOverlay.alpha = 0f;
+
+            // Heavy camera shake on impact
+            if (cameraController != null)
+                cameraController.TriggerShake(8f);
+
+            yield return new WaitForSecondsRealtime(0.1f);
+
+            // ── Stage 4: Screen flicker — title strobes ───────────────
+            if (titleGroup != null)
+            {
+                for (int i = 0; i < 5; i++)
+                {
+                    titleGroup.alpha = 0f;
+                    yield return new WaitForSecondsRealtime(0.05f);
+                    titleGroup.alpha = 1f;
+                    yield return new WaitForSecondsRealtime(Random.Range(0.08f, 0.2f));
+                }
+            }
+
+            // ── Stage 5: Second camera shake (aftershock) ─────────────
+            if (cameraController != null)
+                cameraController.TriggerShake(4f);
+
+            yield return new WaitForSecondsRealtime(0.5f);
+
+            // ── Stage 6: Subtitle fades in slowly ─────────────────────
+            // Find subtitle by name
+            if (titleGroup != null)
+            {
+                var subtitle = titleGroup.transform.Find("Subtitle");
+                if (subtitle != null)
+                {
+                    var subCG = subtitle.GetComponent<CanvasGroup>();
+                    if (subCG == null) subCG = subtitle.gameObject.AddComponent<CanvasGroup>();
+                    subCG.alpha = 0f;
+                    yield return Fade(subCG, 0f, 1f, 2f);
+                }
+            }
+
+            // ── Stage 7: Hold — let it breathe ────────────────────────
+            yield return new WaitForSecondsRealtime(postTitleHold);
+
+            // ── Stage 8: One final flicker before transition ──────────
+            if (titleGroup != null)
+            {
+                titleGroup.alpha = 0f;
+                yield return new WaitForSecondsRealtime(0.1f);
+                titleGroup.alpha = 1f;
+                yield return new WaitForSecondsRealtime(0.3f);
+                titleGroup.alpha = 0f;
+                yield return new WaitForSecondsRealtime(0.15f);
+                titleGroup.alpha = 1f;
+                yield return new WaitForSecondsRealtime(0.5f);
+            }
+
+            // ── Stage 9: Glitch wipe out ──────────────────────────────
             yield return GlitchWipe();
             TransitionOut();
         }
