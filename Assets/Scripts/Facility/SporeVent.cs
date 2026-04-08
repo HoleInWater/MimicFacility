@@ -131,7 +131,9 @@ namespace MimicFacility.Facility
 
         private void OnTriggerEnter(Collider other)
         {
-            if (!isServer || !isActive) return;
+            if (!isActive) return;
+            var id = GetComponent<Mirror.NetworkIdentity>();
+            if (id != null && !id.isServer) return;
 
             var playerState = other.GetComponent<MimicPlayerState>();
             if (playerState != null)

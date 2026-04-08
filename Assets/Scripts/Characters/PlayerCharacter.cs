@@ -294,7 +294,7 @@ namespace MimicFacility.Characters
 
         private void OnTriggerEnter(Collider other)
         {
-            if (!isLocalPlayer) return;
+            if (!IsLocal()) return;
             if (other.CompareTag("Zone"))
             {
                 _currentZone = other.gameObject.name;
