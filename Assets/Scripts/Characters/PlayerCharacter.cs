@@ -96,6 +96,11 @@ namespace MimicFacility.Characters
                 Cursor.visible = false;
                 _playerState = GetComponent<MimicPlayerState>();
                 if (characterController == null) characterController = GetComponent<CharacterController>();
+                if (playerCamera == null) playerCamera = GetComponentInChildren<Camera>();
+                if (audioListener == null) audioListener = GetComponentInChildren<AudioListener>();
+                if (flashlight == null) flashlight = GetComponentInChildren<Light>();
+                if (voiceSource == null) voiceSource = GetComponent<AudioSource>();
+                if (footstepSource == null) footstepSource = GetComponent<AudioSource>();
             }
         }
 
@@ -177,12 +182,14 @@ namespace MimicFacility.Characters
             _cameraPitch += invertY ? mouseY : -mouseY;
             _cameraPitch = Mathf.Clamp(_cameraPitch, -90f, 90f);
 
+            if (playerCamera == null) return;
             playerCamera.transform.localRotation = Quaternion.Euler(_cameraPitch, 0f, 0f);
             transform.Rotate(Vector3.up * mouseX);
         }
 
         private void HandleInteract()
         {
+            if (playerCamera == null) return;
             Ray ray = new Ray(playerCamera.transform.position, playerCamera.transform.forward);
             if (Physics.Raycast(ray, out RaycastHit hit, interactRange, interactableLayer))
             {
