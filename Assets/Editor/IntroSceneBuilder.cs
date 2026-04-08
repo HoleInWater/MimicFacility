@@ -406,7 +406,7 @@ public class IntroSceneBuilder
         titleRT.anchorMin = new Vector2(0.1f, 0.3f);
         titleRT.anchorMax = new Vector2(0.9f, 0.7f);
         titleRT.sizeDelta = Vector2.zero;
-        var titleRenderer = titleRendererObj.AddComponent<IntakeTitleRenderer>();
+        var titleRenderer = titleRendererObj.AddComponent<MimicTitleRenderer>();
 
         // TMPro fallback for subtitle
         var titleTMP = CreateTMPText(titleObj.transform, "TitleText", "", 1,
@@ -414,7 +414,7 @@ public class IntroSceneBuilder
 
         // Subtitle
         CreateTMPText(titleObj.transform, "Subtitle",
-            "You have been admitted.", 24,
+            "Anything you say can and will be used against you.", 22,
             new Color(0.7f, 0.7f, 0.7f, 0.8f), TextAlignmentOptions.Center,
             new Vector2(0, -100));
 

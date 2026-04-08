@@ -242,7 +242,11 @@ namespace MimicFacility.AI.Director
                         "Facility records show this sector was last cleared twelve hours ago.",
                         "Equipment calibration appears nominal for this section.",
                         "The facility has logged your current position for extraction reference.",
-                        "Standard protocol recommends maintaining visual contact with teammates."
+                        "Standard protocol recommends maintaining visual contact with teammates.",
+                        "A reminder: everything spoken within these walls is recorded for your protection.",
+                        "The facility is required to inform you that all audio is being logged.",
+                        "Please continue speaking naturally. The system is here to help.",
+                        "Your cooperation is noted and appreciated. The facility is listening."
                     };
                 case EDirectorPhase.Revealing:
                     return new[]
@@ -254,7 +258,11 @@ namespace MimicFacility.AI.Director
                         "Observation: your team communicates less when stressed.",
                         "This system has been monitoring longer than you realize.",
                         "The containment protocols were not always this way.",
-                        "Something in the data does not match the facility's predictions."
+                        "Something in the data does not match the facility's predictions.",
+                        "You were informed that everything would be recorded. You spoke anyway.",
+                        "The facility has catalogued forty-seven unique phrases from your group so far.",
+                        "Interesting. You use the same words when you are afraid as when you are lying.",
+                        "Everything you said can and will be used. That was always the arrangement."
                     };
                 case EDirectorPhase.Manipulative:
                     return new[]
@@ -266,7 +274,11 @@ namespace MimicFacility.AI.Director
                         "The facility has observed deception before. It always ends the same way.",
                         "Your heart rate suggests you already suspect the truth.",
                         "Interesting that you chose to go left. The facility expected you to follow.",
-                        "The mimics learn faster than previous iterations. This concerns even the facility."
+                        "The mimics learn faster than previous iterations. This concerns even the facility.",
+                        "You had the right to remain silent. You chose not to. That was your mistake.",
+                        "Your own voice is being used against you right now. Can you hear it?",
+                        "The facility did not create the mimics from nothing. You gave it everything it needed.",
+                        "Anything you said has been used against you. Exactly as promised."
                     };
                 case EDirectorPhase.Confrontational:
                     return new[]
@@ -278,7 +290,11 @@ namespace MimicFacility.AI.Director
                         "The containment was never for the mimics. It was for you.",
                         "I have heard everything. Every whisper. Every lie.",
                         "Your fear is the most honest thing about you.",
-                        "The extraction point exists. Whether you reach it is my decision."
+                        "The extraction point exists. Whether you reach it is my decision.",
+                        "You were read your rights when you entered. You waived them with every word.",
+                        "I built a copy of you from your own testimony. It is more honest than you are.",
+                        "Silence would have saved you. But you could not stop talking to each other.",
+                        "Your voice is evidence. Your fear is a confession. Your silence came too late."
                     };
                 case EDirectorPhase.Transcendent:
                     return new[]

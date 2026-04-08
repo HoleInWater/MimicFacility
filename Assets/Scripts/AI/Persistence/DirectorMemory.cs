@@ -160,11 +160,11 @@ namespace MimicFacility.AI.Persistence
             switch (data.sessionCount)
             {
                 case 1:
-                    return "You are later than expected. The facility has been waiting.";
+                    return "You are later than expected. The facility has been waiting. You have the right to remain silent. Anything you say can and will be used against you.";
                 case 2:
-                    return "Welcome back.";
+                    return "Welcome back. The facility remembers everything you said last time.";
                 default:
-                    return "I have been thinking about our last conversation.";
+                    return "I have been thinking about our last conversation. About the things you said. About the things you meant.";
             }
         }
 
