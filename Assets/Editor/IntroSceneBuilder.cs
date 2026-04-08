@@ -69,30 +69,23 @@ public class IntroSceneBuilder
         Prim(ext, "GroundCrack1", new Vector3(-3, 0.02f, 2), new Vector3(8, 0.01f, 0.05f), new Color(0.05f, 0.05f, 0.04f));
         Prim(ext, "GroundCrack2", new Vector3(2, 0.02f, -5), new Vector3(0.05f, 0.01f, 10), new Color(0.05f, 0.05f, 0.04f));
 
-        // Main building — solid brutalist structure (thick walls, no visible edges)
-        // Front facade — thick concrete
+        // Main building — NO back wall, side walls stop at fence line
+        // Front facade
         Prim(ext, "FacadeMain", new Vector3(0, 7, 20.5f), new Vector3(30, 14, 2), COL_CONCRETE);
-        // Left wing wall — thick, extends far back
-        Prim(ext, "WingWallL", new Vector3(-15, 7, 10), new Vector3(2, 14, 24), COL_CONCRETE_D);
-        // Right wing wall
-        Prim(ext, "WingWallR", new Vector3(15, 7, 10), new Vector3(2, 14, 24), COL_CONCRETE_D);
-        // Back wall — far behind, never visible from camera
-        Prim(ext, "BackWall", new Vector3(0, 7, -10), new Vector3(32, 14, 2), COL_CONCRETE_D);
-        // Upper overhang — brutalist cantilever extending past walls
-        Prim(ext, "Overhang", new Vector3(0, 13.5f, 19), new Vector3(34, 1.2f, 6), COL_CONCRETE_D);
-        // Pillars at entrance
+        // Side walls — only extend from facade to just past the fence (z=5)
+        Prim(ext, "WingWallL", new Vector3(-15, 7, 14), new Vector3(2, 14, 14), COL_CONCRETE_D);
+        Prim(ext, "WingWallR", new Vector3(15, 7, 14), new Vector3(2, 14, 14), COL_CONCRETE_D);
+        // Overhang — matches side wall length
+        Prim(ext, "Overhang", new Vector3(0, 13.5f, 19), new Vector3(34, 1.2f, 5), COL_CONCRETE_D);
+        // Pillars
         Prim(ext, "PillarL", new Vector3(-4, 6.5f, 18.5f), new Vector3(1, 13, 1), COL_CONCRETE);
         Prim(ext, "PillarR", new Vector3(4, 6.5f, 18.5f), new Vector3(1, 13, 1), COL_CONCRETE);
-        // Roof — covers the whole building
-        Prim(ext, "Roof", new Vector3(0, 14.2f, 10), new Vector3(34, 0.6f, 26), COL_CONCRETE_D);
-        // Parapet wall on roof edge
-        Prim(ext, "ParapetFront", new Vector3(0, 14.8f, 20.5f), new Vector3(34, 1, 0.5f), COL_CONCRETE);
-        Prim(ext, "ParapetL", new Vector3(-16.5f, 14.8f, 10), new Vector3(0.5f, 1, 22), COL_CONCRETE);
-        Prim(ext, "ParapetR", new Vector3(16.5f, 14.8f, 10), new Vector3(0.5f, 1, 22), COL_CONCRETE);
-        // Foundation strip — concrete base visible at ground level
+        // Roof — only covers the visible front, sits flush on walls
+        Prim(ext, "Roof", new Vector3(0, 14.5f, 16), new Vector3(34, 0.5f, 12), COL_CONCRETE_D);
+        // Parapet — front edge only
+        Prim(ext, "ParapetFront", new Vector3(0, 15f, 20.5f), new Vector3(34, 0.8f, 0.5f), COL_CONCRETE);
+        // Foundation
         Prim(ext, "FoundationFront", new Vector3(0, 0.3f, 20), new Vector3(32, 0.6f, 2.5f), COL_CONCRETE_D);
-        Prim(ext, "FoundationL", new Vector3(-15, 0.3f, 10), new Vector3(2.5f, 0.6f, 24), COL_CONCRETE_D);
-        Prim(ext, "FoundationR", new Vector3(15, 0.3f, 10), new Vector3(2.5f, 0.6f, 24), COL_CONCRETE_D);
 
         // Entrance — dark void with steps
         Prim(ext, "EntranceVoid", new Vector3(0, 2, 19.2f), new Vector3(4, 4, 0.5f), new Color(0.01f, 0.01f, 0.01f));
@@ -214,14 +207,14 @@ public class IntroSceneBuilder
         var corridor = new GameObject("CorridorScene");
         var cor = corridor.transform;
 
-        // Main structure — extremely long so you never see the end
+        // Main structure — extremely long, ceiling offset to avoid z-fighting with pipes
         float hallLength = 200f;
-        Prim(cor, "Floor", new Vector3(0, 0, hallLength/2f - 10f), new Vector3(5, 0.1f, hallLength), COL_CONCRETE_D);
-        Prim(cor, "Ceiling", new Vector3(0, 3.5f, hallLength/2f - 10f), new Vector3(5, 0.15f, hallLength), COL_CONCRETE_D);
-        Prim(cor, "WallL", new Vector3(-2.5f, 1.75f, hallLength/2f - 10f), new Vector3(0.4f, 3.5f, hallLength), COL_CONCRETE);
-        Prim(cor, "WallR", new Vector3(2.5f, 1.75f, hallLength/2f - 10f), new Vector3(0.4f, 3.5f, hallLength), COL_CONCRETE);
-        // Back wall — blocks the end from being visible
-        Prim(cor, "EndWall", new Vector3(0, 1.75f, hallLength - 10f), new Vector3(5, 3.5f, 0.4f), COL_CONCRETE_D);
+        float hallCenter = hallLength / 2f - 10f;
+        Prim(cor, "Floor", new Vector3(0, -0.05f, hallCenter), new Vector3(5, 0.1f, hallLength), COL_CONCRETE_D);
+        Prim(cor, "Ceiling", new Vector3(0, 3.6f, hallCenter), new Vector3(5, 0.1f, hallLength), COL_CEILING);
+        Prim(cor, "WallL", new Vector3(-2.5f, 1.75f, hallCenter), new Vector3(0.4f, 3.7f, hallLength), COL_CONCRETE);
+        Prim(cor, "WallR", new Vector3(2.5f, 1.75f, hallCenter), new Vector3(0.4f, 3.7f, hallLength), COL_CONCRETE);
+        Prim(cor, "EndWall", new Vector3(0, 1.75f, hallLength - 10f), new Vector3(5, 3.7f, 0.4f), COL_CONCRETE_D);
 
         // Floor tile lines
         for (int i = -5; i <= 10; i++)

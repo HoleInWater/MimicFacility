@@ -227,29 +227,28 @@ namespace MimicFacility.UI
                 cam.fieldOfView = Mathf.Lerp(55f, 50f, eased);
         }
 
-        // ── Phase 5: Hold for title, slow zoom ────────────────────────
+        // ── Phase 5: Title — keep orbiting, NO zoom, more dramatic ─────
         void UpdateTitleHold(float t)
         {
-            // Continue slow orbit from control room
-            orbitAngle += orbitSpeed * 0.3f * Time.deltaTime;
+            // Keep orbiting at same speed — don't slow down or zoom
+            orbitAngle += orbitSpeed * Time.deltaTime;
 
-            float progress = Mathf.Clamp01(phaseTimer / orbitDuration);
-            float h = Mathf.Lerp(orbitEndHeight, orbitEndHeight * 0.9f, progress);
-            float r = Mathf.Lerp(orbitEndRadius, orbitEndRadius * 0.9f, progress);
+            float h = orbitEndHeight;
+            float r = orbitEndRadius;
 
             float x = controlRoomCenter.x + Mathf.Cos(orbitAngle) * r;
             float z = controlRoomCenter.z + Mathf.Sin(orbitAngle) * r;
 
-            float by = Mathf.Sin(t * breathSpeed * 0.5f) * breathVertical;
-            transform.position = new Vector3(x, h + by, z);
+            // More dramatic breathing during title
+            float by = Mathf.Sin(t * breathSpeed * 1.5f) * breathVertical * 4f;
+            float bx = Mathf.Sin(t * breathSpeed * 0.8f) * breathAmount * 2f;
+
+            transform.position = new Vector3(x + bx, h + by, z);
             transform.LookAt(controlRoomCenter + Vector3.up * 1.5f);
 
-            // Zoom
+            // NO zoom — keep FOV constant
             if (cam != null)
-            {
-                float zoomT = Mathf.Clamp01(phaseTimer / titleZoomDuration);
-                cam.fieldOfView = Mathf.Lerp(titleZoomStart, titleZoomEnd, zoomT);
-            }
+                cam.fieldOfView = 50f;
         }
     }
 }
