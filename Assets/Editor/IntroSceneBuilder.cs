@@ -358,33 +358,93 @@ public class IntroSceneBuilder
 
     static Material GetParticleMaterial(Color color)
     {
-        // Try URP particle shaders first, fall back to Standard
-        Shader shader = Shader.Find("Universal Render Pipeline/Particles/Unlit")
-            ?? Shader.Find("Universal Render Pipeline/Particles/Simple Lit")
-            ?? Shader.Find("Particles/Standard Unlit")
-            ?? Shader.Find("Standard");
+        // Save a material asset to disk so it persists and doesn't go pink
+        string matDir = "Assets/Materials/Particles";
+        if (!AssetDatabase.IsValidFolder("Assets/Materials"))
+            AssetDatabase.CreateFolder("Assets", "Materials");
+        if (!AssetDatabase.IsValidFolder(matDir))
+            AssetDatabase.CreateFolder("Assets/Materials", "Particles");
+
+        string safeName = $"Particle_{ColorToHex(color)}";
+        string matPath = $"{matDir}/{safeName}.mat";
+
+        // Return existing if already created
+        var existing = AssetDatabase.LoadAssetAtPath<Material>(matPath);
+        if (existing != null) return existing;
+
+        // Try every possible particle shader name across Unity versions
+        string[] shaderNames = new string[]
+        {
+            "Universal Render Pipeline/Particles/Unlit",
+            "Universal Render Pipeline/Particles/Simple Lit",
+            "Universal Render Pipeline/Particles/Lit",
+            "Particles/Standard Unlit",
+            "Particles/Standard Surface",
+            "Mobile/Particles/Additive",
+            "Mobile/Particles/Alpha Blended",
+            "Legacy Shaders/Particles/Alpha Blended",
+            "Sprites/Default",
+            "UI/Default",
+        };
+
+        Shader shader = null;
+        foreach (var name in shaderNames)
+        {
+            shader = Shader.Find(name);
+            if (shader != null)
+            {
+                Debug.Log($"[IntroSceneBuilder] Using particle shader: {name}");
+                break;
+            }
+        }
+
+        if (shader == null)
+        {
+            // Last resort — use the default sprite material which always exists
+            Debug.LogWarning("[IntroSceneBuilder] No particle shader found, using Sprites/Default");
+            shader = Shader.Find("Sprites/Default");
+        }
+
+        if (shader == null)
+        {
+            Debug.LogError("[IntroSceneBuilder] Cannot find ANY shader for particles.");
+            return new Material(Shader.Find("Hidden/InternalErrorShader"));
+        }
 
         var mat = new Material(shader);
         mat.color = color;
 
-        // Enable transparency
+        // URP transparency settings
         if (mat.HasProperty("_Surface"))
-        {
-            mat.SetFloat("_Surface", 1); // 1 = Transparent
-            mat.SetFloat("_Blend", 0);   // 0 = Alpha
-        }
+            mat.SetFloat("_Surface", 1f);
+        if (mat.HasProperty("_Blend"))
+            mat.SetFloat("_Blend", 0f);
         if (mat.HasProperty("_Mode"))
-        {
-            mat.SetFloat("_Mode", 2); // Fade mode for Standard shader
-        }
+            mat.SetFloat("_Mode", 2f);
+
+        // Force alpha blending
+        if (mat.HasProperty("_SrcBlend"))
+            mat.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
+        if (mat.HasProperty("_DstBlend"))
+            mat.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
+        if (mat.HasProperty("_ZWrite"))
+            mat.SetInt("_ZWrite", 0);
 
         mat.renderQueue = 3000;
-        mat.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
-        mat.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
-        mat.SetInt("_ZWrite", 0);
         mat.EnableKeyword("_ALPHABLEND_ON");
+        mat.EnableKeyword("_SURFACE_TYPE_TRANSPARENT");
+
+        // Save to disk so it survives scene reload
+        AssetDatabase.CreateAsset(mat, matPath);
+        AssetDatabase.SaveAssets();
+        Debug.Log($"[IntroSceneBuilder] Created particle material: {matPath}");
 
         return mat;
+    }
+
+    static string ColorToHex(Color c)
+    {
+        return $"{(int)(c.r*255):X2}{(int)(c.g*255):X2}{(int)(c.b*255):X2}";
     }
 
     static ParticleSystem CreateSporeParticles(Transform parent, Vector3 position)
