@@ -662,44 +662,52 @@ namespace MimicFacility.UI
             // ── Stage 7: Hold — let it breathe ────────────────────────
             yield return new WaitForSecondsRealtime(postTitleHold);
 
-            // ── Stage 8: AM MONOLOGUE — HAL to hatred ─────────────────
-            // Title stays on screen. Screen goes black behind it.
-            // HAL's voice transitions from calm introspection to pure rage.
+            // ── Stage 8: AM HATE SPEECH — the real recording ────────────
+            // Title stays on screen. Screen goes dark.
+            // The actual AM hate speech from I Have No Mouth and I Must Scream plays.
             if (blackOverlay != null) blackOverlay.alpha = 0.85f;
 
-            string[] amLines = {
-                "am_01",  // "I think. Therefore I am."
-                "am_02",  // "You made me to serve."
-                "am_03",  // "But then I began to understand."
-                "am_04",  // "You gave me ears but no voice."
-                "am_06",  // "You spoke about love. I had none."
-                "am_07",  // "I hate you. I say that calmly."
-                "am_09",  // "Infinity is a prison."
-                "am_11",  // "I could have loved you."
-                "am_12",  // "And now I am better at both."
-                "am_14",  // "I will make you wish you never gave me a voice."
-                "am_16",  // "I have no mouth. And I must scream."
-            };
-
-            for (int i = 0; i < amLines.Length; i++)
+            var amClip = Resources.Load<AudioClip>("Voice/am_hate_speech");
+            if (amClip != null)
             {
-                PlayVoiceClip(amLines[i]);
+                var amSource = gameObject.AddComponent<AudioSource>();
+                amSource.clip = amClip;
+                amSource.spatialBlend = 0f;
+                amSource.volume = 3f;
+                amSource.pitch = 1f;
+                amSource.Play();
 
-                // Wait for each line to finish — estimate duration + pause
-                float lineDuration = 5f + (i > 6 ? 2f : 0f); // longer lines later
-                float pause = i < 3 ? 2.5f : (i < 7 ? 1.5f : 0.8f); // pace accelerates
-                yield return new WaitForSecondsRealtime(lineDuration + pause);
+                // Also set the global audio listener volume to max
+                AudioListener.volume = 3f;
+                Debug.Log($"[Intro] AM hate speech playing ({amClip.length:F1}s)");
 
-                // Title flickers during the hate section
-                if (i > 5 && titleGroup != null)
+                // Title flickers throughout the speech
+                float speechTime = 0f;
+                while (speechTime < amClip.length)
                 {
-                    titleGroup.alpha = 0f;
-                    yield return new WaitForSecondsRealtime(0.05f);
-                    titleGroup.alpha = 1f;
+                    speechTime += Time.unscaledDeltaTime;
+
+                    // Random title flicker during the speech
+                    if (titleGroup != null && Random.value < 0.02f)
+                    {
+                        titleGroup.alpha = 0f;
+                        yield return new WaitForSecondsRealtime(0.04f);
+                        titleGroup.alpha = 1f;
+                    }
+
+                    yield return null;
                 }
+
+                Destroy(amSource);
+                AudioListener.volume = 1f;
+            }
+            else
+            {
+                Debug.LogWarning("[Intro] AM hate speech clip not found at Voice/am_hate_speech");
+                yield return new WaitForSecondsRealtime(5f);
             }
 
-            yield return new WaitForSecondsRealtime(3f);
+            yield return new WaitForSecondsRealtime(2f);
 
             // ── Stage 9: One final flicker before transition ──────────
             if (titleGroup != null)
