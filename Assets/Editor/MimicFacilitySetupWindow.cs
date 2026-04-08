@@ -6,6 +6,7 @@ using System.Reflection;
 using UnityEngine;
 using UnityEditor;
 using UnityEngine.AI;
+using Unity.AI.Navigation;
 using Mirror;
 using MimicFacility.Core;
 using MimicFacility.Characters;
@@ -26,7 +27,7 @@ using MimicFacility.Testing;
 public class MimicFacilitySetupWindow : EditorWindow
 {
     // ── Tab state ────────────────────────────────────────────────────────
-    private enum Tab { QuickStart, Map, Player, Entities, Systems, Validate }
+    private enum Tab { QuickStart, Pipeline, Map, Player, Entities, Systems, Validate }
     private Tab currentTab = Tab.QuickStart;
 
     // ── Quick Start ──────────────────────────────────────────────────────
@@ -51,6 +52,10 @@ public class MimicFacilitySetupWindow : EditorWindow
 
     // ── Player ───────────────────────────────────────────────────────────
     private Vector3 playerSpawnPos = new Vector3(5f, 1f, 5f);
+
+    // ── Pipeline ─────────────────────────────────────────────────────────
+    private TextAsset mapJsonAsset;
+    private string pipelineLog = "";
 
     // ── Entities ─────────────────────────────────────────────────────────
     private int mimicCount = 2;
@@ -85,7 +90,7 @@ public class MimicFacilitySetupWindow : EditorWindow
         EditorGUILayout.Space(2);
 
         currentTab = (Tab)GUILayout.Toolbar((int)currentTab,
-            new[] { "Quick Start", "Map", "Player", "Entities", "Systems", "Validate" });
+            new[] { "Quick Start", "Pipeline", "Map", "Player", "Entities", "Systems", "Validate" });
 
         EditorGUILayout.Space(5);
         scrollPos = EditorGUILayout.BeginScrollView(scrollPos);
@@ -93,6 +98,7 @@ public class MimicFacilitySetupWindow : EditorWindow
         switch (currentTab)
         {
             case Tab.QuickStart: DrawQuickStart(); break;
+            case Tab.Pipeline:   DrawPipeline(); break;
             case Tab.Map:        DrawMap(); break;
             case Tab.Player:     DrawPlayer(); break;
             case Tab.Entities:   DrawEntities(); break;
@@ -136,6 +142,109 @@ public class MimicFacilitySetupWindow : EditorWindow
         {
             ClearScene();
         }
+    }
+
+    // ══════════════════════════════════════════════════════════════════════
+    // PIPELINE TAB — JSON-driven import
+    // ══════════════════════════════════════════════════════════════════════
+
+    private void DrawPipeline()
+    {
+        EditorGUILayout.LabelField("Import Pipeline", EditorStyles.boldLabel);
+        EditorGUILayout.HelpBox(
+            "Drop a map definition JSON to import a fully wired scene.\n" +
+            "The pipeline resolves all dependencies, spawns systems in order, " +
+            "generates geometry, places entities and gear, bakes NavMesh.\n\n" +
+            "Pipeline: JSON → Systems → Map → Entities → Gear → Lighting → Network → NavMesh",
+            MessageType.Info);
+
+        EditorGUILayout.Space(5);
+        mapJsonAsset = (TextAsset)EditorGUILayout.ObjectField("Map Definition JSON", mapJsonAsset, typeof(TextAsset), false);
+
+        EditorGUILayout.Space(5);
+
+        GUI.backgroundColor = new Color(0.3f, 0.8f, 0.3f);
+        if (GUILayout.Button("IMPORT FROM JSON", GUILayout.Height(35)))
+        {
+            if (mapJsonAsset != null)
+                RunPipeline(mapJsonAsset.text);
+            else
+                EditorUtility.DisplayDialog("No JSON", "Drag a map definition JSON into the field above.", "OK");
+        }
+        GUI.backgroundColor = Color.white;
+
+        EditorGUILayout.Space(5);
+        if (GUILayout.Button("Import Default Facility"))
+        {
+            var pipeline = new MimicFacility.Pipeline.ImportPipeline();
+            var def = MimicFacility.Pipeline.ImportPipeline.CreateDefaultDefinition();
+            RunPipelineWithDef(def);
+        }
+
+        EditorGUILayout.Space(5);
+        if (GUILayout.Button("Browse for JSON file..."))
+        {
+            string path = EditorUtility.OpenFilePanel("Select Map Definition", "Assets/Data/Maps", "json");
+            if (!string.IsNullOrEmpty(path))
+            {
+                string json = System.IO.File.ReadAllText(path);
+                RunPipeline(json);
+            }
+        }
+
+        EditorGUILayout.Space(10);
+        EditorGUILayout.LabelField("Export", EditorStyles.boldLabel);
+
+        if (GUILayout.Button("Export Default Definition to JSON"))
+        {
+            var def = MimicFacility.Pipeline.ImportPipeline.CreateDefaultDefinition();
+            var pipeline = new MimicFacility.Pipeline.ImportPipeline();
+            string json = pipeline.SaveToJson(def);
+            string path = EditorUtility.SaveFilePanel("Save Map Definition", "Assets/Data/Maps", "my_map", "json");
+            if (!string.IsNullOrEmpty(path))
+            {
+                System.IO.File.WriteAllText(path, json);
+                AssetDatabase.Refresh();
+                Debug.Log($"[Pipeline] Exported to {path}");
+            }
+        }
+
+        if (!string.IsNullOrEmpty(pipelineLog))
+        {
+            EditorGUILayout.Space(10);
+            EditorGUILayout.LabelField("Pipeline Log", EditorStyles.boldLabel);
+            EditorGUILayout.TextArea(pipelineLog, GUILayout.Height(150));
+        }
+    }
+
+    private void RunPipeline(string json)
+    {
+        var pipeline = new MimicFacility.Pipeline.ImportPipeline();
+        var def = pipeline.LoadFromJson(json);
+        if (def == null)
+        {
+            EditorUtility.DisplayDialog("Error", "Failed to parse JSON.", "OK");
+            return;
+        }
+        RunPipelineWithDef(def);
+    }
+
+    private void RunPipelineWithDef(MimicFacility.Pipeline.MapDefinition def)
+    {
+        pipelineLog = "";
+        var pipeline = new MimicFacility.Pipeline.ImportPipeline();
+        pipeline.OnLog += msg => pipelineLog += msg + "\n";
+        pipeline.OnWarning += msg => pipelineLog += "[WARN] " + msg + "\n";
+        pipeline.OnError += msg => pipelineLog += "[ERROR] " + msg + "\n";
+
+        Undo.SetCurrentGroupName("Pipeline Import: " + def.mapName);
+        pipeline.Execute(def);
+
+        // Also create player
+        if (FindObjectOfType<PlayerCharacter>() == null)
+            CreatePlayer(FindBestSpawnPoint());
+
+        Repaint();
     }
 
     // ══════════════════════════════════════════════════════════════════════
