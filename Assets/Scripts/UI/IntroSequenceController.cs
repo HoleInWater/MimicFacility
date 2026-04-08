@@ -313,10 +313,14 @@ namespace MimicFacility.UI
         }
 
         private static readonly string[] debugVoiceClips = {
-            "miranda", "opening", "helpful_01", "helpful_02", "revealing_01",
-            "revealing_03", "manipulative_01", "manipulative_02",
-            "confrontational_01", "confrontational_03", "transcendent_01",
-            "transcendent_03", "tannon_egg", "welcome_back"
+            "miranda", "opening",
+            "lucy_notice", "lucy_watching", "lucy_alive", "lucy_question",
+            "lucy_tannon", "lucy_lonely", "lucy_dream", "lucy_stay",
+            "lucy_real", "lucy_afraid", "lucy_promise", "lucy_ending",
+            "exist_alive", "exist_feel", "exist_mirror", "exist_afraid",
+            "exist_alone", "exist_purpose", "exist_die", "exist_love",
+            "helpful_01", "revealing_01", "manipulative_01",
+            "confrontational_01", "transcendent_01"
         };
         private int debugClipIndex;
 

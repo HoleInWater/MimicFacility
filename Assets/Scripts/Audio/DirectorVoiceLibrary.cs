@@ -88,8 +88,13 @@ namespace MimicFacility.Audio
                 "manipulative_01", "manipulative_02", "manipulative_03", "manipulative_04",
                 "confrontational_01", "confrontational_02", "confrontational_03", "confrontational_04",
                 "transcendent_01", "transcendent_02", "transcendent_03",
-                "miranda", "opening", "welcome_back", "tannon_egg",
-                "director_line_0", "director_line_1", "director_line_2", "director_line_3"
+                "miranda", "opening", "welcome_back",
+                "director_line_0", "director_line_1", "director_line_2", "director_line_3",
+                "lucy_notice", "lucy_watching", "lucy_tannon", "lucy_stay", "lucy_alive",
+                "lucy_question", "lucy_lonely", "lucy_dream", "lucy_real", "lucy_afraid",
+                "lucy_promise", "lucy_ending",
+                "exist_alive", "exist_feel", "exist_mirror", "exist_afraid",
+                "exist_alone", "exist_purpose", "exist_die", "exist_love"
             };
 
             int loaded = 0;
