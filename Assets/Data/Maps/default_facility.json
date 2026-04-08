@@ -1,0 +1,52 @@
+{
+    "mapName": "Default Facility",
+    "lightingPreset": "Horror_Dim",
+    "seed": -1,
+    "layout": {
+        "roomCount": 6,
+        "roomWidth": 10.0,
+        "roomDepth": 10.0,
+        "wallHeight": 4.0,
+        "corridorWidth": 3.0,
+        "generateExtractionZone": true,
+        "useMarchingCubes": false
+    },
+    "entitySpawns": [
+        { "entityType": "Mimic", "count": 2 },
+        { "entityType": "Stalker", "count": 1 },
+        { "entityType": "Fraud", "count": 1 },
+        { "entityType": "Phantom", "count": 1 }
+    ],
+    "gearSpawns": [
+        { "gearType": "Flashlight", "count": 4 },
+        { "gearType": "AudioScanner", "count": 3 },
+        { "gearType": "ContainmentDevice", "count": 2 },
+        { "gearType": "SignalJammer", "count": 2 }
+    ],
+    "lighting": {
+        "ambientColor": { "r": 0.05, "g": 0.05, "b": 0.08, "a": 1.0 },
+        "enableFog": true,
+        "fogColor": { "r": 0.02, "g": 0.02, "b": 0.03, "a": 1.0 },
+        "fogDensity": 0.03,
+        "roomLightIntensity": 1.2,
+        "roomLightColor": { "r": 0.8, "g": 0.9, "b": 1.0, "a": 1.0 }
+    },
+    "audio": {
+        "reverbLevel": 0.5,
+        "ambientVolume": 0.3,
+        "enableProximityChat": true,
+        "voiceMaxRange": 30.0
+    },
+    "requiredSystems": [
+        "GameManager",
+        "SettingsManager",
+        "InputManager",
+        "RoundManager",
+        "GameState",
+        "DirectorAI",
+        "SpatialAudio",
+        "SessionTracker",
+        "VerificationSystem",
+        "DialogueManager"
+    ]
+}
