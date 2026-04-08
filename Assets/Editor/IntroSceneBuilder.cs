@@ -33,10 +33,10 @@ public class IntroSceneBuilder
 
         RenderSettings.fog = true;
         RenderSettings.fogMode = FogMode.Linear;
-        RenderSettings.fogStartDistance = 5f;
-        RenderSettings.fogEndDistance = 80f;
-        RenderSettings.fogColor = new Color(0.01f, 0.01f, 0.02f);
-        RenderSettings.ambientLight = new Color(0.02f, 0.02f, 0.03f);
+        RenderSettings.fogStartDistance = 25f;
+        RenderSettings.fogEndDistance = 200f;
+        RenderSettings.fogColor = new Color(0.01f, 0.01f, 0.015f);
+        RenderSettings.ambientLight = new Color(0.06f, 0.06f, 0.08f);
 
         // ── Camera ───────────────────────────────────────────────────────
         var camObj = new GameObject("IntroCamera");
@@ -69,20 +69,32 @@ public class IntroSceneBuilder
         Prim(ext, "GroundCrack1", new Vector3(-3, 0.02f, 2), new Vector3(8, 0.01f, 0.05f), new Color(0.05f, 0.05f, 0.04f));
         Prim(ext, "GroundCrack2", new Vector3(2, 0.02f, -5), new Vector3(0.05f, 0.01f, 10), new Color(0.05f, 0.05f, 0.04f));
 
-        // Main building — multi-section brutalist facade
-        Prim(ext, "FacadeMain", new Vector3(0, 7, 20), new Vector3(28, 14, 1.5f), COL_CONCRETE);
-        Prim(ext, "FacadeWingL", new Vector3(-14, 5, 15), new Vector3(1.5f, 10, 12), COL_CONCRETE_D);
-        Prim(ext, "FacadeWingR", new Vector3(14, 5, 15), new Vector3(1.5f, 10, 12), COL_CONCRETE_D);
-        // Upper overhang — brutalist cantilever
-        Prim(ext, "Overhang", new Vector3(0, 13, 18), new Vector3(32, 1, 5), COL_CONCRETE_D);
+        // Main building — solid brutalist structure (thick walls, no visible edges)
+        // Front facade — thick concrete
+        Prim(ext, "FacadeMain", new Vector3(0, 7, 20.5f), new Vector3(30, 14, 2), COL_CONCRETE);
+        // Left wing wall — thick, extends far back
+        Prim(ext, "WingWallL", new Vector3(-15, 7, 10), new Vector3(2, 14, 24), COL_CONCRETE_D);
+        // Right wing wall
+        Prim(ext, "WingWallR", new Vector3(15, 7, 10), new Vector3(2, 14, 24), COL_CONCRETE_D);
+        // Back wall — closes the structure
+        Prim(ext, "BackWall", new Vector3(0, 7, -2), new Vector3(32, 14, 2), COL_CONCRETE_D);
+        // Inner fill — solid block so you can't see inside
+        Prim(ext, "BuildingFill", new Vector3(0, 7, 9), new Vector3(28, 13.5f, 22), new Color(0.05f, 0.05f, 0.06f));
+        // Upper overhang — brutalist cantilever extending past walls
+        Prim(ext, "Overhang", new Vector3(0, 13.5f, 19), new Vector3(34, 1.2f, 6), COL_CONCRETE_D);
         // Pillars at entrance
-        Prim(ext, "PillarL", new Vector3(-4, 5, 18), new Vector3(0.8f, 10, 0.8f), COL_CONCRETE);
-        Prim(ext, "PillarR", new Vector3(4, 5, 18), new Vector3(0.8f, 10, 0.8f), COL_CONCRETE);
-        // Roof structure
-        Prim(ext, "Roof", new Vector3(0, 14, 14), new Vector3(30, 0.5f, 14), COL_CONCRETE_D);
-        // Side walls extending back
-        Prim(ext, "SideWallL", new Vector3(-14, 5, 10), new Vector3(1, 10, 20), COL_CONCRETE_D);
-        Prim(ext, "SideWallR", new Vector3(14, 5, 10), new Vector3(1, 10, 20), COL_CONCRETE_D);
+        Prim(ext, "PillarL", new Vector3(-4, 6.5f, 18.5f), new Vector3(1, 13, 1), COL_CONCRETE);
+        Prim(ext, "PillarR", new Vector3(4, 6.5f, 18.5f), new Vector3(1, 13, 1), COL_CONCRETE);
+        // Roof — covers the whole building
+        Prim(ext, "Roof", new Vector3(0, 14.2f, 10), new Vector3(34, 0.6f, 26), COL_CONCRETE_D);
+        // Parapet wall on roof edge
+        Prim(ext, "ParapetFront", new Vector3(0, 14.8f, 20.5f), new Vector3(34, 1, 0.5f), COL_CONCRETE);
+        Prim(ext, "ParapetL", new Vector3(-16.5f, 14.8f, 10), new Vector3(0.5f, 1, 22), COL_CONCRETE);
+        Prim(ext, "ParapetR", new Vector3(16.5f, 14.8f, 10), new Vector3(0.5f, 1, 22), COL_CONCRETE);
+        // Foundation strip — concrete base visible at ground level
+        Prim(ext, "FoundationFront", new Vector3(0, 0.3f, 20), new Vector3(32, 0.6f, 2.5f), COL_CONCRETE_D);
+        Prim(ext, "FoundationL", new Vector3(-15, 0.3f, 10), new Vector3(2.5f, 0.6f, 24), COL_CONCRETE_D);
+        Prim(ext, "FoundationR", new Vector3(15, 0.3f, 10), new Vector3(2.5f, 0.6f, 24), COL_CONCRETE_D);
 
         // Entrance — dark void with steps
         Prim(ext, "EntranceVoid", new Vector3(0, 2, 19.2f), new Vector3(4, 4, 0.5f), new Color(0.01f, 0.01f, 0.01f));
@@ -158,8 +170,8 @@ public class IntroSceneBuilder
         var sl = searchlight.AddComponent<Light>();
         sl.type = LightType.Spot;
         sl.color = new Color(0.9f, 0.8f, 0.6f);
-        sl.intensity = 5f;
-        sl.range = 40f;
+        sl.intensity = 15f;
+        sl.range = 60f;
         sl.spotAngle = 20f;
         searchlight.transform.rotation = Quaternion.Euler(45, -30, 15);
         Prim(ext, "SearchlightPole", new Vector3(8, 3, 10), new Vector3(0.15f, 6, 0.15f), COL_METAL);
@@ -171,8 +183,8 @@ public class IntroSceneBuilder
         var sl2 = searchlight2.AddComponent<Light>();
         sl2.type = LightType.Spot;
         sl2.color = new Color(0.7f, 0.7f, 0.8f);
-        sl2.intensity = 8f;
-        sl2.range = 60f;
+        sl2.intensity = 20f;
+        sl2.range = 80f;
         sl2.spotAngle = 15f;
         searchlight2.transform.rotation = Quaternion.Euler(50, 20, 0);
         searchlight2.AddComponent<IntroSearchlightSweep>();
@@ -236,8 +248,8 @@ public class IntroSceneBuilder
                 var cLight = lightObj.AddComponent<Light>();
                 cLight.type = LightType.Point;
                 cLight.color = broken ? new Color(0.5f, 0.4f, 0.3f) : new Color(0.7f, 0.8f, 0.9f);
-                cLight.intensity = broken ? 0.2f : 0.8f;
-                cLight.range = 5f;
+                cLight.intensity = broken ? 0.5f : 2.5f;
+                cLight.range = 8f;
                 var flicker = lightObj.AddComponent<IntroLightFlicker>();
                 flicker.isBroken = broken;
             }
@@ -463,6 +475,7 @@ public class IntroSceneBuilder
         tsc.corridorScene = corridor;
         tsc.controlRoomScene = controlRoom;
         tsc.cameraController = camCtrl;
+        camCtrl.corridorSceneRoot = corridor.transform;
         tsc.titleGroup = titleGroupCG;
         tsc.titleText = titleTMP;
         tsc.creditText = credText;

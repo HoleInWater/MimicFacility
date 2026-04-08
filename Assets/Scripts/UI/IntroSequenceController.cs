@@ -122,6 +122,7 @@ namespace MimicFacility.UI
         private float lastBeatTime;
         private float[] spectrumData = new float[256];
         private float prevBass;
+        private bool isTransitioning;
 
         void Start()
         {
@@ -268,8 +269,9 @@ namespace MimicFacility.UI
 
         void TickRandomFlicker()
         {
-            // Only flicker during corridor and control room phases
-            if (sequenceTime < corridorStartTime || sequenceTime > titleDropTime) return;
+            // Don't flicker during scene transitions or before corridor
+            if (isTransitioning) return;
+            if (sequenceTime < corridorStartTime + 3f || sequenceTime > titleDropTime - 3f) return;
 
             if (Time.time < nextFlickerTime) return;
 
@@ -480,10 +482,12 @@ namespace MimicFacility.UI
 
         IEnumerator FadeTransition(Action swapScenes, float fadeDuration = 1f)
         {
+            isTransitioning = true;
             yield return Fade(blackOverlay, blackOverlay != null ? blackOverlay.alpha : 0f, 1f, fadeDuration);
             swapScenes?.Invoke();
             yield return new WaitForSeconds(0.2f);
             yield return Fade(blackOverlay, 1f, 0f, fadeDuration);
+            isTransitioning = false;
         }
 
         void TickCredits()
