@@ -500,7 +500,7 @@ public class LobbySceneBuilder
         sbRT.pivot = new Vector2(0.5f, 0f);
 
         CreateTMPText(sbRT, "StatusText", "INTAKE PROCESSING FACILITY  //  AWAITING AUTHORIZATION",
-            12, COL_UI_DIM, TextAlignmentOptions.MidlineCenter);
+            12, COL_UI_DIM, TextAlignmentOptions.Center);
 
         // ── Attach LobbyUI Component ────────────────────────────────────
         var lobbyUI = canvasObj.AddComponent<LobbyUI>();
@@ -650,7 +650,7 @@ public class LobbySceneBuilder
         numTMP.text = number;
         numTMP.fontSize = 16;
         numTMP.color = COL_GLOW_NUM;
-        numTMP.alignment = TextAlignmentOptions.MidlineCenter;
+        numTMP.alignment = TextAlignmentOptions.Center;
         numTMP.fontStyle = FontStyles.Bold;
 
         // Player name
