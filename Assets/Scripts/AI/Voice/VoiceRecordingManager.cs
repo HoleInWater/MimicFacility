@@ -457,7 +457,7 @@ namespace MimicFacility.AI.Voice
 
             foreach (var player in players)
             {
-                string otherId = player.PlayerId;
+                string otherId = player.netId.ToString();
                 if (otherId == speakerId) continue;
 
                 float distance = Vector3.Distance(speakerPosition, player.transform.position);
