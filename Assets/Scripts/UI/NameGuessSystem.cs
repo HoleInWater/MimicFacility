@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 using TMPro;
 using MimicFacility.Audio;
 
@@ -56,8 +57,22 @@ namespace MimicFacility.UI
 
         public void Show()
         {
+            // Must have EventSystem for buttons to work
+            if (FindObjectOfType<UnityEngine.EventSystems.EventSystem>() == null)
+            {
+                var esObj = new GameObject("EventSystem");
+                esObj.AddComponent<UnityEngine.EventSystems.EventSystem>();
+                esObj.AddComponent<UnityEngine.EventSystems.StandaloneInputModule>();
+            }
+
+            // Cursor must be visible and unlocked to click buttons
+            Cursor.visible = true;
+            Cursor.lockState = CursorLockMode.None;
+
             if (genderPanel != null)
                 genderPanel.SetActive(true);
+
+            Debug.Log("[NameGuess] Panel shown. Cursor visible. Click MALE or FEMALE.");
         }
 
         public void Hide()
