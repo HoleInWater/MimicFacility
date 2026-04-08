@@ -5,6 +5,7 @@ using UnityEditor;
 using UnityEditor.SceneManagement;
 using TMPro;
 using MimicFacility.UI;
+using MimicFacility.Audio;
 
 public class IntroSceneBuilder
 {
