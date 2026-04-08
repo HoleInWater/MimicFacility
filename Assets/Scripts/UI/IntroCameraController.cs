@@ -12,11 +12,13 @@ namespace MimicFacility.UI
         public Vector3 exteriorLookAt = new Vector3(0f, 5f, 30f);
         public float exteriorPushDuration = 30f;
 
-        [Header("Phase 3 -- Corridor")]
-        public Vector3 corridorStart = new Vector3(0f, 1.8f, -8f);
-        public Vector3 corridorEnd = new Vector3(0f, 1.7f, 12f);
+        [Header("Phase 3 -- Corridor (scene moves, camera stays)")]
+        public Vector3 corridorCamPos = new Vector3(0f, 1.8f, 0f);
         public Vector3 corridorLookAt = new Vector3(0f, 1.6f, 30f);
+        public float corridorScrollSpeed = 0.8f;
         public float corridorPushDuration = 26f;
+        [Tooltip("The corridor scene root — moves backward to create infinite hallway effect")]
+        public Transform corridorSceneRoot;
 
         [Header("Phase 4 -- Control Room")]
         public Vector3 controlRoomCenter = new Vector3(0f, 0f, 0f);
@@ -83,7 +85,7 @@ namespace MimicFacility.UI
                     baseFOV = 65f;
                     break;
                 case Phase.Corridor:
-                    transform.position = corridorStart;
+                    transform.position = corridorCamPos;
                     transform.LookAt(corridorLookAt);
                     baseFOV = 58f;
                     break;
@@ -174,30 +176,30 @@ namespace MimicFacility.UI
                 cam.fieldOfView = Mathf.Lerp(65f, 58f, eased);
         }
 
-        // ── Phase 3: Walk down the corridor ───────────────────────────
+        // ── Phase 3: Corridor scrolls backward — camera stays still ───
+        // Creates an infinite hallway effect. The scene moves, not you.
         void UpdateCorridor(float t)
         {
-            float progress = Mathf.Clamp01(phaseTimer / corridorPushDuration);
-            float eased = progress * progress * (3f - 2f * progress);
-
-            Vector3 basePos = Vector3.Lerp(corridorStart, corridorEnd, eased);
-
-            // Head bob — subtle footstep rhythm
+            // Camera stays in place with subtle bob and breathing
             float bobX = Mathf.Sin(t * bobSpeed) * bobAmount;
             float bobY = Mathf.Abs(Mathf.Sin(t * bobSpeed * 2f)) * bobAmount * 0.6f;
-
-            // Breathing
             float bx = Mathf.Sin(t * breathSpeed * 1.2f) * breathAmount * 0.5f;
 
-            transform.position = basePos + new Vector3(bobX + bx, bobY, 0f);
+            transform.position = corridorCamPos + new Vector3(bobX + bx, bobY, 0f);
 
-            // Slight look sway — like nervously checking corners
             float lookSway = Mathf.Sin(t * 0.3f) * 0.5f;
             transform.LookAt(corridorLookAt + new Vector3(lookSway, 0f, 0f));
 
-            // FOV tightens as you go deeper
+            // Move the corridor scene backward — infinite hallway
+            if (corridorSceneRoot != null)
+            {
+                corridorSceneRoot.position -= Vector3.forward * corridorScrollSpeed * Time.deltaTime;
+            }
+
+            // FOV tightens slowly
+            float progress = Mathf.Clamp01(phaseTimer / corridorPushDuration);
             if (cam != null)
-                cam.fieldOfView = Mathf.Lerp(58f, 50f, eased);
+                cam.fieldOfView = Mathf.Lerp(58f, 50f, progress);
         }
 
         // ── Phase 4: Orbit the Director's control room ────────────────
