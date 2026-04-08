@@ -152,6 +152,30 @@ namespace MimicFacility.UI
 
             sequenceTime = 0f;
             nextCreditIndex = 0;
+            nextLucyLine = 0;
+
+            // Auto-find references if builder didn't wire them
+            if (corridorScene == null)
+            {
+                var obj = GameObject.Find("CorridorScene");
+                if (obj != null) corridorScene = obj;
+            }
+            if (controlRoomScene == null)
+            {
+                var obj = GameObject.Find("ControlRoomScene");
+                if (obj != null) controlRoomScene = obj;
+            }
+            if (facilityExteriorScene == null)
+            {
+                var obj = GameObject.Find("FacilityExterior");
+                if (obj != null) facilityExteriorScene = obj;
+            }
+            if (cameraController == null)
+                cameraController = FindObjectOfType<IntroCameraController>();
+            if (musicSource == null)
+                musicSource = GetComponentInChildren<AudioSource>();
+
+            Debug.Log($"[Intro] References: corridor={corridorScene != null}, control={controlRoomScene != null}, exterior={facilityExteriorScene != null}, cam={cameraController != null}, music={musicSource != null}");
         }
 
         void Update()
@@ -319,11 +343,26 @@ namespace MimicFacility.UI
         // the camera controller reference keeps getting lost ─────────────
         [SerializeField] private float corridorScrollSpeed = 3f;
 
+        private bool corridorScrollLogged;
+
         void TickCorridorScroll()
         {
-            // Only scroll during corridor phase (between corridorStartTime and controlRoomStartTime)
             if (sequenceTime < corridorStartTime || sequenceTime > controlRoomStartTime) return;
-            if (corridorScene == null || !corridorScene.activeInHierarchy) return;
+
+            if (corridorScene == null)
+            {
+                // Last resort — try to find it
+                corridorScene = GameObject.Find("CorridorScene");
+                if (corridorScene == null) return;
+            }
+
+            if (!corridorScene.activeInHierarchy) return;
+
+            if (!corridorScrollLogged)
+            {
+                corridorScrollLogged = true;
+                Debug.Log($"[Intro] Corridor scrolling at {corridorScrollSpeed} units/sec. Position: {corridorScene.transform.position}");
+            }
 
             corridorScene.transform.position -= Vector3.forward * corridorScrollSpeed * Time.deltaTime;
         }
@@ -352,18 +391,25 @@ namespace MimicFacility.UI
             if (sequenceTime >= time)
             {
                 nextLucyLine++;
+                Debug.Log($"[Intro] Lucy line {nextLucyLine}/{lucySchedule.Length} at {time}s: {clipName}");
                 PlayVoiceClip(clipName);
             }
         }
 
         void PlayVoiceClip(string clipName)
         {
+            // Try library first
             if (DirectorVoiceLibrary.Instance != null)
             {
-                DirectorVoiceLibrary.Instance.PlayClip(clipName);
-                return;
+                bool played = DirectorVoiceLibrary.Instance.PlayClip(clipName);
+                if (played)
+                {
+                    Debug.Log($"[Intro] Playing via library: {clipName}");
+                    return;
+                }
             }
 
+            // Direct load from Resources
             var clip = Resources.Load<AudioClip>($"Voice/{clipName}");
             if (clip != null)
             {
@@ -372,7 +418,12 @@ namespace MimicFacility.UI
                 src.spatialBlend = 0f;
                 src.volume = 1f;
                 src.Play();
+                Debug.Log($"[Intro] Playing direct: {clipName} ({clip.length:F1}s)");
                 Destroy(src, clip.length + 0.5f);
+            }
+            else
+            {
+                Debug.LogWarning($"[Intro] Voice clip NOT FOUND: Voice/{clipName}");
             }
         }
 
