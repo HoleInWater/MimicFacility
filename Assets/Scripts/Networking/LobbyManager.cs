@@ -152,6 +152,49 @@ namespace MimicFacility.Networking
         }
 
         [Command(requiresAuthority = false)]
+        public void CmdChangeDisplayName(int connectionId, string newName)
+        {
+            if (string.IsNullOrWhiteSpace(newName)) return;
+            if (newName.Length > 24)
+                newName = newName.Substring(0, 24);
+
+            for (int i = 0; i < _lobbyPlayers.Count; i++)
+            {
+                if (_lobbyPlayers[i].connectionId == connectionId)
+                {
+                    var data = _lobbyPlayers[i];
+                    data.playerName = newName;
+                    _lobbyPlayers[i] = data;
+                    break;
+                }
+            }
+
+            RpcUpdateLobbyUI();
+        }
+
+        [Command(requiresAuthority = false)]
+        public void CmdSendChatMessage(int connectionId, string message)
+        {
+            if (string.IsNullOrWhiteSpace(message)) return;
+            if (message.Length > 200)
+                message = message.Substring(0, 200);
+
+            string senderName = "UNKNOWN";
+            foreach (var p in _lobbyPlayers)
+            {
+                if (p.connectionId == connectionId)
+                {
+                    senderName = string.IsNullOrEmpty(p.playerName)
+                        ? $"SUBJECT {p.subjectNumber:D2}"
+                        : p.playerName;
+                    break;
+                }
+            }
+
+            RpcReceiveChatMessage(senderName, message);
+        }
+
+        [Command(requiresAuthority = false)]
         public void CmdStartGame(int connectionId)
         {
             if (connectionId != hostConnectionId) return;
@@ -259,6 +302,14 @@ namespace MimicFacility.Networking
         private void RpcGameStarting()
         {
             OnGameStarting?.Invoke();
+        }
+
+        [ClientRpc]
+        private void RpcReceiveChatMessage(string senderName, string message)
+        {
+            var lobbyUI = FindObjectOfType<MimicFacility.UI.LobbyUI>();
+            if (lobbyUI != null)
+                lobbyUI.DisplayChatMessage(senderName, message);
         }
 
         private void OnLobbyPlayersChanged(SyncList<LobbyPlayerData>.Operation op, int index, LobbyPlayerData oldItem, LobbyPlayerData newItem)

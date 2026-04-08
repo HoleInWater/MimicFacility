@@ -634,6 +634,14 @@ public class IntroSceneBuilder
         trunk.GetComponent<Renderer>().material = new Material(shader) { color = new Color(0.15f, 0.12f, 0.08f) };
     }
 
+    static void ApplyColor(GameObject obj, Color color)
+    {
+        var r = obj.GetComponent<Renderer>();
+        if (r == null) return;
+        var shader = Shader.Find("Standard") ?? Shader.Find("Universal Render Pipeline/Lit");
+        r.material = new Material(shader) { color = color };
+    }
+
     static void SetEmission(GameObject obj, Color emissionColor)
     {
         var r = obj.GetComponent<Renderer>();
