@@ -76,10 +76,8 @@ public class IntroSceneBuilder
         Prim(ext, "WingWallL", new Vector3(-15, 7, 10), new Vector3(2, 14, 24), COL_CONCRETE_D);
         // Right wing wall
         Prim(ext, "WingWallR", new Vector3(15, 7, 10), new Vector3(2, 14, 24), COL_CONCRETE_D);
-        // Back wall — closes the structure
-        Prim(ext, "BackWall", new Vector3(0, 7, -2), new Vector3(32, 14, 2), COL_CONCRETE_D);
-        // Inner fill — solid block so you can't see inside
-        Prim(ext, "BuildingFill", new Vector3(0, 7, 9), new Vector3(28, 13.5f, 22), new Color(0.05f, 0.05f, 0.06f));
+        // Back wall — far behind, never visible from camera
+        Prim(ext, "BackWall", new Vector3(0, 7, -10), new Vector3(32, 14, 2), COL_CONCRETE_D);
         // Upper overhang — brutalist cantilever extending past walls
         Prim(ext, "Overhang", new Vector3(0, 13.5f, 19), new Vector3(34, 1.2f, 6), COL_CONCRETE_D);
         // Pillars at entrance
@@ -216,11 +214,14 @@ public class IntroSceneBuilder
         var corridor = new GameObject("CorridorScene");
         var cor = corridor.transform;
 
-        // Main structure
-        Prim(cor, "Floor", Vector3.zero, new Vector3(5, 0.1f, 50), COL_CONCRETE_D);
-        Prim(cor, "Ceiling", Vector3.up * 3.5f, new Vector3(5, 0.15f, 50), COL_CONCRETE_D);
-        Prim(cor, "WallL", new Vector3(-2.5f, 1.75f, 0), new Vector3(0.4f, 3.5f, 50), COL_CONCRETE);
-        Prim(cor, "WallR", new Vector3(2.5f, 1.75f, 0), new Vector3(0.4f, 3.5f, 50), COL_CONCRETE);
+        // Main structure — extremely long so you never see the end
+        float hallLength = 200f;
+        Prim(cor, "Floor", new Vector3(0, 0, hallLength/2f - 10f), new Vector3(5, 0.1f, hallLength), COL_CONCRETE_D);
+        Prim(cor, "Ceiling", new Vector3(0, 3.5f, hallLength/2f - 10f), new Vector3(5, 0.15f, hallLength), COL_CONCRETE_D);
+        Prim(cor, "WallL", new Vector3(-2.5f, 1.75f, hallLength/2f - 10f), new Vector3(0.4f, 3.5f, hallLength), COL_CONCRETE);
+        Prim(cor, "WallR", new Vector3(2.5f, 1.75f, hallLength/2f - 10f), new Vector3(0.4f, 3.5f, hallLength), COL_CONCRETE);
+        // Back wall — blocks the end from being visible
+        Prim(cor, "EndWall", new Vector3(0, 1.75f, hallLength - 10f), new Vector3(5, 3.5f, 0.4f), COL_CONCRETE_D);
 
         // Floor tile lines
         for (int i = -5; i <= 10; i++)
@@ -317,66 +318,131 @@ public class IntroSceneBuilder
         Prim(cor, "VentVoid", new Vector3(0, 3.55f, 20), new Vector3(0.7f, 0.3f, 0.7f), new Color(0.01f, 0.01f, 0.01f));
 
         // ════════════════════════════════════════════════════════════════
-        // PHASE 4: CONTROL ROOM — the Director's domain
+        // PHASE 4: THE AI CORE — the Director's mind made physical
         // ════════════════════════════════════════════════════════════════
         var controlRoom = new GameObject("ControlRoomScene");
+        var cr = controlRoom.transform;
 
-        // Room shell
-        Prim(controlRoom.transform, "Floor", Vector3.zero, new Vector3(12, 0.1f, 12), COL_CONCRETE_D);
-        Prim(controlRoom.transform, "Ceiling", Vector3.up * 4, new Vector3(12, 0.1f, 12), COL_CONCRETE_D);
-        Prim(controlRoom.transform, "WallN", new Vector3(0, 2, 6), new Vector3(12, 4, 0.3f), COL_CONCRETE);
-        Prim(controlRoom.transform, "WallS", new Vector3(0, 2, -6), new Vector3(12, 4, 0.3f), COL_CONCRETE);
-        Prim(controlRoom.transform, "WallE", new Vector3(6, 2, 0), new Vector3(0.3f, 4, 12), COL_CONCRETE);
-        Prim(controlRoom.transform, "WallW", new Vector3(-6, 2, 0), new Vector3(0.3f, 4, 12), COL_CONCRETE);
+        // Large circular room
+        float crSize = 16f;
+        Prim(cr, "Floor", Vector3.zero, new Vector3(crSize, 0.1f, crSize), COL_CONCRETE_D);
+        Prim(cr, "Ceiling", Vector3.up * 6, new Vector3(crSize, 0.1f, crSize), COL_CONCRETE_D);
+        Prim(cr, "WallN", new Vector3(0, 3, crSize/2), new Vector3(crSize, 6, 0.5f), COL_CONCRETE);
+        Prim(cr, "WallS", new Vector3(0, 3, -crSize/2), new Vector3(crSize, 6, 0.5f), COL_CONCRETE);
+        Prim(cr, "WallE", new Vector3(crSize/2, 3, 0), new Vector3(0.5f, 6, crSize), COL_CONCRETE);
+        Prim(cr, "WallW", new Vector3(-crSize/2, 3, 0), new Vector3(0.5f, 6, crSize), COL_CONCRETE);
 
-        // Main monitor bank (the Director watches from here)
-        for (int i = -2; i <= 2; i++)
+        // ── THE AI CORE — central monolith ──────────────────────────
+        // Main column — dark, imposing, the heart of the Director
+        Prim(cr, "CoreBase", new Vector3(0, 0.5f, 0), new Vector3(2, 1, 2), COL_WIRE);
+        Prim(cr, "CoreColumn", new Vector3(0, 3, 0), new Vector3(1.2f, 5, 1.2f), new Color(0.06f, 0.06f, 0.08f));
+        Prim(cr, "CoreTop", new Vector3(0, 5.5f, 0), new Vector3(1.8f, 0.3f, 1.8f), COL_METAL);
+
+        // Glowing rings around the core at different heights
+        for (int ring = 0; ring < 4; ring++)
         {
-            var screen = Prim(controlRoom.transform, $"Screen_{i}",
-                new Vector3(i * 1.5f, 2.5f, 5.7f), new Vector3(1.2f, 0.8f, 0.1f), COL_SCREEN);
-            SetEmission(screen, new Color(0.05f, 0.3f, 0.05f));
+            float ry = 1.5f + ring * 1.2f;
+            float rSize = 1.4f + ring * 0.1f;
+            var ringObj = Prim(cr, $"CoreRing_{ring}", new Vector3(0, ry, 0),
+                new Vector3(rSize, 0.08f, rSize), COL_SCREEN);
+            SetEmission(ringObj, new Color(0.02f, 0.15f + ring * 0.05f, 0.02f));
+            ringObj.AddComponent<IntroScreenGlitch>();
+        }
+
+        // Data cables radiating from core to walls
+        for (int i = 0; i < 8; i++)
+        {
+            float angle = i * 45f * Mathf.Deg2Rad;
+            float cx = Mathf.Cos(angle) * 3f;
+            float cz = Mathf.Sin(angle) * 3f;
+            float ex = Mathf.Cos(angle) * (crSize/2 - 0.5f);
+            float ez = Mathf.Sin(angle) * (crSize/2 - 0.5f);
+            // Cable from core to wall
+            Vector3 mid = new Vector3((cx+ex)/2, 0.1f, (cz+ez)/2);
+            float cableLen = Vector3.Distance(new Vector3(cx,0,cz), new Vector3(ex,0,ez));
+            var cable = Prim(cr, $"CoreCable_{i}", mid, new Vector3(0.05f, 0.05f, cableLen), COL_WIRE);
+            cable.transform.LookAt(new Vector3(ex, 0.1f, ez));
+        }
+
+        // Monitor wall — massive curved screen bank behind the core
+        for (int row = 0; row < 3; row++)
+        for (int col = -3; col <= 3; col++)
+        {
+            float sx = col * 1.3f;
+            float sy = 1.5f + row * 1.2f;
+            var screen = Prim(cr, $"Screen_{row}_{col}",
+                new Vector3(sx, sy, crSize/2 - 0.3f), new Vector3(1.1f, 1f, 0.1f), COL_SCREEN);
+            SetEmission(screen, new Color(0.03f + Random.Range(0f, 0.02f), 0.2f + Random.Range(0f, 0.1f), 0.03f));
             screen.AddComponent<IntroScreenGlitch>();
         }
 
-        // Console desk
-        Prim(controlRoom.transform, "Console", new Vector3(0, 1, 4.5f), new Vector3(8, 0.1f, 2), COL_METAL);
-        // Console legs
-        Prim(controlRoom.transform, "Leg1", new Vector3(-3.5f, 0.5f, 4.5f), new Vector3(0.1f, 1, 0.1f), COL_METAL);
-        Prim(controlRoom.transform, "Leg2", new Vector3(3.5f, 0.5f, 4.5f), new Vector3(0.1f, 1, 0.1f), COL_METAL);
-
-        // Server racks along walls
-        for (int i = 0; i < 4; i++)
+        // Server racks in a ring around the room
+        for (int i = 0; i < 8; i++)
         {
-            Prim(controlRoom.transform, $"Rack_{i}", new Vector3(-5.5f, 1.5f, -4 + i * 2.5f),
-                new Vector3(0.6f, 3, 1), COL_WIRE);
-            // Blinking lights on racks
-            var rackLight = new GameObject($"RackLight_{i}");
-            rackLight.transform.SetParent(controlRoom.transform);
-            rackLight.transform.position = new Vector3(-5.2f, 2f, -4 + i * 2.5f);
-            var rl = rackLight.AddComponent<Light>();
-            rl.type = LightType.Point;
-            rl.color = i % 2 == 0 ? Color.green : Color.red;
-            rl.intensity = 0.5f;
-            rl.range = 1.5f;
+            float angle = i * 45f * Mathf.Deg2Rad;
+            float rx = Mathf.Cos(angle) * (crSize/2 - 1.5f);
+            float rz = Mathf.Sin(angle) * (crSize/2 - 1.5f);
+            if (Mathf.Abs(rz) > crSize/2 - 2f) continue; // skip positions behind monitor wall
+
+            Prim(cr, $"Rack_{i}", new Vector3(rx, 1.5f, rz), new Vector3(0.8f, 3, 1.2f), COL_WIRE);
+
+            // Rack LEDs — multiple per rack
+            for (int led = 0; led < 3; led++)
+            {
+                var ledObj = new GameObject($"LED_{i}_{led}");
+                ledObj.transform.SetParent(cr);
+                ledObj.transform.position = new Vector3(rx + 0.3f, 1f + led * 0.8f, rz);
+                var ledLight = ledObj.AddComponent<Light>();
+                ledLight.type = LightType.Point;
+                ledLight.color = (i + led) % 3 == 0 ? Color.red : (i + led) % 3 == 1 ? Color.green : new Color(0f, 0.5f, 1f);
+                ledLight.intensity = 0.8f;
+                ledLight.range = 1.5f;
+            }
         }
 
-        // Cables on floor
-        for (int i = 0; i < 6; i++)
+        // Floor cables — dense web radiating from center
+        for (int i = 0; i < 16; i++)
         {
-            Prim(controlRoom.transform, $"Cable_{i}",
-                new Vector3(Random.Range(-4f, 4f), 0.05f, Random.Range(-4f, 4f)),
-                new Vector3(0.03f, 0.03f, Random.Range(2f, 5f)), COL_WIRE);
+            float angle = i * 22.5f * Mathf.Deg2Rad + Random.Range(-0.1f, 0.1f);
+            float len = Random.Range(3f, crSize/2 - 1f);
+            float cx2 = Mathf.Cos(angle) * len / 2f;
+            float cz2 = Mathf.Sin(angle) * len / 2f;
+            var floorCable = Prim(cr, $"FloorCable_{i}",
+                new Vector3(cx2, 0.02f, cz2),
+                new Vector3(0.03f, 0.03f, len), COL_WIRE);
+            floorCable.transform.LookAt(new Vector3(Mathf.Cos(angle) * len, 0.02f, Mathf.Sin(angle) * len));
         }
 
-        // Central overhead light (dim, red tint)
-        var centralLight = new GameObject("CentralLight");
-        centralLight.transform.SetParent(controlRoom.transform);
-        centralLight.transform.position = Vector3.up * 3.5f;
-        var cl = centralLight.AddComponent<Light>();
-        cl.type = LightType.Point;
-        cl.color = new Color(0.9f, 0.3f, 0.2f);
-        cl.intensity = 1.5f;
-        cl.range = 10f;
+        // Central red light — the core's heartbeat
+        var coreLight = new GameObject("CoreLight");
+        coreLight.transform.SetParent(cr);
+        coreLight.transform.position = new Vector3(0, 3, 0);
+        var coreLightComp = coreLight.AddComponent<Light>();
+        coreLightComp.type = LightType.Point;
+        coreLightComp.color = new Color(0.9f, 0.15f, 0.1f);
+        coreLightComp.intensity = 4f;
+        coreLightComp.range = crSize;
+        coreLight.AddComponent<IntroWarningLightBlink>();
+
+        // Secondary blue accent lights from monitors
+        var monitorGlow = new GameObject("MonitorGlow");
+        monitorGlow.transform.SetParent(cr);
+        monitorGlow.transform.position = new Vector3(0, 2.5f, crSize/2 - 1);
+        var mgLight = monitorGlow.AddComponent<Light>();
+        mgLight.type = LightType.Point;
+        mgLight.color = new Color(0.1f, 0.4f, 0.15f);
+        mgLight.intensity = 3f;
+        mgLight.range = crSize * 0.8f;
+
+        // Ambient overhead fill
+        var ambLight = new GameObject("AmbientFill");
+        ambLight.transform.SetParent(cr);
+        ambLight.transform.position = Vector3.up * 5.5f;
+        var al = ambLight.AddComponent<Light>();
+        al.type = LightType.Point;
+        al.color = new Color(0.3f, 0.15f, 0.1f);
+        al.intensity = 1.5f;
+        al.range = crSize;
 
         // ════════════════════════════════════════════════════════════════
         // UI CANVAS

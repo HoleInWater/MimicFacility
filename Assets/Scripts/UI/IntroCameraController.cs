@@ -20,12 +20,12 @@ namespace MimicFacility.UI
         [Tooltip("The corridor scene root — moves backward to create infinite hallway effect")]
         public Transform corridorSceneRoot;
 
-        [Header("Phase 4 -- Control Room")]
-        public Vector3 controlRoomCenter = new Vector3(0f, 0f, 0f);
-        public float orbitStartHeight = 6f;
-        public float orbitEndHeight = 3f;
-        public float orbitStartRadius = 10f;
-        public float orbitEndRadius = 5f;
+        [Header("Phase 4 -- AI Core Room")]
+        public Vector3 controlRoomCenter = new Vector3(0f, 2f, 0f);
+        public float orbitStartHeight = 4f;
+        public float orbitEndHeight = 2.5f;
+        public float orbitStartRadius = 5f;
+        public float orbitEndRadius = 3f;
         public float orbitSpeed = 0.06f;
         public float orbitDuration = 20f;
 
