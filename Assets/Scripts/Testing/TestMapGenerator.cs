@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 using Unity.AI.Navigation;
+using Mirror;
 using MimicFacility.Facility;
 
 namespace MimicFacility.Testing
