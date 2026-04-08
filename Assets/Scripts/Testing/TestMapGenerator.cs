@@ -231,7 +231,7 @@ namespace MimicFacility.Testing
             light.intensity = lightIntensity;
             light.range = Mathf.Max(roomWidth, roomDepth) * 1.2f;
 
-            var facilityLight = lightObj.AddComponent<FacilityLight>();
+            lightObj.AddComponent<NetworkIdentity>(); var facilityLight = lightObj.AddComponent<FacilityLight>();
         }
 
         private void CreateDoor(Transform parent, Vector3 position, string zoneTag)

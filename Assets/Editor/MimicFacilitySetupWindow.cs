@@ -608,6 +608,7 @@ public class MimicFacilitySetupWindow : EditorWindow
         light.intensity = 1.2f;
         light.range = roomSize * 1.3f;
         light.color = new Color(0.8f, 0.9f, 1f);
+        lightObj.AddComponent<NetworkIdentity>();
         lightObj.AddComponent<FacilityLight>();
 
         // Door on even rooms
@@ -616,6 +617,7 @@ public class MimicFacilitySetupWindow : EditorWindow
             var doorObj = MakePrimitive(room.transform, $"Door_{zone}", PrimitiveType.Cube,
                 center + Vector3.right * roomSize / 2f + Vector3.up * wallHeight / 2f,
                 new Vector3(0.2f, wallHeight, corridorWidth), COL_DOOR, false);
+            doorObj.AddComponent<NetworkIdentity>();
             doorObj.AddComponent<AudioSource>();
             doorObj.AddComponent<FacilityDoor>();
         }
@@ -626,6 +628,7 @@ public class MimicFacilitySetupWindow : EditorWindow
             var termObj = MakePrimitive(room.transform, $"Terminal_{zone}", PrimitiveType.Cube,
                 center + Vector3.forward * (roomSize / 2f - 0.5f) + Vector3.up * 1f,
                 new Vector3(1f, 1.5f, 0.3f), COL_TERMINAL, false);
+            termObj.AddComponent<NetworkIdentity>();
             SetEmission(termObj, Color.green * 0.3f);
             termObj.AddComponent<AudioSource>();
             termObj.AddComponent<ResearchTerminal>();
@@ -642,6 +645,7 @@ public class MimicFacilitySetupWindow : EditorWindow
             sphere.isTrigger = true;
             ventObj.AddComponent<ParticleSystem>();
             ventObj.AddComponent<AudioSource>();
+            ventObj.AddComponent<NetworkIdentity>();
             ventObj.AddComponent<SporeVent>();
         }
     }
@@ -873,6 +877,7 @@ public class MimicFacilitySetupWindow : EditorWindow
         var obj = new GameObject("DirectorAI");
         Undo.RegisterCreatedObjectUndo(obj, "Create Director");
 
+        obj.AddComponent<NetworkIdentity>();
         obj.AddComponent<OllamaClient>();
         obj.AddComponent<CorruptionTracker>();
         obj.AddComponent<DirectorMemory>();
@@ -881,7 +886,6 @@ public class MimicFacilitySetupWindow : EditorWindow
         obj.AddComponent<FacilityControlSystem>();
         obj.AddComponent<MimicDialogueManager>();
         obj.AddComponent<DirectorAI>();
-        obj.AddComponent<NetworkIdentity>();
 
         Debug.Log("[Director] Created with full AI stack.");
     }
@@ -1063,9 +1067,9 @@ public class MimicFacilitySetupWindow : EditorWindow
         }
         Undo.RegisterCreatedObjectUndo(obj, "Add " + name);
         obj.AddComponent<AudioSource>();
-        obj.AddComponent<T>();
-        if (obj.GetComponent<NetworkBehaviour>() != null)
+        if (typeof(NetworkBehaviour).IsAssignableFrom(typeof(T)))
             EnsureComponent<NetworkIdentity>(obj);
+        obj.AddComponent<T>();
         Selection.activeGameObject = obj;
     }
 
@@ -1078,6 +1082,7 @@ public class MimicFacilitySetupWindow : EditorWindow
         l.type = LightType.Point;
         l.intensity = 1.2f;
         l.range = 12f;
+        obj.AddComponent<NetworkIdentity>();
         obj.AddComponent<FacilityLight>();
         Selection.activeGameObject = obj;
     }
