@@ -7,6 +7,8 @@ using MimicFacility.Characters;
 
 namespace MimicFacility.Entities
 {
+    [RequireComponent(typeof(UnityEngine.AI.NavMeshAgent))]
+    [RequireComponent(typeof(AudioSource))]
     public class Phantom : NetworkBehaviour
     {
         [Header("Sound Projection")]

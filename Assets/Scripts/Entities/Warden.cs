@@ -7,6 +7,8 @@ using MimicFacility.Facility;
 
 namespace MimicFacility.Entities
 {
+    [RequireComponent(typeof(AudioSource))]
+    [RequireComponent(typeof(SphereCollider))]
     public class Warden : NetworkBehaviour
     {
         [Header("Zone Control")]

@@ -29,6 +29,10 @@ namespace MimicFacility.Entities
         public bool HasData => capturedPhrases.Count > 0;
     }
 
+    [RequireComponent(typeof(UnityEngine.AI.NavMeshAgent))]
+    [RequireComponent(typeof(AudioSource))]
+    [RequireComponent(typeof(CapsuleCollider))]
+    [RequireComponent(typeof(Rigidbody))]
     public class MimicBase : NetworkBehaviour
     {
         [Header("Components")]
@@ -65,8 +69,33 @@ namespace MimicFacility.Entities
         public override void OnStartServer()
         {
             health = maxHealth;
+
+            if (agent == null) agent = GetComponent<NavMeshAgent>();
             if (agent != null)
+            {
                 agent.speed = MoveSpeed;
+                agent.angularSpeed = 360f;
+                agent.acceleration = 8f;
+                agent.stoppingDistance = 0.5f;
+            }
+
+            if (voiceAudio == null) voiceAudio = GetComponent<AudioSource>();
+            if (voiceAudio != null)
+            {
+                voiceAudio.spatialBlend = 1f;
+                voiceAudio.maxDistance = 25f;
+                voiceAudio.rolloffMode = AudioRolloffMode.Linear;
+                voiceAudio.playOnAwake = false;
+            }
+
+            if (mimicCollider == null) mimicCollider = GetComponent<CapsuleCollider>();
+
+            var rb = GetComponent<Rigidbody>();
+            if (rb != null)
+            {
+                rb.isKinematic = true;
+                rb.useGravity = false;
+            }
         }
 
         [Server]

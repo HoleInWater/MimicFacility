@@ -6,6 +6,8 @@ using MimicFacility.Characters;
 
 namespace MimicFacility.Gear
 {
+    [RequireComponent(typeof(SphereCollider))]
+    [RequireComponent(typeof(Rigidbody))]
     public abstract class GearItem : NetworkBehaviour, IInteractable
     {
         [Header("Gear Visuals")]

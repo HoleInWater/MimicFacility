@@ -6,6 +6,8 @@ using MimicFacility.Characters;
 
 namespace MimicFacility.Entities
 {
+    [RequireComponent(typeof(SphereCollider))]
+    [RequireComponent(typeof(AudioSource))]
     public class Parasite : NetworkBehaviour
     {
         [Header("Infection Settings")]

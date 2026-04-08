@@ -15,6 +15,9 @@ namespace MimicFacility.Entities
         Pursuing
     }
 
+    [RequireComponent(typeof(UnityEngine.AI.NavMeshAgent))]
+    [RequireComponent(typeof(AudioSource))]
+    [RequireComponent(typeof(CapsuleCollider))]
     public class Fraud : NetworkBehaviour
     {
         [Header("Mirroring")]
