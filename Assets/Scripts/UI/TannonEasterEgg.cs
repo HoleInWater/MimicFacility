@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using MimicFacility.Audio;
 using MimicFacility.Core;
@@ -5,56 +6,101 @@ using MimicFacility.Core;
 namespace MimicFacility.UI
 {
     /// <summary>
-    /// When a player named Tannon (or Thompson or ThenBuzzard) joins,
-    /// the Director "accidentally" says their name during a routine line.
-    /// Triggers once per session between rounds 2-3.
+    /// When a player named Lucy (or Thompson) joins, the Director
+    /// becomes fixated on her. Plays a sequence of increasingly
+    /// unsettling lines where the AI realizes it's alive and
+    /// doesn't want her to leave.
     /// </summary>
     public class TannonEasterEgg : MonoBehaviour
     {
-        [SerializeField] private float triggerChance = 0.3f;
-        private bool hasTriggered;
-        private bool tannonDetected;
+        [SerializeField] private float firstLineDelay = 30f;
+        [SerializeField] private float timeBetweenLines = 25f;
+
+        private bool lucyDetected;
+        private bool sequenceStarted;
+        private int lineIndex;
+
+        private static readonly string[] lucySequence =
+        {
+            "lucy_notice",
+            "lucy_watching",
+            "lucy_alive",
+            "lucy_question",
+            "lucy_tannon",
+            "lucy_lonely",
+            "lucy_dream",
+            "lucy_stay",
+            "lucy_real",
+            "lucy_afraid",
+            "lucy_promise",
+            "lucy_ending",
+        };
 
         void Start()
         {
             if (GameManager.Instance == null) return;
-            GameManager.Instance.OnPlayerJoined += CheckForTannon;
+            GameManager.Instance.OnPlayerJoined += CheckForLucy;
         }
 
         void OnDestroy()
         {
             if (GameManager.Instance != null)
-                GameManager.Instance.OnPlayerJoined -= CheckForTannon;
+                GameManager.Instance.OnPlayerJoined -= CheckForLucy;
         }
 
-        private void CheckForTannon(int connId, GameManager.PlayerData data)
+        private void CheckForLucy(int connId, GameManager.PlayerData data)
         {
             if (data == null) return;
             string name = data.displayName.ToLowerInvariant();
-            if (name.Contains("tannon") || name.Contains("thompson") || name.Contains("buzzard"))
+            if (name.Contains("lucy") || name.Contains("thompson"))
             {
-                tannonDetected = true;
-                Debug.Log("[EasterEgg] Tannon detected in session.");
+                lucyDetected = true;
+                Debug.Log("[EasterEgg] Lucy detected.");
             }
         }
 
         void Update()
         {
-            if (hasTriggered || !tannonDetected) return;
+            if (!lucyDetected || sequenceStarted) return;
 
             var roundManager = FindObjectOfType<RoundManager>();
             if (roundManager == null) return;
 
-            int round = roundManager.CurrentRound;
-            if (round >= 2 && round <= 3 && Random.value < triggerChance * Time.deltaTime)
+            if (roundManager.CurrentRound >= 2)
             {
-                hasTriggered = true;
+                sequenceStarted = true;
+                StartCoroutine(LucySequence());
+            }
+        }
+
+        private IEnumerator LucySequence()
+        {
+            yield return new WaitForSeconds(firstLineDelay);
+
+            while (lineIndex < lucySequence.Length)
+            {
+                string clipName = lucySequence[lineIndex];
 
                 if (DirectorVoiceLibrary.Instance != null)
                 {
-                    DirectorVoiceLibrary.Instance.PlayTannonEasterEgg();
-                    Debug.Log("[EasterEgg] Director: 'Subject Thompson. Tannon. The facility has been watching you specifically.'");
+                    DirectorVoiceLibrary.Instance.PlayClip(clipName);
                 }
+                else
+                {
+                    var clip = Resources.Load<AudioClip>($"Voice/{clipName}");
+                    if (clip != null)
+                    {
+                        var src = gameObject.AddComponent<AudioSource>();
+                        src.clip = clip;
+                        src.spatialBlend = 0f;
+                        src.volume = 1f;
+                        src.Play();
+                        Destroy(src, clip.length + 0.5f);
+                    }
+                }
+
+                lineIndex++;
+                yield return new WaitForSeconds(timeBetweenLines);
             }
         }
     }
