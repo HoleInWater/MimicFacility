@@ -295,7 +295,7 @@ namespace MimicFacility.Characters
         private void OnTriggerEnter(Collider other)
         {
             if (!IsLocal()) return;
-            if (other.CompareTag("Zone"))
+            if (other.gameObject.name.StartsWith("Room_") || other.gameObject.name.StartsWith("Zone"))
             {
                 _currentZone = other.gameObject.name;
                 if (_playerState != null && isServer)
