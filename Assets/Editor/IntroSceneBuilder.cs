@@ -166,6 +166,8 @@ public class IntroSceneBuilder
         sl.range = 60f;
         sl.spotAngle = 20f;
         searchlight.transform.rotation = Quaternion.Euler(45, -30, 15);
+        var brokenFlicker = searchlight.AddComponent<IntroLightFlicker>();
+        brokenFlicker.isBroken = true;
         Prim(ext, "SearchlightPole", new Vector3(8, 3, 10), new Vector3(0.15f, 6, 0.15f), COL_METAL);
 
         // Second searchlight — working, slowly sweeping (simulated with angled spot)
@@ -331,6 +333,57 @@ public class IntroSceneBuilder
         Prim(cr, "CoreBase", new Vector3(0, 0.5f, 0), new Vector3(2, 1, 2), COL_WIRE);
         Prim(cr, "CoreColumn", new Vector3(0, 3, 0), new Vector3(1.2f, 5, 1.2f), new Color(0.06f, 0.06f, 0.08f));
         Prim(cr, "CoreTop", new Vector3(0, 5.5f, 0), new Vector3(1.8f, 0.3f, 1.8f), COL_METAL);
+
+        // ── THE HAL EYE — the Director's face ──────────────────────
+        // Outer ring (dark housing)
+        var halEyeHousing = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
+        halEyeHousing.name = "HAL_Eye_Housing";
+        halEyeHousing.transform.SetParent(cr);
+        halEyeHousing.transform.position = new Vector3(0, 3f, 0.65f);
+        halEyeHousing.transform.localScale = new Vector3(0.7f, 0.02f, 0.7f);
+        halEyeHousing.transform.rotation = Quaternion.Euler(90, 0, 0);
+        ApplyColor(halEyeHousing, new Color(0.03f, 0.03f, 0.04f));
+
+        // Inner lens (dark red, emissive — the actual eye)
+        var halEyeLens = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
+        halEyeLens.name = "HAL_Eye_Lens";
+        halEyeLens.transform.SetParent(cr);
+        halEyeLens.transform.position = new Vector3(0, 3f, 0.66f);
+        halEyeLens.transform.localScale = new Vector3(0.45f, 0.02f, 0.45f);
+        halEyeLens.transform.rotation = Quaternion.Euler(90, 0, 0);
+        ApplyColor(halEyeLens, new Color(0.6f, 0.05f, 0.02f));
+        SetEmission(halEyeLens, new Color(0.8f, 0.1f, 0.02f));
+
+        // Inner bright dot (the pupil)
+        var halEyePupil = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
+        halEyePupil.name = "HAL_Eye_Pupil";
+        halEyePupil.transform.SetParent(cr);
+        halEyePupil.transform.position = new Vector3(0, 3f, 0.67f);
+        halEyePupil.transform.localScale = new Vector3(0.15f, 0.02f, 0.15f);
+        halEyePupil.transform.rotation = Quaternion.Euler(90, 0, 0);
+        ApplyColor(halEyePupil, new Color(0.9f, 0.2f, 0.05f));
+        SetEmission(halEyePupil, new Color(1f, 0.3f, 0.1f));
+
+        // HAL eye light — red glow from the eye
+        var halEyeLight = new GameObject("HAL_Eye_Light");
+        halEyeLight.transform.SetParent(cr);
+        halEyeLight.transform.position = new Vector3(0, 3f, 0.8f);
+        var eyeLight = halEyeLight.AddComponent<Light>();
+        eyeLight.type = LightType.Point;
+        eyeLight.color = new Color(0.9f, 0.15f, 0.05f);
+        eyeLight.intensity = 3f;
+        eyeLight.range = 4f;
+        halEyeLight.AddComponent<IntroWarningLightBlink>();
+
+        // Yellow ring around housing (HAL's signature look)
+        var halEyeRing = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
+        halEyeRing.name = "HAL_Eye_Ring";
+        halEyeRing.transform.SetParent(cr);
+        halEyeRing.transform.position = new Vector3(0, 3f, 0.64f);
+        halEyeRing.transform.localScale = new Vector3(0.8f, 0.015f, 0.8f);
+        halEyeRing.transform.rotation = Quaternion.Euler(90, 0, 0);
+        ApplyColor(halEyeRing, new Color(0.5f, 0.4f, 0.05f));
+        SetEmission(halEyeRing, new Color(0.3f, 0.25f, 0.02f));
 
         // Glowing rings around the core at different heights
         for (int ring = 0; ring < 4; ring++)
