@@ -230,7 +230,7 @@ public class IntroSceneBuilder
         var logoObj = CreateUIPanel(canvasObj.transform, "StudioLogo", Color.clear);
         var logoGroup = logoObj.AddComponent<CanvasGroup>();
         logoGroup.alpha = 0f;
-        var logoText = CreateTMPText(logoObj.transform, "LogoText", "HOLEINWATER", 48,
+        var logoText = CreateTMPText(logoObj.transform, "LogoText", "CRIMSON BLADE INTERACTIVE", 48,
             new Color(0.9f, 0.9f, 0.9f), TextAlignmentOptions.Center);
 
         // Credit text
