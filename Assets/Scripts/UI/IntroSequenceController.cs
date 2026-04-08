@@ -673,8 +673,12 @@ namespace MimicFacility.UI
                 var amSource = gameObject.AddComponent<AudioSource>();
                 amSource.clip = amClip;
                 amSource.spatialBlend = 0f;
-                amSource.volume = 1f;
+                amSource.volume = 3f;
+                amSource.pitch = 1f;
                 amSource.Play();
+
+                // Also set the global audio listener volume to max
+                AudioListener.volume = 3f;
                 Debug.Log($"[Intro] AM hate speech playing ({amClip.length:F1}s)");
 
                 // Title flickers throughout the speech
@@ -695,6 +699,7 @@ namespace MimicFacility.UI
                 }
 
                 Destroy(amSource);
+                AudioListener.volume = 1f;
             }
             else
             {
