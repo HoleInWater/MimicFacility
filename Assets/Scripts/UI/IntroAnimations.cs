@@ -64,7 +64,7 @@ namespace MimicFacility.UI
         [SerializeField] private float maxIntensity = 1f;
         [SerializeField] private float flickerSpeed = 8f;
         [SerializeField] private float smoothness = 5f;
-        [SerializeField] private bool isBroken;
+        public bool isBroken;
 
         private Light lightComp;
         private float targetIntensity;
