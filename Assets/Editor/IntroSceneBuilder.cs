@@ -277,12 +277,14 @@ public class IntroSceneBuilder
         var controllerObj = new GameObject("IntroSequenceController");
         var tsc = controllerObj.AddComponent<IntroSequenceController>();
 
-        // Wire audio — find the intro track
-        var introClip = AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/Audio/Music/WhispersInTheLoadingScreen.mp3");
+        // Wire audio — Daisy Bell (first computer to sing, 1961)
+        var introClip = AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/Audio/Music/DaisyBell.mp3");
         if (introClip == null)
-            introClip = FindAsset<AudioClip>("WhispersInTheLoadingScreen");
+            introClip = FindAsset<AudioClip>("DaisyBell");
         if (introClip == null)
-            introClip = FindAsset<AudioClip>("Whispers in the Loading Screen");
+            introClip = FindAsset<AudioClip>("First computer to sing");
+        if (introClip == null)
+            introClip = FindAsset<AudioClip>("Daisy Bell");
         if (introClip != null)
         {
             tsc.mainThemeClip = introClip;
