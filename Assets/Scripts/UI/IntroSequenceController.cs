@@ -373,22 +373,33 @@ namespace MimicFacility.UI
         [SerializeField] private float corridorScrollSpeed = 5f;
 
         private bool corridorScrollLogged;
+        private float corridorWalkZ;
 
         void TickCorridorScroll()
         {
             if (sequenceTime < corridorStartTime || sequenceTime > controlRoomStartTime) return;
 
-            // Move the CAMERA forward instead of moving the scene backward
-            // This is simpler and avoids parenting/reference issues
-            if (cameraController == null) return;
+            // Find the actual camera in the scene
+            Camera cam = Camera.main;
+            if (cam == null) cam = FindObjectOfType<Camera>();
+            if (cam == null) return;
 
             if (!corridorScrollLogged)
             {
                 corridorScrollLogged = true;
-                Debug.Log($"[Intro] Corridor walk at {corridorScrollSpeed} units/sec. Cam: {cameraController.transform.position}");
+                corridorWalkZ = cam.transform.position.z;
+                Debug.Log($"[Intro] Corridor walk started. Camera at z={corridorWalkZ:F1}. Speed: {corridorScrollSpeed}");
             }
 
-            cameraController.transform.position += Vector3.forward * corridorScrollSpeed * Time.deltaTime;
+            // Walk forward every frame — directly set camera Z
+            corridorWalkZ += corridorScrollSpeed * Time.deltaTime;
+
+            float t = Time.time;
+            float bobX = Mathf.Sin(t * 1.8f) * 0.03f;
+            float bobY = 1.8f + Mathf.Abs(Mathf.Sin(t * 3.6f)) * 0.02f;
+
+            cam.transform.position = new Vector3(bobX, bobY, corridorWalkZ);
+            cam.transform.rotation = Quaternion.Euler(0, 0, 0);
         }
 
         // ── Lucy sequence — plays automatically throughout the intro ────
@@ -541,8 +552,11 @@ namespace MimicFacility.UI
             {
                 if (facilityExteriorScene != null) facilityExteriorScene.SetActive(false);
                 if (corridorScene != null) corridorScene.SetActive(true);
+                // Disable camera controller during corridor — we drive the camera directly
                 if (cameraController != null)
-                    cameraController.SetPhase(IntroCameraController.Phase.Corridor);
+                    cameraController.enabled = false;
+                corridorScrollLogged = false;
+                corridorWalkZ = 0f;
             }));
         }
 
@@ -552,8 +566,12 @@ namespace MimicFacility.UI
             {
                 if (corridorScene != null) corridorScene.SetActive(false);
                 if (controlRoomScene != null) controlRoomScene.SetActive(true);
+                // Re-enable camera controller for the orbit
                 if (cameraController != null)
+                {
+                    cameraController.enabled = true;
                     cameraController.SetPhase(IntroCameraController.Phase.ControlRoom);
+                }
             }));
         }
 
