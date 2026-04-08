@@ -34,6 +34,9 @@ namespace MimicFacility.AI.Director
         private DirectorMemory directorMemory;
         private PersonalWeaponSystem personalWeaponSystem;
         private PromptBuilder.DirectorContext cachedContext;
+        private MimicFacility.Audio.PiperTTSClient piperTTS;
+        private MimicFacility.Audio.DirectorVocalProcessor vocalProcessor;
+        private AudioSource directorVoiceSource;
 
         private float lastEvalTime;
         private float lastSlipTime;
@@ -75,6 +78,28 @@ namespace MimicFacility.AI.Director
             }
 
             corruptionTracker.OnCorruptionChanged += HandleCorruptionChanged;
+
+            // HAL 9000 voice via Piper TTS
+            piperTTS = FindObjectOfType<MimicFacility.Audio.PiperTTSClient>();
+            if (piperTTS == null)
+            {
+                var go = new GameObject("PiperTTSClient");
+                piperTTS = go.AddComponent<MimicFacility.Audio.PiperTTSClient>();
+            }
+
+            vocalProcessor = FindObjectOfType<MimicFacility.Audio.DirectorVocalProcessor>();
+            if (vocalProcessor == null)
+            {
+                var go = new GameObject("DirectorVocalProcessor");
+                vocalProcessor = go.AddComponent<MimicFacility.Audio.DirectorVocalProcessor>();
+            }
+
+            directorVoiceSource = GetComponent<AudioSource>();
+            if (directorVoiceSource == null)
+                directorVoiceSource = gameObject.AddComponent<AudioSource>();
+            directorVoiceSource.spatialBlend = 0f;
+            directorVoiceSource.volume = 0.9f;
+
             StartCoroutine(PeriodicEvaluation());
         }
 
@@ -190,6 +215,51 @@ namespace MimicFacility.AI.Director
         {
             string[] lines = GetFallbackPool(currentPhase);
             return lines[rng.Next(lines.Length)];
+        }
+
+        /// <summary>
+        /// Speak a line using the full voice pipeline:
+        /// Text → Piper TTS (HAL 9000 model) → DirectorVocalProcessor (era DSP) → AudioSource
+        /// Falls back to text-only if Piper is unavailable.
+        /// </summary>
+        public void SpeakLine(string text)
+        {
+            if (!isServer) return;
+            if (string.IsNullOrEmpty(text)) return;
+
+            // Update vocal processor era to match current Director phase
+            if (vocalProcessor != null)
+                vocalProcessor.SetEraFromPhase(currentPhase);
+
+            if (piperTTS != null && piperTTS.IsAvailable)
+            {
+                piperTTS.SpeakTo(text, directorVoiceSource, () =>
+                {
+                    Debug.Log($"[DirectorAI] Spoke: \"{text}\"");
+                });
+            }
+            else
+            {
+                Debug.Log($"[DirectorAI] (no voice) \"{text}\"");
+            }
+
+            // Broadcast text to all clients for HUD display
+            RpcDirectorSpoke(text);
+        }
+
+        [ClientRpc]
+        private void RpcDirectorSpoke(string text)
+        {
+            // HUD systems can listen for this
+            Debug.Log($"[Director] {text}");
+        }
+
+        /// <summary>
+        /// Speak a random fallback line with full voice pipeline.
+        /// </summary>
+        public void SpeakFallback()
+        {
+            SpeakLine(GetFallbackLine());
         }
 
         public void DeployVerbalSlip()
