@@ -30,9 +30,10 @@ namespace MimicFacility.UI
         [SerializeField] private float pauseBeforeGuess = 2f;
         [SerializeField] private float pauseAfterGuess = 3f;
 
+        // The 12 Apostles — matching the facility's structural motif of 12
         private static readonly string[] boyNames = {
-            "Jacob", "Ethan", "Michael", "Alexander", "William",
-            "Joshua", "Daniel", "James", "Landon", "Logan"
+            "Peter", "Andrew", "James", "John", "Philip", "Bartholomew",
+            "Thomas", "Matthew", "Thaddaeus", "Simon", "Judas"
         };
 
         private static readonly string[] girlNames = {
