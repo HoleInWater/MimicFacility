@@ -33,6 +33,7 @@ namespace MimicFacility.Gameplay
         public static event Action OnExtractionAvailable;
         public static event Action<string> OnGameOver;
         public static event Action OnGameWin;
+        public static event Action<string, string> OnMimicReproduced;
 
         public static void EntitySpotted(string entityType, string location)
         {
@@ -94,6 +95,11 @@ namespace MimicFacility.Gameplay
             OnGameWin?.Invoke();
         }
 
+        public static void MimicReproduced(string triggerWord, string playerId)
+        {
+            OnMimicReproduced?.Invoke(triggerWord, playerId);
+        }
+
         public static void Clear()
         {
             OnEntitySpotted = null;
@@ -108,6 +114,7 @@ namespace MimicFacility.Gameplay
             OnExtractionAvailable = null;
             OnGameOver = null;
             OnGameWin = null;
+            OnMimicReproduced = null;
         }
     }
 }
