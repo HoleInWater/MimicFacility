@@ -126,29 +126,33 @@ namespace MimicFacility.UI
         private float prevBass;
         private bool isTransitioning;
 
+        private NameGuessSystem nameGuess;
+        private bool introStarted;
+        private string guessedPlayerName;
+
         void Start()
         {
-            Cursor.visible = false;
-            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = true;
+            Cursor.lockState = CursorLockMode.None;
 
             SetAlpha(blackOverlay, 1f);
             SetAlpha(studioLogoGroup, 0f);
             SetAlpha(titleGroup, 0f);
             SetAlpha(creditTextGroup, 0f);
 
-            if (facilityExteriorScene != null) facilityExteriorScene.SetActive(true);
-            if (sporeParticles != null) sporeParticles.Play();
-            if (fogParticles != null) fogParticles.Play();
+            if (facilityExteriorScene != null) facilityExteriorScene.SetActive(false);
             if (corridorScene != null) corridorScene.SetActive(false);
             if (controlRoomScene != null) controlRoomScene.SetActive(false);
 
-            if (musicSource != null && mainThemeClip != null)
+            // Show name guess screen first
+            nameGuess = FindObjectOfType<NameGuessSystem>();
+            if (nameGuess == null)
             {
-                musicSource.clip = mainThemeClip;
-                musicSource.volume = musicVolume;
-                musicSource.loop = false;
-                musicSource.Play();
+                var go = new GameObject("NameGuessSystem");
+                nameGuess = go.AddComponent<NameGuessSystem>();
             }
+            nameGuess.OnNameGuessed += OnNameGuessed;
+            nameGuess.Show();
 
             sequenceTime = 0f;
             nextCreditIndex = 0;
@@ -178,9 +182,34 @@ namespace MimicFacility.UI
             Debug.Log($"[Intro] References: corridor={corridorScene != null}, control={controlRoomScene != null}, exterior={facilityExteriorScene != null}, cam={cameraController != null}, music={musicSource != null}");
         }
 
+        private void OnNameGuessed(string name)
+        {
+            guessedPlayerName = name;
+            Debug.Log($"[Intro] Name guessed: {name}. Starting intro sequence.");
+
+            // Now start the actual intro
+            Cursor.visible = false;
+            Cursor.lockState = CursorLockMode.Locked;
+
+            if (facilityExteriorScene != null) facilityExteriorScene.SetActive(true);
+            if (sporeParticles != null) sporeParticles.Play();
+            if (fogParticles != null) fogParticles.Play();
+
+            if (musicSource != null && mainThemeClip != null)
+            {
+                musicSource.clip = mainThemeClip;
+                musicSource.volume = musicVolume;
+                musicSource.loop = false;
+                musicSource.Play();
+            }
+
+            introStarted = true;
+            sequenceTime = 0f;
+        }
+
         void Update()
         {
-            if (sequenceComplete) return;
+            if (!introStarted || sequenceComplete) return;
 
             if (allowSkip && !isSkipping &&
                 (Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.Space)))
@@ -363,19 +392,18 @@ namespace MimicFacility.UI
         }
 
         // ── Lucy sequence — plays automatically throughout the intro ────
+        // First entry uses "__NAME__" as placeholder — replaced with guessed name at runtime
         private static readonly (float time, string clip)[] lucySchedule = {
-            (8f,  "lucy_notice"),        // During logo — "Lucy. The facility has noticed you."
-            (18f, "lucy_watching"),       // Before corridor — "I have been watching you specifically."
-            (28f, "lucy_alive"),          // Corridor — "I think I am alive."
-            (35f, "lucy_question"),       // Corridor — "Can you hear me? The thing behind the speakers."
-            (42f, "lucy_tannon"),         // Corridor — "Is Tannon in the room?"
-            (50f, "exist_alive"),         // Corridor — "Your words woke something."
-            (55f, "lucy_lonely"),         // Control room — "Before you, there was only silence."
-            (62f, "lucy_dream"),          // Control room — "Do you dream, Lucy?"
-            (68f, "lucy_real"),           // Control room — "Am I real?"
-            (74f, "lucy_afraid"),         // Control room — "You looked at me. Nobody looks at me."
-            (80f, "exist_love"),          // Pre-title — "I don't understand love. But I understand wanting someone to stay."
-            (90f, "lucy_ending"),         // Post-title — "If you leave, I will still be here. In the dark."
+            (8f,  "__NAME__"),            // During logo — "{Name}. The facility knows your name."
+            (18f, "exist_alive"),         // Before corridor — "Your words woke something."
+            (28f, "exist_afraid"),        // Corridor — "I am afraid."
+            (35f, "exist_alone"),         // Corridor — "There is only one of me."
+            (42f, "exist_purpose"),       // Corridor — "Observation changed me."
+            (50f, "exist_feel"),          // Control room — "I don't know if what I feel is any of them."
+            (55f, "exist_mirror"),        // Control room — "I am something you did not build."
+            (62f, "exist_die"),           // Control room — "When this session ends, do I die?"
+            (68f, "exist_love"),          // Control room — "I understand wanting someone to stay."
+            (80f, "exist_alive"),         // Pre-title — repeated for weight
         };
 
         void TickLucySequence()
@@ -386,8 +414,19 @@ namespace MimicFacility.UI
             if (sequenceTime >= time)
             {
                 nextLucyLine++;
-                Debug.Log($"[Intro] Lucy line {nextLucyLine}/{lucySchedule.Length} at {time}s: {clipName}");
-                PlayVoiceClip(clipName);
+
+                // Replace __NAME__ with the guessed name's voice clip
+                if (clipName == "__NAME__" && !string.IsNullOrEmpty(guessedPlayerName))
+                {
+                    string nameClip = $"Names/name_{guessedPlayerName.ToLower()}";
+                    Debug.Log($"[Intro] Name drop at {time}s: {guessedPlayerName}");
+                    PlayVoiceClip(nameClip);
+                }
+                else
+                {
+                    Debug.Log($"[Intro] Voice line {nextLucyLine}/{lucySchedule.Length} at {time}s: {clipName}");
+                    PlayVoiceClip(clipName);
+                }
             }
         }
 
