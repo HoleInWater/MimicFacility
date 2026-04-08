@@ -241,14 +241,24 @@ public class IntroSceneBuilder
         var titleObj = CreateUIPanel(canvasObj.transform, "TitlePanel", Color.clear);
         var titleGroupCG = titleObj.AddComponent<CanvasGroup>();
         titleGroupCG.alpha = 0f;
-        var titleTMP = CreateTMPText(titleObj.transform, "TitleText", "MIMIC", 120,
-            COL_TITLE, TextAlignmentOptions.Center);
+        // Custom rendered MIMIC title (procedural horror font)
+        var titleRendererObj = new GameObject("MimicTitle");
+        titleRendererObj.transform.SetParent(titleObj.transform, false);
+        var titleRT = titleRendererObj.AddComponent<RectTransform>();
+        titleRT.anchorMin = new Vector2(0.1f, 0.3f);
+        titleRT.anchorMax = new Vector2(0.9f, 0.7f);
+        titleRT.sizeDelta = Vector2.zero;
+        var titleRenderer = titleRendererObj.AddComponent<MimicTitleRenderer>();
+
+        // TMPro fallback for subtitle
+        var titleTMP = CreateTMPText(titleObj.transform, "TitleText", "", 1,
+            Color.clear, TextAlignmentOptions.Center);
 
         // Subtitle
         CreateTMPText(titleObj.transform, "Subtitle",
             "The facility is listening.", 24,
             new Color(0.7f, 0.7f, 0.7f, 0.8f), TextAlignmentOptions.Center,
-            new Vector2(0, -80));
+            new Vector2(0, -100));
 
         // Skip hint
         CreateTMPText(canvasObj.transform, "SkipHint",
