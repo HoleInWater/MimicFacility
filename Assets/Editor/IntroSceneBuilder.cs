@@ -29,8 +29,9 @@ public class IntroSceneBuilder
         EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
 
         RenderSettings.fog = true;
-        RenderSettings.fogMode = FogMode.ExponentialSquared;
-        RenderSettings.fogDensity = 0.06f;
+        RenderSettings.fogMode = FogMode.Linear;
+        RenderSettings.fogStartDistance = 5f;
+        RenderSettings.fogEndDistance = 80f;
         RenderSettings.fogColor = new Color(0.01f, 0.01f, 0.02f);
         RenderSettings.ambientLight = new Color(0.02f, 0.02f, 0.03f);
 
