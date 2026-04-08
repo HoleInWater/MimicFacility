@@ -20,6 +20,8 @@ namespace MimicFacility.Characters
         public abstract void OnUnequipped(PlayerCharacter wielder);
     }
 
+    [RequireComponent(typeof(CharacterController))]
+    [RequireComponent(typeof(AudioSource))]
     public class PlayerCharacter : NetworkBehaviour
     {
         [Header("Components")]

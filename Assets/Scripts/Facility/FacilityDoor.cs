@@ -5,6 +5,8 @@ using MimicFacility.Characters;
 
 namespace MimicFacility.Facility
 {
+    [RequireComponent(typeof(BoxCollider))]
+    [RequireComponent(typeof(AudioSource))]
     public class FacilityDoor : NetworkBehaviour, IInteractable
     {
         [SerializeField] private string zoneTag;

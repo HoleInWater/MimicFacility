@@ -4,6 +4,7 @@ using Mirror;
 
 namespace MimicFacility.Facility
 {
+    [RequireComponent(typeof(Light))]
     public class FacilityLight : NetworkBehaviour
     {
         [SerializeField] private string zoneTag;

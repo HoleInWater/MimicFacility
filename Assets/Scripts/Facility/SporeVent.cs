@@ -8,6 +8,9 @@ using MimicFacility.Gear;
 
 namespace MimicFacility.Facility
 {
+    [RequireComponent(typeof(SphereCollider))]
+    [RequireComponent(typeof(ParticleSystem))]
+    [RequireComponent(typeof(AudioSource))]
     public class SporeVent : NetworkBehaviour
     {
         [SerializeField] private string zoneTag;

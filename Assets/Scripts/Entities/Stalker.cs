@@ -6,6 +6,9 @@ using MimicFacility.Characters;
 
 namespace MimicFacility.Entities
 {
+    [RequireComponent(typeof(UnityEngine.AI.NavMeshAgent))]
+    [RequireComponent(typeof(AudioSource))]
+    [RequireComponent(typeof(CapsuleCollider))]
     public class Stalker : NetworkBehaviour
     {
         [Header("Stalker Settings")]
