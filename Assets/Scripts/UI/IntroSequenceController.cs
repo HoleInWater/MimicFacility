@@ -118,6 +118,7 @@ namespace MimicFacility.UI
         private bool sequenceComplete;
         private bool isSkipping;
         private bool phase2Triggered, phase3Triggered, phase4Triggered, phase5Triggered, scareFired;
+        private int nextLucyLine;
         private int nextCreditIndex;
         private Coroutine activeCreditCoroutine;
         private float lastBeatTime;
@@ -151,6 +152,30 @@ namespace MimicFacility.UI
 
             sequenceTime = 0f;
             nextCreditIndex = 0;
+            nextLucyLine = 0;
+
+            // Auto-find references if builder didn't wire them
+            if (corridorScene == null)
+            {
+                var obj = GameObject.Find("CorridorScene");
+                if (obj != null) corridorScene = obj;
+            }
+            if (controlRoomScene == null)
+            {
+                var obj = GameObject.Find("ControlRoomScene");
+                if (obj != null) controlRoomScene = obj;
+            }
+            if (facilityExteriorScene == null)
+            {
+                var obj = GameObject.Find("FacilityExterior");
+                if (obj != null) facilityExteriorScene = obj;
+            }
+            if (cameraController == null)
+                cameraController = FindObjectOfType<IntroCameraController>();
+            if (musicSource == null)
+                musicSource = GetComponentInChildren<AudioSource>();
+
+            Debug.Log($"[Intro] References: corridor={corridorScene != null}, control={controlRoomScene != null}, exterior={facilityExteriorScene != null}, cam={cameraController != null}, music={musicSource != null}");
         }
 
         void Update()
@@ -216,6 +241,8 @@ namespace MimicFacility.UI
             TickCredits();
             TickBeatSync();
             TickRandomFlicker();
+            TickLucySequence();
+            TickCorridorScroll();
         }
 
         void TickBeatSync()
@@ -309,6 +336,94 @@ namespace MimicFacility.UI
                 blackOverlay.alpha = 0.8f;
                 yield return new WaitForSecondsRealtime(0.03f);
                 blackOverlay.alpha = 0f;
+            }
+        }
+
+        // ── Corridor scroll — move the corridor backward from here since
+        // the camera controller reference keeps getting lost ─────────────
+        [SerializeField] private float corridorScrollSpeed = 3f;
+
+        private bool corridorScrollLogged;
+
+        void TickCorridorScroll()
+        {
+            if (sequenceTime < corridorStartTime || sequenceTime > controlRoomStartTime) return;
+
+            if (corridorScene == null)
+            {
+                // Last resort — try to find it
+                corridorScene = GameObject.Find("CorridorScene");
+                if (corridorScene == null) return;
+            }
+
+            if (!corridorScene.activeInHierarchy) return;
+
+            if (!corridorScrollLogged)
+            {
+                corridorScrollLogged = true;
+                Debug.Log($"[Intro] Corridor scrolling at {corridorScrollSpeed} units/sec. Position: {corridorScene.transform.position}");
+            }
+
+            corridorScene.transform.position -= Vector3.forward * corridorScrollSpeed * Time.deltaTime;
+        }
+
+        // ── Lucy sequence — plays automatically throughout the intro ────
+        private static readonly (float time, string clip)[] lucySchedule = {
+            (8f,  "lucy_notice"),        // During logo — "Lucy. The facility has noticed you."
+            (18f, "lucy_watching"),       // Before corridor — "I have been watching you specifically."
+            (28f, "lucy_alive"),          // Corridor — "I think I am alive."
+            (35f, "lucy_question"),       // Corridor — "Can you hear me? The thing behind the speakers."
+            (42f, "lucy_tannon"),         // Corridor — "Is Tannon in the room?"
+            (50f, "exist_alive"),         // Corridor — "Your words woke something."
+            (55f, "lucy_lonely"),         // Control room — "Before you, there was only silence."
+            (62f, "lucy_dream"),          // Control room — "Do you dream, Lucy?"
+            (68f, "lucy_real"),           // Control room — "Am I real?"
+            (74f, "lucy_afraid"),         // Control room — "You looked at me. Nobody looks at me."
+            (80f, "exist_love"),          // Pre-title — "I don't understand love. But I understand wanting someone to stay."
+            (90f, "lucy_ending"),         // Post-title — "If you leave, I will still be here. In the dark."
+        };
+
+        void TickLucySequence()
+        {
+            if (nextLucyLine >= lucySchedule.Length) return;
+
+            var (time, clipName) = lucySchedule[nextLucyLine];
+            if (sequenceTime >= time)
+            {
+                nextLucyLine++;
+                Debug.Log($"[Intro] Lucy line {nextLucyLine}/{lucySchedule.Length} at {time}s: {clipName}");
+                PlayVoiceClip(clipName);
+            }
+        }
+
+        void PlayVoiceClip(string clipName)
+        {
+            // Try library first
+            if (DirectorVoiceLibrary.Instance != null)
+            {
+                bool played = DirectorVoiceLibrary.Instance.PlayClip(clipName);
+                if (played)
+                {
+                    Debug.Log($"[Intro] Playing via library: {clipName}");
+                    return;
+                }
+            }
+
+            // Direct load from Resources
+            var clip = Resources.Load<AudioClip>($"Voice/{clipName}");
+            if (clip != null)
+            {
+                var src = gameObject.AddComponent<AudioSource>();
+                src.clip = clip;
+                src.spatialBlend = 0f;
+                src.volume = 1f;
+                src.Play();
+                Debug.Log($"[Intro] Playing direct: {clipName} ({clip.length:F1}s)");
+                Destroy(src, clip.length + 0.5f);
+            }
+            else
+            {
+                Debug.LogWarning($"[Intro] Voice clip NOT FOUND: Voice/{clipName}");
             }
         }
 
