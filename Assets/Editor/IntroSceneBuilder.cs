@@ -17,6 +17,9 @@ public class IntroSceneBuilder
     static readonly Color COL_SCREEN     = new Color(0.05f, 0.20f, 0.05f);
     static readonly Color COL_TITLE      = new Color(0.8f, 0.1f, 0.1f, 0.9f);
     static readonly Color COL_WIRE       = new Color(0.10f, 0.10f, 0.12f);
+    static readonly Color COL_PIPE       = new Color(0.30f, 0.18f, 0.10f);
+    static readonly Color COL_BLOOD      = new Color(0.25f, 0.05f, 0.03f);
+    static readonly Color COL_DOOR       = new Color(0.38f, 0.28f, 0.18f);
 
     [MenuItem("MimicFacility/Scenes/Build Intro Sequence Scene")]
     public static void Build()
