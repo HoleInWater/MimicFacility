@@ -204,10 +204,6 @@ namespace MimicFacility.UI
             {
                 phase4Triggered = true;
                 CutToControlRoom();
-
-                // Easter egg — Director calls out Tannon right when the AI core is revealed
-                if (DirectorVoiceLibrary.Instance != null)
-                    StartCoroutine(TannonEasterEggDelayed());
             }
 
             // Phase 5: INTAKE title

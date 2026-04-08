@@ -19,11 +19,11 @@ namespace MimicFacility.Audio
 
         [Header("Audio")]
         [SerializeField] private AudioSource voiceSource;
-        [SerializeField] private float volume = 0.9f;
-        [SerializeField] private float minTimeBetweenLines = 4f;
+        [SerializeField] private float volume = 1f;
+        [SerializeField] private float minTimeBetweenLines = 2f;
 
         [Header("Processing")]
-        [SerializeField] private bool applyVocalProcessor = true;
+        [SerializeField] private bool applyVocalProcessor = false;
 
         private readonly Dictionary<string, AudioClip> clipCache = new Dictionary<string, AudioClip>();
         private readonly Dictionary<EDirectorPhase, List<string>> phaseClips = new Dictionary<EDirectorPhase, List<string>>();
