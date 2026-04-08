@@ -487,8 +487,11 @@ namespace MimicFacility.UI
 
         private int GetLocalConnectionId()
         {
-            if (NetworkClient.connection != null)
-                return NetworkClient.connection.connectionId;
+            var localPlayer = NetworkClient.localPlayer;
+            if (localPlayer != null && localPlayer.connectionToClient != null)
+                return localPlayer.connectionToClient.connectionId;
+            if (localPlayer != null)
+                return (int)localPlayer.netId;
             return -1;
         }
 
