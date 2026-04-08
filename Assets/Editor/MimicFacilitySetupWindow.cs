@@ -996,7 +996,15 @@ public class MimicFacilitySetupWindow : EditorWindow
     private T EnsureComponent<T>(GameObject obj) where T : Component
     {
         T comp = obj.GetComponent<T>();
-        if (comp == null) comp = Undo.AddComponent<T>(obj);
+        if (comp == null)
+        {
+            if (typeof(NetworkBehaviour).IsAssignableFrom(typeof(T)))
+            {
+                if (obj.GetComponent<NetworkIdentity>() == null)
+                    Undo.AddComponent<NetworkIdentity>(obj);
+            }
+            comp = Undo.AddComponent<T>(obj);
+        }
         return comp;
     }
 
@@ -1005,6 +1013,8 @@ public class MimicFacilitySetupWindow : EditorWindow
         if (FindObjectOfType<T>() != null) return;
         var obj = new GameObject(name);
         Undo.RegisterCreatedObjectUndo(obj, "Create " + name);
+        if (typeof(NetworkBehaviour).IsAssignableFrom(typeof(T)) || extras.Length > 0)
+            obj.AddComponent<NetworkIdentity>();
         obj.AddComponent<T>();
         foreach (var t in extras)
         {
