@@ -5,6 +5,7 @@ using UnityEngine;
 using Random = UnityEngine.Random;
 using UnityEngine.SceneManagement;
 using TMPro;
+using MimicFacility.Audio;
 
 namespace MimicFacility.UI
 {
@@ -197,6 +198,10 @@ namespace MimicFacility.UI
             {
                 phase4Triggered = true;
                 CutToControlRoom();
+
+                // Easter egg — Director calls out Tannon right when the AI core is revealed
+                if (DirectorVoiceLibrary.Instance != null)
+                    StartCoroutine(TannonEasterEggDelayed());
             }
 
             // Phase 5: INTAKE title
@@ -303,6 +308,13 @@ namespace MimicFacility.UI
                 yield return new WaitForSecondsRealtime(0.03f);
                 blackOverlay.alpha = 0f;
             }
+        }
+
+        IEnumerator TannonEasterEggDelayed()
+        {
+            yield return new WaitForSecondsRealtime(3f);
+            if (DirectorVoiceLibrary.Instance != null)
+                DirectorVoiceLibrary.Instance.PlayTannonEasterEgg();
         }
 
         IEnumerator PlayLogo()
