@@ -645,9 +645,9 @@ namespace MimicFacility.UI
                 ? localPlayer.connectionToClient.connectionId
                 : -1;
 
-            // On the client side connectionToClient may be null; use connectionToServer instead
-            if (localConnId < 0 && localPlayer.connectionToServer != null)
-                localConnId = localPlayer.connectionToServer.connectionId;
+            // On client side, use netId as fallback identifier
+            if (localConnId < 0)
+                localConnId = (int)localPlayer.netId;
 
             var assignment = _verificationSystem.GetAssignment(localConnId);
             if (assignment == null)
