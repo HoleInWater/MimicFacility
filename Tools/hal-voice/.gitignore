@@ -1,0 +1,6 @@
+venv/
+models/*.onnx
+models/*.onnx.json
+samples/
+__pycache__/
+test_output.wav
