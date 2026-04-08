@@ -86,6 +86,11 @@ public class IntroSceneBuilder
         Prim(exterior.transform, "Sign1", new Vector3(-6, 1.5f, 4.8f), new Vector3(0.8f, 0.6f, 0.05f), Color.yellow);
         Prim(exterior.transform, "Sign2", new Vector3(6, 1.5f, 4.8f), new Vector3(0.8f, 0.6f, 0.05f), Color.red);
 
+        // Dead trees around the facility
+        Stump(exterior.transform, new Vector3(-10, 0, 8), 3f);
+        Stump(exterior.transform, new Vector3(8, 0, 3), 2.5f);
+        Stump(exterior.transform, new Vector3(-14, 0, 2), 4f);
+
         // Searchlight (broken, tilted)
         var searchlight = new GameObject("BrokenSearchlight");
         searchlight.transform.SetParent(exterior.transform);
@@ -98,8 +103,8 @@ public class IntroSceneBuilder
         sl.spotAngle = 25f;
         searchlight.transform.rotation = Quaternion.Euler(45, -30, 15);
 
-        ParticleSystem sporePS = null;
-        ParticleSystem fogPS = null;
+        var sporePS = CreateSporeParticles(exterior.transform, new Vector3(0, 3, 12));
+        var fogPS = CreateFogParticles(exterior.transform, new Vector3(0, 0.5f, 10));
 
         // ════════════════════════════════════════════════════════════════
         // PHASE 3: CORRIDOR — brutalist hallway with flickering lights
@@ -324,6 +329,37 @@ public class IntroSceneBuilder
         r.sharedMaterial.SetColor("_EmissionColor", emissionColor);
     }
 
+    static Material GetParticleMaterial(Color color)
+    {
+        // Try URP particle shaders first, fall back to Standard
+        Shader shader = Shader.Find("Universal Render Pipeline/Particles/Unlit")
+            ?? Shader.Find("Universal Render Pipeline/Particles/Simple Lit")
+            ?? Shader.Find("Particles/Standard Unlit")
+            ?? Shader.Find("Standard");
+
+        var mat = new Material(shader);
+        mat.color = color;
+
+        // Enable transparency
+        if (mat.HasProperty("_Surface"))
+        {
+            mat.SetFloat("_Surface", 1); // 1 = Transparent
+            mat.SetFloat("_Blend", 0);   // 0 = Alpha
+        }
+        if (mat.HasProperty("_Mode"))
+        {
+            mat.SetFloat("_Mode", 2); // Fade mode for Standard shader
+        }
+
+        mat.renderQueue = 3000;
+        mat.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
+        mat.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
+        mat.SetInt("_ZWrite", 0);
+        mat.EnableKeyword("_ALPHABLEND_ON");
+
+        return mat;
+    }
+
     static ParticleSystem CreateSporeParticles(Transform parent, Vector3 position)
     {
         var obj = new GameObject("SporeParticles");
@@ -344,6 +380,10 @@ public class IntroSceneBuilder
         var shape = ps.shape;
         shape.shapeType = ParticleSystemShapeType.Box;
         shape.scale = new Vector3(20, 8, 20);
+
+        var renderer = obj.GetComponent<ParticleSystemRenderer>();
+        renderer.material = GetParticleMaterial(COL_SPORE);
+        renderer.renderMode = ParticleSystemRenderMode.Billboard;
 
         return ps;
     }
@@ -367,6 +407,10 @@ public class IntroSceneBuilder
         var shape = ps.shape;
         shape.shapeType = ParticleSystemShapeType.Box;
         shape.scale = new Vector3(30, 1, 30);
+
+        var renderer = obj.GetComponent<ParticleSystemRenderer>();
+        renderer.material = GetParticleMaterial(new Color(0.1f, 0.1f, 0.12f, 0.15f));
+        renderer.renderMode = ParticleSystemRenderMode.Billboard;
 
         return ps;
     }
