@@ -86,11 +86,6 @@ public class IntroSceneBuilder
         Prim(exterior.transform, "Sign1", new Vector3(-6, 1.5f, 4.8f), new Vector3(0.8f, 0.6f, 0.05f), Color.yellow);
         Prim(exterior.transform, "Sign2", new Vector3(6, 1.5f, 4.8f), new Vector3(0.8f, 0.6f, 0.05f), Color.red);
 
-        // Dead trees
-        Stump(exterior.transform, new Vector3(-10, 0, 8), 3f);
-        Stump(exterior.transform, new Vector3(8, 0, 3), 2.5f);
-        Stump(exterior.transform, new Vector3(-14, 0, 2), 4f);
-
         // Searchlight (broken, tilted)
         var searchlight = new GameObject("BrokenSearchlight");
         searchlight.transform.SetParent(exterior.transform);
@@ -103,11 +98,8 @@ public class IntroSceneBuilder
         sl.spotAngle = 25f;
         searchlight.transform.rotation = Quaternion.Euler(45, -30, 15);
 
-        // Spore particles
-        var sporePS = CreateSporeParticles(exterior.transform, new Vector3(0, 3, 12));
-
-        // Fog particles
-        var fogPS = CreateFogParticles(exterior.transform, new Vector3(0, 0.5f, 10));
+        ParticleSystem sporePS = null;
+        ParticleSystem fogPS = null;
 
         // ════════════════════════════════════════════════════════════════
         // PHASE 3: CORRIDOR — brutalist hallway with flickering lights
