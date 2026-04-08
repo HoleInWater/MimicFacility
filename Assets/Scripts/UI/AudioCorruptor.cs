@@ -74,20 +74,21 @@ namespace MimicFacility.UI
 
             source.pitch = pitchDecay + warble;
 
-            // Stutter — brief pauses that get more frequent
+            // Stutter — brief volume cuts that get more frequent (no pause/unpause)
             float stutterIntensity = Mathf.Clamp01((t - stutterRampStart) / (stutterRampEnd - stutterRampStart));
             if (!isStuttering && Random.value < stutterChance * stutterIntensity)
             {
                 isStuttering = true;
                 stutterEndTime = Time.time + Random.Range(stutterMinDuration, stutterMaxDuration * stutterIntensity);
-                stutterPauseTime = source.time;
-                source.Pause();
             }
-            if (isStuttering && Time.time >= stutterEndTime)
+            if (isStuttering)
             {
-                isStuttering = false;
-                source.time = stutterPauseTime;
-                source.UnPause();
+                source.volume = 0f;
+                if (Time.time >= stutterEndTime)
+                {
+                    isStuttering = false;
+                    source.volume = baseVolume;
+                }
             }
 
             // Volume drops — brief silence glitches

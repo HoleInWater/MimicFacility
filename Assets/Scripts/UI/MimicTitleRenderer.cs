@@ -142,13 +142,13 @@ namespace MimicFacility.UI
             for (int i = 0; i < pixels.Length; i++)
                 pixels[i] = Color.clear;
 
-            // "MIMIC" — 5 letters centered on texture
-            float letterW = textureWidth / 7f;
+            // "INTAKE" — 6 letters centered on texture
+            float letterW = textureWidth / 8.5f;
             float iWidth = letterW * 0.4f;
             float gap = letterW * 0.15f;
 
-            // Total width: M + gap + I + gap + M + gap + I + gap + C
-            float totalW = letterW + gap + iWidth + gap + letterW + gap + iWidth + gap + letterW;
+            // Total width: I + N + T + A + K + E with gaps
+            float totalW = iWidth + gap + letterW + gap + letterW + gap + letterW + gap + letterW + gap + letterW;
             float startX = (textureWidth - totalW) / 2f;
 
             float topY = textureHeight * 0.85f;
@@ -157,11 +157,12 @@ namespace MimicFacility.UI
             float strokeW = letterW * 0.18f;
 
             float cx = startX;
-            DrawM(pixels, cx, botY, letterW, letterH, strokeW); cx += letterW + gap;
-            DrawI(pixels, cx, botY, iWidth, letterH, strokeW);  cx += iWidth + gap;
-            DrawM(pixels, cx, botY, letterW, letterH, strokeW); cx += letterW + gap;
-            DrawI(pixels, cx, botY, iWidth, letterH, strokeW);  cx += iWidth + gap;
-            DrawC(pixels, cx, botY, letterW, letterH, strokeW);
+            DrawI(pixels, cx, botY, iWidth, letterH, strokeW);   cx += iWidth + gap;
+            DrawN(pixels, cx, botY, letterW, letterH, strokeW);  cx += letterW + gap;
+            DrawT(pixels, cx, botY, letterW, letterH, strokeW);  cx += letterW + gap;
+            DrawA(pixels, cx, botY, letterW, letterH, strokeW);  cx += letterW + gap;
+            DrawK(pixels, cx, botY, letterW, letterH, strokeW);  cx += letterW + gap;
+            DrawE(pixels, cx, botY, letterW, letterH, strokeW);
 
             // Glow pass — blur bright pixels outward
             var glowed = new Color[pixels.Length];
@@ -256,11 +257,44 @@ namespace MimicFacility.UI
 
         private void DrawC(Color[] pixels, float x, float y, float w, float h, float stroke)
         {
-            // Left vertical
             FillRect(pixels, x, y, stroke, h);
-            // Top horizontal
             FillRect(pixels, x, y + h - stroke, w, stroke);
-            // Bottom horizontal
+            FillRect(pixels, x, y, w, stroke);
+        }
+
+        private void DrawN(Color[] pixels, float x, float y, float w, float h, float stroke)
+        {
+            FillRect(pixels, x, y, stroke, h);
+            FillRect(pixels, x + w - stroke, y, stroke, h);
+            DrawDiagonal(pixels, x + stroke, y + h, x + w - stroke, y, stroke * 0.8f);
+        }
+
+        private void DrawT(Color[] pixels, float x, float y, float w, float h, float stroke)
+        {
+            FillRect(pixels, x, y + h - stroke, w, stroke);
+            FillRect(pixels, x + w / 2f - stroke / 2f, y, stroke, h);
+        }
+
+        private void DrawA(Color[] pixels, float x, float y, float w, float h, float stroke)
+        {
+            FillRect(pixels, x, y, stroke, h);
+            FillRect(pixels, x + w - stroke, y, stroke, h);
+            FillRect(pixels, x, y + h - stroke, w, stroke);
+            FillRect(pixels, x, y + h * 0.45f, w, stroke);
+        }
+
+        private void DrawK(Color[] pixels, float x, float y, float w, float h, float stroke)
+        {
+            FillRect(pixels, x, y, stroke, h);
+            DrawDiagonal(pixels, x + stroke, y + h * 0.5f, x + w, y + h, stroke * 0.8f);
+            DrawDiagonal(pixels, x + stroke, y + h * 0.5f, x + w, y, stroke * 0.8f);
+        }
+
+        private void DrawE(Color[] pixels, float x, float y, float w, float h, float stroke)
+        {
+            FillRect(pixels, x, y, stroke, h);
+            FillRect(pixels, x, y + h - stroke, w, stroke);
+            FillRect(pixels, x, y + h * 0.45f, w * 0.75f, stroke);
             FillRect(pixels, x, y, w, stroke);
         }
 

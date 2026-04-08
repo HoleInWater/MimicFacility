@@ -33,7 +33,7 @@ namespace MimicFacility.UI
         [Tooltip("'It won't be a stylish marriage' — the computer tries to be human. Director's domain.")]
         public float controlRoomStartTime = 50f;
 
-        [Header("Phase 5 -- MIMIC Title (~82s)")]
+        [Header("Phase 5 -- INTAKE Title (~82s)")]
         [Tooltip("'Upon the seat' — building to finale. Title slams in.")]
         public float titleDropTime = 82f;
         public float titleDrawDuration = 2f;
@@ -198,7 +198,7 @@ namespace MimicFacility.UI
                 CutToControlRoom();
             }
 
-            // Phase 5: MIMIC title
+            // Phase 5: INTAKE title
             if (!phase5Triggered && sequenceTime >= titleDropTime)
             {
                 phase5Triggered = true;

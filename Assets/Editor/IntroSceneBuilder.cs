@@ -175,6 +175,7 @@ public class IntroSceneBuilder
         sl2.range = 60f;
         sl2.spotAngle = 15f;
         searchlight2.transform.rotation = Quaternion.Euler(50, 20, 0);
+        searchlight2.AddComponent<IntroSearchlightSweep>();
         Prim(ext, "SearchlightPole2", new Vector3(-10, 4, 12), new Vector3(0.15f, 8, 0.15f), COL_METAL);
 
         // Distant background buildings (silhouettes)
@@ -192,6 +193,7 @@ public class IntroSceneBuilder
         wl.color = Color.red;
         wl.intensity = 2f;
         wl.range = 8f;
+        warningLight.AddComponent<IntroWarningLightBlink>();
 
         var sporePS = CreateSporeParticles(exterior.transform, new Vector3(0, 3, 12));
         var fogPS = CreateFogParticles(exterior.transform, new Vector3(0, 0.5f, 10));
@@ -236,6 +238,8 @@ public class IntroSceneBuilder
                 cLight.color = broken ? new Color(0.5f, 0.4f, 0.3f) : new Color(0.7f, 0.8f, 0.9f);
                 cLight.intensity = broken ? 0.2f : 0.8f;
                 cLight.range = 5f;
+                var flicker = lightObj.AddComponent<IntroLightFlicker>();
+                flicker.isBroken = broken;
             }
         }
 
@@ -274,25 +278,29 @@ public class IntroSceneBuilder
             float doorAngle = i == 1 ? 0.3f : 0f; // one slightly ajar
             Prim(cor, $"DoorFrame_{i}", new Vector3(side, 1.5f, z),
                 new Vector3(i % 2 == 0 ? 0.1f : 0.1f, 3, 1.2f), COL_CONCRETE_D);
-            Prim(cor, $"Door_{i}", new Vector3(side + (i % 2 == 0 ? 0.15f : -0.15f) + doorAngle, 1.5f, z),
+            var doorObj = Prim(cor, $"Door_{i}", new Vector3(side + (i % 2 == 0 ? 0.15f : -0.15f) + doorAngle, 1.5f, z),
                 new Vector3(0.08f, 2.8f, 1), COL_DOOR);
+            if (i == 1) doorObj.AddComponent<IntroDoorCreak>();
         }
 
-        // Wheelchair (toppled)
-        Prim(cor, "Wheelchair", new Vector3(-1, 0.3f, 15), new Vector3(0.6f, 0.8f, 0.5f), COL_METAL);
+        // Wheelchair (toppled, rocking)
+        var wheelchair = Prim(cor, "Wheelchair", new Vector3(-1, 0.3f, 15), new Vector3(0.6f, 0.8f, 0.5f), COL_METAL);
+        wheelchair.AddComponent<IntroWheelchairRock>();
         Prim(cor, "WheelchairWheel", new Vector3(-1.3f, 0.3f, 15), new Vector3(0.05f, 0.5f, 0.5f), new Color(0.1f, 0.1f, 0.1f));
 
         // Paper / debris on floor
         for (int i = 0; i < 8; i++)
         {
-            Prim(cor, $"Paper_{i}",
+            var paper = Prim(cor, $"Paper_{i}",
                 new Vector3(Random.Range(-1.5f, 1.5f), 0.01f, Random.Range(-5f, 25f)),
                 new Vector3(Random.Range(0.1f, 0.3f), 0.005f, Random.Range(0.1f, 0.2f)),
                 new Color(0.35f, 0.33f, 0.28f));
+            paper.AddComponent<IntroPaperFloat>();
         }
 
         // Vent grate on ceiling (something could be up there)
-        Prim(cor, "VentGrate", new Vector3(0, 3.48f, 20), new Vector3(0.8f, 0.02f, 0.8f), COL_METAL);
+        var ventGrate = Prim(cor, "VentGrate", new Vector3(0, 3.48f, 20), new Vector3(0.8f, 0.02f, 0.8f), COL_METAL);
+        ventGrate.AddComponent<IntroVentBreathe>();
         // Dark void behind the grate
         Prim(cor, "VentVoid", new Vector3(0, 3.55f, 20), new Vector3(0.7f, 0.3f, 0.7f), new Color(0.01f, 0.01f, 0.01f));
 
@@ -315,6 +323,7 @@ public class IntroSceneBuilder
             var screen = Prim(controlRoom.transform, $"Screen_{i}",
                 new Vector3(i * 1.5f, 2.5f, 5.7f), new Vector3(1.2f, 0.8f, 0.1f), COL_SCREEN);
             SetEmission(screen, new Color(0.05f, 0.3f, 0.05f));
+            screen.AddComponent<IntroScreenGlitch>();
         }
 
         // Console desk
@@ -390,14 +399,14 @@ public class IntroSceneBuilder
         var titleObj = CreateUIPanel(canvasObj.transform, "TitlePanel", Color.clear);
         var titleGroupCG = titleObj.AddComponent<CanvasGroup>();
         titleGroupCG.alpha = 0f;
-        // Custom rendered MIMIC title (procedural horror font)
-        var titleRendererObj = new GameObject("MimicTitle");
+        // Custom rendered INTAKE title (procedural horror font)
+        var titleRendererObj = new GameObject("IntakeTitle");
         titleRendererObj.transform.SetParent(titleObj.transform, false);
         var titleRT = titleRendererObj.AddComponent<RectTransform>();
         titleRT.anchorMin = new Vector2(0.1f, 0.3f);
         titleRT.anchorMax = new Vector2(0.9f, 0.7f);
         titleRT.sizeDelta = Vector2.zero;
-        var titleRenderer = titleRendererObj.AddComponent<MimicTitleRenderer>();
+        var titleRenderer = titleRendererObj.AddComponent<IntakeTitleRenderer>();
 
         // TMPro fallback for subtitle
         var titleTMP = CreateTMPText(titleObj.transform, "TitleText", "", 1,
@@ -405,7 +414,7 @@ public class IntroSceneBuilder
 
         // Subtitle
         CreateTMPText(titleObj.transform, "Subtitle",
-            "The facility is listening.", 24,
+            "You have been admitted.", 24,
             new Color(0.7f, 0.7f, 0.7f, 0.8f), TextAlignmentOptions.Center,
             new Vector2(0, -100));
 
@@ -467,7 +476,7 @@ public class IntroSceneBuilder
         Debug.Log("  Phase 1: Abandoned facility exterior with spores and fog");
         Debug.Log("  Phase 3: Brutalist corridor with flickering lights");
         Debug.Log("  Phase 4: Director's control room with monitors and server racks");
-        Debug.Log("  Phase 5: MIMIC title with glitch wipe transition");
+        Debug.Log("  Phase 5: INTAKE title with glitch wipe transition");
         Debug.Log("  Save the scene to Assets/Scenes/IntroScene.unity");
     }
 
