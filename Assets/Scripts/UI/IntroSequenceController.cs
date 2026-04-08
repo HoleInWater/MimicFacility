@@ -30,7 +30,7 @@ namespace MimicFacility.UI
         public float controlRoomStartTime = 38f;
 
         [Header("Phase 5 -- MIMIC Title (~52s)")]
-        public float titleDropTime = 52f;
+        public float titleDropTime = 60f;
         public float titleDrawDuration = 3f;
         public float postTitleHold = 5f;
 
@@ -72,10 +72,14 @@ namespace MimicFacility.UI
 
         public List<CreditLine> creditLines = new List<CreditLine>
         {
-            new CreditLine { time = 22f, text = "A HoleInWater Production" },
-            new CreditLine { time = 28f, text = "Creative Director — Landon Adams" },
-            new CreditLine { time = 34f, text = "\"Everything the AI did to you,\nit learned by watching you do it to each other.\"" },
-            new CreditLine { time = 42f, text = "HoleInWater\nproudly presents" },
+            new CreditLine { time = 22f, text = "A Crimson Blade Interactive Production" },
+            new CreditLine { time = 26f, text = "Creative Director & Lead Developer\nLandon Adams" },
+            new CreditLine { time = 31f, text = "Lead Manager — Garrett\nCo-Leader — Ezra" },
+            new CreditLine { time = 36f, text = "Music by Malakai Probert" },
+            new CreditLine { time = 40f, text = "Section Leaders\nDeegan  —  Lori" },
+            new CreditLine { time = 44f, text = "Developer & QA — Tannon Thompson\nDavid  —  Nora" },
+            new CreditLine { time = 49f, text = "\"Everything the AI did to you,\nit learned by watching you do it to each other.\"" },
+            new CreditLine { time = 55f, text = "Crimson Blade Interactive\nproudly presents" },
         };
 
         [Serializable]
