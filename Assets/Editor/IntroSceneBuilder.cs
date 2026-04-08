@@ -414,11 +414,11 @@ public class IntroSceneBuilder
             var sectionLight = new GameObject($"SectionLight_{section}");
             sectionLight.transform.SetParent(cor);
             sectionLight.transform.position = new Vector3(0, 3.2f, z);
-            var sl = sectionLight.AddComponent<Light>();
-            sl.type = LightType.Point;
-            sl.color = Color.Lerp(new Color(0.7f, 0.8f, 0.9f), new Color(0.2f, 0.6f, 0.2f), aiBlend);
-            sl.intensity = Mathf.Lerp(2f, 1.2f, aiBlend);
-            sl.range = 6f;
+            var secLight = sectionLight.AddComponent<Light>();
+            secLight.type = LightType.Point;
+            secLight.color = Color.Lerp(new Color(0.7f, 0.8f, 0.9f), new Color(0.2f, 0.6f, 0.2f), aiBlend);
+            secLight.intensity = Mathf.Lerp(2f, 1.2f, aiBlend);
+            secLight.range = 6f;
             Prim(cor, $"SectionFixture_{section}", new Vector3(0, 3.5f, z),
                 new Vector3(0.4f, 0.05f, 0.4f), COL_METAL);
 
