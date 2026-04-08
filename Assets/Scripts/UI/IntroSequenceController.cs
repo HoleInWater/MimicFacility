@@ -16,23 +16,28 @@ namespace MimicFacility.UI
         [Range(0f, 1f)] public float musicVolume = 1f;
 
         [Header("Phase 1 -- Black to Facility Exterior (0s)")]
-        public float fadeInDuration = 7f;
+        [Tooltip("Slow fade — ambient hum, single tone, darkness lifts")]
+        public float fadeInDuration = 10f;
 
-        [Header("Phase 2 -- Studio Logo (~7s)")]
-        public float logoStartTime = 7f;
-        public float logoDuration = 5f;
-        public float logoFadeSpeed = 1f;
+        [Header("Phase 2 -- Studio Logo (~10s)")]
+        [Tooltip("First whisper/texture enters — Crimson Blade logo")]
+        public float logoStartTime = 10f;
+        public float logoDuration = 8f;
+        public float logoFadeSpeed = 1.5f;
 
-        [Header("Phase 3 -- Corridor (~20s)")]
-        public float corridorStartTime = 20f;
+        [Header("Phase 3 -- Corridor (~32s)")]
+        [Tooltip("Rhythm or pulse enters — cut to corridor, credits roll")]
+        public float corridorStartTime = 32f;
 
-        [Header("Phase 4 -- Control Room (~38s)")]
-        public float controlRoomStartTime = 38f;
+        [Header("Phase 4 -- Control Room (~58s)")]
+        [Tooltip("Fuller sound — Director's domain revealed")]
+        public float controlRoomStartTime = 58f;
 
-        [Header("Phase 5 -- MIMIC Title (~52s)")]
-        public float titleDropTime = 60f;
-        public float titleDrawDuration = 3f;
-        public float postTitleHold = 5f;
+        [Header("Phase 5 -- MIMIC Title (~78s)")]
+        [Tooltip("The drop — title slams in on the musical hit")]
+        public float titleDropTime = 78f;
+        public float titleDrawDuration = 2f;
+        public float postTitleHold = 12f;
 
         [Header("Scene References")]
         public CanvasGroup blackOverlay;
@@ -45,7 +50,7 @@ namespace MimicFacility.UI
 
         [Header("Scare")]
         public ScaryScreenFlash scaryScreen;
-        public float scareTime = 18f;
+        public float scareTime = 30f;
 
         [Header("Corridor")]
         public GameObject corridorScene;
@@ -72,14 +77,14 @@ namespace MimicFacility.UI
 
         public List<CreditLine> creditLines = new List<CreditLine>
         {
-            new CreditLine { time = 22f, text = "A Crimson Blade Interactive Production" },
-            new CreditLine { time = 26f, text = "Creative Director & Lead Developer\nLandon Adams" },
-            new CreditLine { time = 31f, text = "Lead Manager — Garrett\nCo-Leader — Ezra" },
-            new CreditLine { time = 36f, text = "Music by Malakai Probert" },
-            new CreditLine { time = 40f, text = "Section Leaders\nDeegan  —  Lori" },
-            new CreditLine { time = 44f, text = "Developer & QA — Tannon Thompson\nDavid  —  Nora" },
-            new CreditLine { time = 49f, text = "\"Everything the AI did to you,\nit learned by watching you do it to each other.\"" },
-            new CreditLine { time = 55f, text = "Crimson Blade Interactive\nproudly presents" },
+            new CreditLine { time = 34f, text = "A Crimson Blade Interactive Production" },
+            new CreditLine { time = 39f, text = "Creative Director & Lead Developer\nLandon Adams" },
+            new CreditLine { time = 45f, text = "Lead Manager — Garrett\nCo-Leader — Ezra" },
+            new CreditLine { time = 50f, text = "Music by Malakai Probert" },
+            new CreditLine { time = 55f, text = "Section Leaders\nDeegan  —  Lori" },
+            new CreditLine { time = 60f, text = "Developer & QA — Tannon Thompson\nDavid  —  Nora" },
+            new CreditLine { time = 66f, text = "\"Everything the AI did to you,\nit learned by watching you do it to each other.\"" },
+            new CreditLine { time = 73f, text = "Crimson Blade Interactive\nproudly presents" },
         };
 
         [Serializable]
