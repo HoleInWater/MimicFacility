@@ -341,7 +341,7 @@ namespace MimicFacility.UI
 
         // ── Corridor scroll — move the corridor backward from here since
         // the camera controller reference keeps getting lost ─────────────
-        [SerializeField] private float corridorScrollSpeed = 3f;
+        [SerializeField] private float corridorScrollSpeed = 5f;
 
         private bool corridorScrollLogged;
 
@@ -349,22 +349,17 @@ namespace MimicFacility.UI
         {
             if (sequenceTime < corridorStartTime || sequenceTime > controlRoomStartTime) return;
 
-            if (corridorScene == null)
-            {
-                // Last resort — try to find it
-                corridorScene = GameObject.Find("CorridorScene");
-                if (corridorScene == null) return;
-            }
-
-            if (!corridorScene.activeInHierarchy) return;
+            // Move the CAMERA forward instead of moving the scene backward
+            // This is simpler and avoids parenting/reference issues
+            if (cameraController == null) return;
 
             if (!corridorScrollLogged)
             {
                 corridorScrollLogged = true;
-                Debug.Log($"[Intro] Corridor scrolling at {corridorScrollSpeed} units/sec. Position: {corridorScene.transform.position}");
+                Debug.Log($"[Intro] Corridor walk at {corridorScrollSpeed} units/sec. Cam: {cameraController.transform.position}");
             }
 
-            corridorScene.transform.position -= Vector3.forward * corridorScrollSpeed * Time.deltaTime;
+            cameraController.transform.position += Vector3.forward * corridorScrollSpeed * Time.deltaTime;
         }
 
         // ── Lucy sequence — plays automatically throughout the intro ────
