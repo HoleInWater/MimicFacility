@@ -560,6 +560,10 @@ public class IntroSceneBuilder
         var controllerObj = new GameObject("IntroSequenceController");
         var tsc = controllerObj.AddComponent<IntroSequenceController>();
 
+        // Director voice library — loads HAL 9000 voice clips from Resources
+        var voiceLibObj = new GameObject("DirectorVoiceLibrary");
+        voiceLibObj.AddComponent<DirectorVoiceLibrary>();
+
         // Wire audio — Daisy Bell (first computer to sing, 1961)
         var introClip = AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/Audio/Music/DaisyBell.mp3");
         if (introClip == null)
