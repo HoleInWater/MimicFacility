@@ -30,9 +30,9 @@ public class IntroSceneBuilder
 
         RenderSettings.fog = true;
         RenderSettings.fogMode = FogMode.ExponentialSquared;
-        RenderSettings.fogDensity = 0.02f;
-        RenderSettings.fogColor = new Color(0.03f, 0.03f, 0.04f);
-        RenderSettings.ambientLight = new Color(0.03f, 0.03f, 0.05f);
+        RenderSettings.fogDensity = 0.06f;
+        RenderSettings.fogColor = new Color(0.01f, 0.01f, 0.02f);
+        RenderSettings.ambientLight = new Color(0.02f, 0.02f, 0.03f);
 
         // ── Camera ───────────────────────────────────────────────────────
         var camObj = new GameObject("IntroCamera");

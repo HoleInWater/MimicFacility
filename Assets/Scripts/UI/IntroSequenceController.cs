@@ -22,8 +22,8 @@ namespace MimicFacility.UI
         [Header("Phase 2 -- Studio Logo (~10s)")]
         [Tooltip("First whisper/texture enters — Crimson Blade logo")]
         public float logoStartTime = 10f;
-        public float logoDuration = 8f;
-        public float logoFadeSpeed = 1.5f;
+        public float logoDuration = 5f;
+        public float logoFadeSpeed = 1.2f;
 
         [Header("Phase 3 -- Corridor (~32s)")]
         [Tooltip("Rhythm or pulse enters — cut to corridor, credits roll")]
@@ -37,7 +37,7 @@ namespace MimicFacility.UI
         [Tooltip("The drop — title slams in on the musical hit")]
         public float titleDropTime = 78f;
         public float titleDrawDuration = 2f;
-        public float postTitleHold = 12f;
+        public float postTitleHold = 8f;
 
         [Header("Scene References")]
         public CanvasGroup blackOverlay;
@@ -98,12 +98,21 @@ namespace MimicFacility.UI
         public string nextSceneName = "MainMenu";
         public bool allowSkip = true;
 
+        [Header("Beat Sync")]
+        [Tooltip("Lights in the scene to flicker with the music")]
+        public Light[] sceneLights;
+        public float beatDetectThreshold = 0.05f;
+        public float beatCooldown = 0.3f;
+
         private float sequenceTime;
         private bool sequenceComplete;
         private bool isSkipping;
         private bool phase2Triggered, phase3Triggered, phase4Triggered, phase5Triggered, scareFired;
         private int nextCreditIndex;
         private Coroutine activeCreditCoroutine;
+        private float lastBeatTime;
+        private float[] spectrumData = new float[256];
+        private float prevBass;
 
         void Start()
         {
@@ -188,6 +197,101 @@ namespace MimicFacility.UI
             }
 
             TickCredits();
+            TickBeatSync();
+            TickRandomFlicker();
+        }
+
+        void TickBeatSync()
+        {
+            if (musicSource == null || !musicSource.isPlaying) return;
+
+            musicSource.GetSpectrumData(spectrumData, 0, FFTWindow.BlackmanHarris);
+
+            // Bass energy — average of low frequency bins (0-8)
+            float bass = 0f;
+            for (int i = 0; i < 8; i++)
+                bass += spectrumData[i];
+            bass /= 8f;
+
+            // Beat detection — spike in bass energy
+            float delta = bass - prevBass;
+            prevBass = bass;
+
+            if (delta > beatDetectThreshold && Time.time - lastBeatTime > beatCooldown)
+            {
+                lastBeatTime = Time.time;
+                OnBeat(bass * 10f);
+            }
+
+            // Ambient light pulse from overall energy
+            float energy = 0f;
+            for (int i = 0; i < 64; i++)
+                energy += spectrumData[i];
+
+            if (sceneLights != null)
+            {
+                foreach (var light in sceneLights)
+                {
+                    if (light == null) continue;
+                    light.intensity = Mathf.Lerp(light.intensity, 0.5f + energy * 20f, Time.deltaTime * 8f);
+                }
+            }
+        }
+
+        void OnBeat(float intensity)
+        {
+            // Camera pulse
+            if (cameraController != null)
+                cameraController.TriggerBeatPulse();
+
+            // Light flicker on beat
+            if (sceneLights != null)
+            {
+                foreach (var light in sceneLights)
+                {
+                    if (light != null)
+                        light.intensity = 2f + intensity;
+                }
+            }
+        }
+
+        private float nextFlickerTime;
+
+        void TickRandomFlicker()
+        {
+            // Only flicker during corridor and control room phases
+            if (sequenceTime < corridorStartTime || sequenceTime > titleDropTime) return;
+
+            if (Time.time < nextFlickerTime) return;
+
+            // Random interval — more frequent as we approach the title drop
+            float distToTitle = titleDropTime - sequenceTime;
+            float maxInterval = Mathf.Lerp(1f, 5f, distToTitle / 40f);
+            nextFlickerTime = Time.time + Random.Range(0.5f, maxInterval);
+
+            StartCoroutine(QuickFlicker());
+        }
+
+        IEnumerator QuickFlicker()
+        {
+            if (blackOverlay == null) yield break;
+
+            int flicks = Random.Range(1, 4);
+            for (int i = 0; i < flicks; i++)
+            {
+                blackOverlay.alpha = Random.Range(0.1f, 0.5f);
+                yield return new WaitForSecondsRealtime(Random.Range(0.02f, 0.06f));
+                blackOverlay.alpha = 0f;
+                yield return new WaitForSecondsRealtime(Random.Range(0.03f, 0.1f));
+            }
+
+            // Occasional hard flash
+            if (Random.value < 0.2f)
+            {
+                blackOverlay.alpha = 0.8f;
+                yield return new WaitForSecondsRealtime(0.03f);
+                blackOverlay.alpha = 0f;
+            }
         }
 
         IEnumerator PlayLogo()
