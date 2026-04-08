@@ -295,7 +295,7 @@ namespace MimicFacility.Gameplay
 
         private void OnCountdownChanged(float oldVal, float newVal) { }
         private void OnExtractionActiveChanged(bool oldVal, bool newVal) => UpdateVisuals();
-        private void OnPlayersInZoneChanged(SyncList<int>.Operation op, int index, int oldItem, int newItem) { }
+        private void OnPlayersInZoneChanged(SyncList<int>.Operation op, int index, int item) { }
 
         // ═══════════════════════════════════════════════════════════════
         // UTILITY
