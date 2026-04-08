@@ -180,6 +180,13 @@ namespace MimicFacility.UI
         // Creates an infinite hallway effect. The scene moves, not you.
         void UpdateCorridor(float t)
         {
+            // Auto-find corridor root if reference is missing
+            if (corridorSceneRoot == null)
+            {
+                var obj = GameObject.Find("CorridorScene");
+                if (obj != null) corridorSceneRoot = obj.transform;
+            }
+
             // Camera stays in place with subtle bob and breathing
             float bobX = Mathf.Sin(t * bobSpeed) * bobAmount;
             float bobY = Mathf.Abs(Mathf.Sin(t * bobSpeed * 2f)) * bobAmount * 0.6f;
@@ -194,6 +201,10 @@ namespace MimicFacility.UI
             if (corridorSceneRoot != null)
             {
                 corridorSceneRoot.position -= Vector3.forward * corridorScrollSpeed * Time.deltaTime;
+            }
+            else
+            {
+                Debug.LogWarning("[IntroCam] CorridorScene not found — hallway won't scroll");
             }
 
             // FOV tightens slowly
