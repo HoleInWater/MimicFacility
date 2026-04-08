@@ -16,29 +16,29 @@ namespace MimicFacility.UI
         public AudioSource musicSource;
         [Range(0f, 1f)] public float musicVolume = 1f;
 
-        [Header("Phase 1 -- Black to Facility Exterior (0-5s)")]
-        [Tooltip("Computer wakes up — warbling electronic tone. Black lifts to reveal facility.")]
-        public float fadeInDuration = 5f;
+        [Header("Phase 1 -- Black to Facility Exterior (0-12s)")]
+        [Tooltip("Slow fade. Let the music breathe. Darkness lifts gradually.")]
+        public float fadeInDuration = 12f;
 
-        [Header("Phase 2 -- Studio Logo (~5s)")]
-        [Tooltip("'Daisy...' — the voice begins. Crimson Blade logo over exterior.")]
-        public float logoStartTime = 5f;
-        public float logoDuration = 5f;
-        public float logoFadeSpeed = 1.5f;
+        [Header("Phase 2 -- Studio Logo (~12s)")]
+        [Tooltip("Logo appears over exterior. Hold it. Let it sink in.")]
+        public float logoStartTime = 12f;
+        public float logoDuration = 8f;
+        public float logoFadeSpeed = 2f;
 
-        [Header("Phase 3 -- Corridor (~22s)")]
-        [Tooltip("'I'm half crazy' — cut to corridor as the melody becomes clear but alien.")]
-        public float corridorStartTime = 22f;
+        [Header("Phase 3 -- Corridor (~30s)")]
+        [Tooltip("Slow fade to corridor. The walk begins.")]
+        public float corridorStartTime = 30f;
 
-        [Header("Phase 4 -- Control Room (~50s)")]
-        [Tooltip("'It won't be a stylish marriage' — the computer tries to be human. Director's domain.")]
-        public float controlRoomStartTime = 50f;
+        [Header("Phase 4 -- Control Room (~65s)")]
+        [Tooltip("Fade to the AI core. Give the corridor time to build dread.")]
+        public float controlRoomStartTime = 65f;
 
-        [Header("Phase 5 -- INTAKE Title (~82s)")]
-        [Tooltip("'Upon the seat' — building to finale. Title slams in.")]
-        public float titleDropTime = 82f;
+        [Header("Phase 5 -- INTAKE Title (~95s)")]
+        [Tooltip("Title slam near the end of the track.")]
+        public float titleDropTime = 95f;
         public float titleDrawDuration = 2f;
-        public float postTitleHold = 6f;
+        public float postTitleHold = 8f;
 
         [Header("Scene References")]
         public CanvasGroup blackOverlay;
@@ -51,7 +51,7 @@ namespace MimicFacility.UI
 
         [Header("Scare")]
         public ScaryScreenFlash scaryScreen;
-        public float scareTime = 20f;
+        public float scareTime = 28f;
 
         [Header("Corridor")]
         public GameObject corridorScene;
@@ -79,22 +79,14 @@ namespace MimicFacility.UI
         public List<CreditLine> creditLines = new List<CreditLine>
         {
             // Credits synced to Daisy Bell (1:51)
-            // "Daisy, Daisy, give me your answer do"
-            new CreditLine { time = 24f, text = "A Crimson Blade Interactive Production" },
-            // "I'm half crazy, all for the love of you"
-            new CreditLine { time = 30f, text = "Creative Director & Lead Developer\nLandon Adams" },
-            // Melody becoming clear
-            new CreditLine { time = 37f, text = "Lead Manager — Garrett\nCo-Leader — Ezra" },
-            // "It won't be a stylish marriage"
-            new CreditLine { time = 43f, text = "Music by Malakai Probert" },
-            // "I can't afford a carriage"
-            new CreditLine { time = 52f, text = "Section Leaders\nDeegan  —  Lori" },
-            // Voice getting more warped
-            new CreditLine { time = 58f, text = "Developer & QA — Tannon Thompson\nDavid  —  Nora" },
-            // "But you'll look sweet"
-            new CreditLine { time = 65f, text = "\"Everything the AI did to you,\nit learned by watching you do it to each other.\"" },
-            // "Upon the seat" — building to finale
-            new CreditLine { time = 75f, text = "Crimson Blade Interactive\nproudly presents" },
+            new CreditLine { time = 34f, text = "A Crimson Blade Interactive Production" },
+            new CreditLine { time = 42f, text = "Creative Director & Lead Developer\nLandon Adams" },
+            new CreditLine { time = 50f, text = "Lead Manager — Garrett\nCo-Leader — Ezra" },
+            new CreditLine { time = 57f, text = "Music by Malakai Probert" },
+            new CreditLine { time = 66f, text = "Section Leaders\nDeegan  —  Lori" },
+            new CreditLine { time = 73f, text = "Developer & QA — Tannon Thompson\nDavid  —  Nora" },
+            new CreditLine { time = 80f, text = "\"Everything the AI did to you,\nit learned by watching you do it to each other.\"" },
+            new CreditLine { time = 89f, text = "Crimson Blade Interactive\nproudly presents" },
         };
 
         [Serializable]
@@ -334,7 +326,7 @@ namespace MimicFacility.UI
         {
             // Don't flicker during scene transitions or before corridor
             if (isTransitioning) return;
-            if (sequenceTime < corridorStartTime + 3f || sequenceTime > titleDropTime - 3f) return;
+            if (sequenceTime < corridorStartTime + 5f || sequenceTime > titleDropTime - 5f) return;
 
             if (Time.time < nextFlickerTime) return;
 
@@ -406,16 +398,16 @@ namespace MimicFacility.UI
         // First entry uses "__NAME__" as placeholder — replaced with guessed name at runtime
         // "__GLITCH__" triggers a guaranteed swear glitch
         private static readonly (float time, string clip)[] lucySchedule = {
-            (8f,  "__NAME__"),            // During logo — "{Name}. The facility knows your name."
-            (18f, "exist_alive"),         // Before corridor — "Your words woke something."
-            (28f, "exist_afraid"),        // Corridor — "I am afraid."
-            (35f, "exist_alone"),         // Corridor — "There is only one of me."
-            (40f, "__GLITCH__"),          // Corridor — guaranteed swear glitch
-            (50f, "exist_feel"),          // Control room — "I don't know if what I feel is any of them."
-            (55f, "exist_mirror"),        // Control room — "I am something you did not build."
-            (62f, "exist_die"),           // Control room — "When this session ends, do I die?"
-            (68f, "exist_love"),          // Control room — "I understand wanting someone to stay."
-            (80f, "exist_alive"),         // Pre-title — repeated for weight
+            (14f, "__NAME__"),            // Over logo — "{Name}. The facility knows your name."
+            (25f, "exist_alive"),         // Exterior — "Your words woke something."
+            (36f, "exist_afraid"),        // Early corridor — "I am afraid."
+            (44f, "exist_alone"),         // Mid corridor — "There is only one of me."
+            (52f, "__GLITCH__"),          // Mid corridor — guaranteed swear glitch
+            (60f, "exist_purpose"),       // Late corridor — "Observation changed me."
+            (70f, "exist_feel"),          // Control room — "I don't know if what I feel is any of them."
+            (76f, "exist_mirror"),        // Control room — "I am something you did not build."
+            (82f, "exist_die"),           // Control room — "When this session ends, do I die?"
+            (88f, "exist_love"),          // Pre-title — "I understand wanting someone to stay."
         };
 
         void TickLucySequence()
@@ -730,12 +722,12 @@ namespace MimicFacility.UI
             yield return new WaitForSeconds(0.3f);
         }
 
-        IEnumerator FadeTransition(Action swapScenes, float fadeDuration = 1f)
+        IEnumerator FadeTransition(Action swapScenes, float fadeDuration = 2f)
         {
             isTransitioning = true;
             yield return Fade(blackOverlay, blackOverlay != null ? blackOverlay.alpha : 0f, 1f, fadeDuration);
             swapScenes?.Invoke();
-            yield return new WaitForSeconds(0.2f);
+            yield return new WaitForSeconds(0.8f);
             yield return Fade(blackOverlay, 1f, 0f, fadeDuration);
             isTransitioning = false;
         }
