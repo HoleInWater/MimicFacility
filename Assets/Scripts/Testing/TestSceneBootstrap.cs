@@ -102,6 +102,8 @@ namespace MimicFacility.Testing
                 yield return null;
             }
 
+            EnsureNetworkIdentities();
+
             Log("=== Bootstrap Complete — All Systems Online ===");
             Log($"Rooms: {roomCount} | Mimics: {mimicCount} | Stalkers: {stalkerCount} | Frauds: {fraudCount}");
             Log("Controls: WASD move, Mouse look, E interact, LMB use gear, F flashlight, V push-to-talk, ESC pause");
@@ -407,6 +409,21 @@ namespace MimicFacility.Testing
             canvasObj.AddComponent<UnityEngine.UI.GraphicRaycaster>();
 
             Log("  Created UI Canvas");
+        }
+
+        private void EnsureNetworkIdentities()
+        {
+            Log("Adding NetworkIdentity to all NetworkBehaviours...");
+            int count = 0;
+            foreach (var nb in FindObjectsOfType<NetworkBehaviour>())
+            {
+                if (nb.GetComponent<NetworkIdentity>() == null)
+                {
+                    nb.gameObject.AddComponent<NetworkIdentity>();
+                    count++;
+                }
+            }
+            Log($"  Added NetworkIdentity to {count} objects");
         }
 
         private void OnGUI()

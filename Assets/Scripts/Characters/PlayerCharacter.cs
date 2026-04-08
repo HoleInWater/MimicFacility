@@ -84,9 +84,24 @@ namespace MimicFacility.Characters
             }
         }
 
+        private void Start()
+        {
+            // Fallback for non-networked testing (no Mirror host)
+            var id = GetComponent<Mirror.NetworkIdentity>();
+            if (id == null)
+            {
+                if (playerCamera != null) playerCamera.enabled = true;
+                if (audioListener != null) audioListener.enabled = true;
+                Cursor.lockState = CursorLockMode.Locked;
+                Cursor.visible = false;
+                _playerState = GetComponent<MimicPlayerState>();
+                if (characterController == null) characterController = GetComponent<CharacterController>();
+            }
+        }
+
         private void OnDisable()
         {
-            if (!isLocalPlayer || InputManager.Instance == null) return;
+            if (!IsLocal() || InputManager.Instance == null) return;
             InputManager.Instance.OnInteractPressed -= HandleInteract;
             InputManager.Instance.OnUseGearPressed -= HandleUseGear;
             InputManager.Instance.OnToggleFlashlightPressed -= HandleToggleFlashlight;
@@ -96,16 +111,22 @@ namespace MimicFacility.Characters
 
         public override void OnStartClient()
         {
-            if (!isLocalPlayer)
+            if (!IsLocal())
             {
-                playerCamera.enabled = false;
-                audioListener.enabled = false;
+                if (playerCamera != null) playerCamera.enabled = false;
+                if (audioListener != null) audioListener.enabled = false;
             }
+        }
+
+        private bool IsLocal()
+        {
+            var id = GetComponent<Mirror.NetworkIdentity>();
+            return id == null || id.isLocalPlayer;
         }
 
         private void Update()
         {
-            if (!isLocalPlayer) return;
+            if (!IsLocal()) return;
 
             HandleMovement();
             HandleMouseLook();
