@@ -15,29 +15,29 @@ namespace MimicFacility.UI
         public AudioSource musicSource;
         [Range(0f, 1f)] public float musicVolume = 1f;
 
-        [Header("Phase 1 -- Black to Facility Exterior (0s)")]
-        [Tooltip("Slow fade — ambient hum, single tone, darkness lifts")]
-        public float fadeInDuration = 10f;
+        [Header("Phase 1 -- Black to Facility Exterior (0-5s)")]
+        [Tooltip("Computer wakes up — warbling electronic tone. Black lifts to reveal facility.")]
+        public float fadeInDuration = 5f;
 
-        [Header("Phase 2 -- Studio Logo (~10s)")]
-        [Tooltip("First whisper/texture enters — Crimson Blade logo")]
-        public float logoStartTime = 10f;
+        [Header("Phase 2 -- Studio Logo (~5s)")]
+        [Tooltip("'Daisy...' — the voice begins. Crimson Blade logo over exterior.")]
+        public float logoStartTime = 5f;
         public float logoDuration = 5f;
-        public float logoFadeSpeed = 1.2f;
+        public float logoFadeSpeed = 1.5f;
 
-        [Header("Phase 3 -- Corridor (~32s)")]
-        [Tooltip("Rhythm or pulse enters — cut to corridor, credits roll")]
-        public float corridorStartTime = 32f;
+        [Header("Phase 3 -- Corridor (~22s)")]
+        [Tooltip("'I'm half crazy' — cut to corridor as the melody becomes clear but alien.")]
+        public float corridorStartTime = 22f;
 
-        [Header("Phase 4 -- Control Room (~58s)")]
-        [Tooltip("Fuller sound — Director's domain revealed")]
-        public float controlRoomStartTime = 58f;
+        [Header("Phase 4 -- Control Room (~50s)")]
+        [Tooltip("'It won't be a stylish marriage' — the computer tries to be human. Director's domain.")]
+        public float controlRoomStartTime = 50f;
 
-        [Header("Phase 5 -- MIMIC Title (~78s)")]
-        [Tooltip("The drop — title slams in on the musical hit")]
-        public float titleDropTime = 78f;
+        [Header("Phase 5 -- MIMIC Title (~82s)")]
+        [Tooltip("'Upon the seat' — building to finale. Title slams in.")]
+        public float titleDropTime = 82f;
         public float titleDrawDuration = 2f;
-        public float postTitleHold = 8f;
+        public float postTitleHold = 6f;
 
         [Header("Scene References")]
         public CanvasGroup blackOverlay;
@@ -50,7 +50,7 @@ namespace MimicFacility.UI
 
         [Header("Scare")]
         public ScaryScreenFlash scaryScreen;
-        public float scareTime = 30f;
+        public float scareTime = 20f;
 
         [Header("Corridor")]
         public GameObject corridorScene;
@@ -77,14 +77,23 @@ namespace MimicFacility.UI
 
         public List<CreditLine> creditLines = new List<CreditLine>
         {
-            new CreditLine { time = 34f, text = "A Crimson Blade Interactive Production" },
-            new CreditLine { time = 39f, text = "Creative Director & Lead Developer\nLandon Adams" },
-            new CreditLine { time = 45f, text = "Lead Manager — Garrett\nCo-Leader — Ezra" },
-            new CreditLine { time = 50f, text = "Music by Malakai Probert" },
-            new CreditLine { time = 55f, text = "Section Leaders\nDeegan  —  Lori" },
-            new CreditLine { time = 60f, text = "Developer & QA — Tannon Thompson\nDavid  —  Nora" },
-            new CreditLine { time = 66f, text = "\"Everything the AI did to you,\nit learned by watching you do it to each other.\"" },
-            new CreditLine { time = 73f, text = "Crimson Blade Interactive\nproudly presents" },
+            // Credits synced to Daisy Bell (1:51)
+            // "Daisy, Daisy, give me your answer do"
+            new CreditLine { time = 24f, text = "A Crimson Blade Interactive Production" },
+            // "I'm half crazy, all for the love of you"
+            new CreditLine { time = 30f, text = "Creative Director & Lead Developer\nLandon Adams" },
+            // Melody becoming clear
+            new CreditLine { time = 37f, text = "Lead Manager — Garrett\nCo-Leader — Ezra" },
+            // "It won't be a stylish marriage"
+            new CreditLine { time = 43f, text = "Music by Malakai Probert" },
+            // "I can't afford a carriage"
+            new CreditLine { time = 52f, text = "Section Leaders\nDeegan  —  Lori" },
+            // Voice getting more warped
+            new CreditLine { time = 58f, text = "Developer & QA — Tannon Thompson\nDavid  —  Nora" },
+            // "But you'll look sweet"
+            new CreditLine { time = 65f, text = "\"Everything the AI did to you,\nit learned by watching you do it to each other.\"" },
+            // "Upon the seat" — building to finale
+            new CreditLine { time = 75f, text = "Crimson Blade Interactive\nproudly presents" },
         };
 
         [Serializable]

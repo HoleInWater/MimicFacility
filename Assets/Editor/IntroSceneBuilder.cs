@@ -29,8 +29,9 @@ public class IntroSceneBuilder
         EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
 
         RenderSettings.fog = true;
-        RenderSettings.fogMode = FogMode.ExponentialSquared;
-        RenderSettings.fogDensity = 0.06f;
+        RenderSettings.fogMode = FogMode.Linear;
+        RenderSettings.fogStartDistance = 5f;
+        RenderSettings.fogEndDistance = 80f;
         RenderSettings.fogColor = new Color(0.01f, 0.01f, 0.02f);
         RenderSettings.ambientLight = new Color(0.02f, 0.02f, 0.03f);
 
@@ -49,103 +50,248 @@ public class IntroSceneBuilder
         var musicSource = audioObj.AddComponent<AudioSource>();
         musicSource.playOnAwake = false;
         musicSource.loop = false;
+        // Audio corruptor — song degrades over time like a dying machine
+        audioObj.AddComponent<AudioCorruptor>();
 
         // ════════════════════════════════════════════════════════════════
         // PHASE 1: FACILITY EXTERIOR — abandoned brutalist building at night
         // ════════════════════════════════════════════════════════════════
         var exterior = new GameObject("FacilityExterior");
+        var ext = exterior.transform;
 
-        // Ground
-        Prim(exterior.transform, "Ground", Vector3.zero, new Vector3(80, 0.1f, 80), COL_GROUND);
+        // Ground — cracked concrete lot with color variation
+        Prim(ext, "Ground", Vector3.zero, new Vector3(100, 0.1f, 100), COL_GROUND);
+        Prim(ext, "GroundStain1", new Vector3(-8, 0.01f, 5), new Vector3(6, 0.01f, 4), new Color(0.08f, 0.08f, 0.06f));
+        Prim(ext, "GroundStain2", new Vector3(5, 0.01f, -3), new Vector3(4, 0.01f, 3), new Color(0.10f, 0.07f, 0.05f));
+        Prim(ext, "GroundCrack1", new Vector3(-3, 0.02f, 2), new Vector3(8, 0.01f, 0.05f), new Color(0.05f, 0.05f, 0.04f));
+        Prim(ext, "GroundCrack2", new Vector3(2, 0.02f, -5), new Vector3(0.05f, 0.01f, 10), new Color(0.05f, 0.05f, 0.04f));
 
-        // Main building facade
-        Prim(exterior.transform, "Facade", new Vector3(0, 6, 20), new Vector3(24, 12, 1), COL_CONCRETE);
-        Prim(exterior.transform, "FacadeLeft", new Vector3(-12, 6, 15), new Vector3(1, 12, 10), COL_CONCRETE_D);
-        Prim(exterior.transform, "FacadeRight", new Vector3(12, 6, 15), new Vector3(1, 12, 10), COL_CONCRETE_D);
+        // Main building — multi-section brutalist facade
+        Prim(ext, "FacadeMain", new Vector3(0, 7, 20), new Vector3(28, 14, 1.5f), COL_CONCRETE);
+        Prim(ext, "FacadeWingL", new Vector3(-14, 5, 15), new Vector3(1.5f, 10, 12), COL_CONCRETE_D);
+        Prim(ext, "FacadeWingR", new Vector3(14, 5, 15), new Vector3(1.5f, 10, 12), COL_CONCRETE_D);
+        // Upper overhang — brutalist cantilever
+        Prim(ext, "Overhang", new Vector3(0, 13, 18), new Vector3(32, 1, 5), COL_CONCRETE_D);
+        // Pillars at entrance
+        Prim(ext, "PillarL", new Vector3(-4, 5, 18), new Vector3(0.8f, 10, 0.8f), COL_CONCRETE);
+        Prim(ext, "PillarR", new Vector3(4, 5, 18), new Vector3(0.8f, 10, 0.8f), COL_CONCRETE);
+        // Roof structure
+        Prim(ext, "Roof", new Vector3(0, 14, 14), new Vector3(30, 0.5f, 14), COL_CONCRETE_D);
+        // Side walls extending back
+        Prim(ext, "SideWallL", new Vector3(-14, 5, 10), new Vector3(1, 10, 20), COL_CONCRETE_D);
+        Prim(ext, "SideWallR", new Vector3(14, 5, 10), new Vector3(1, 10, 20), COL_CONCRETE_D);
 
-        // Entrance — dark opening
-        Prim(exterior.transform, "EntranceDoor", new Vector3(0, 1.5f, 19.4f), new Vector3(3, 3, 0.5f), Color.black);
+        // Entrance — dark void with steps
+        Prim(ext, "EntranceVoid", new Vector3(0, 2, 19.2f), new Vector3(4, 4, 0.5f), new Color(0.01f, 0.01f, 0.01f));
+        Prim(ext, "Step1", new Vector3(0, 0.15f, 17), new Vector3(6, 0.3f, 1.5f), COL_CONCRETE);
+        Prim(ext, "Step2", new Vector3(0, 0.35f, 17.8f), new Vector3(5, 0.3f, 1), COL_CONCRETE);
+        Prim(ext, "Step3", new Vector3(0, 0.55f, 18.4f), new Vector3(4.5f, 0.3f, 0.8f), COL_CONCRETE);
 
-        // Broken windows (dark rectangles on facade)
-        for (int i = -2; i <= 2; i++)
+        // Windows — three rows, some dark, some faintly lit
+        for (int row = 0; row < 3; row++)
+        for (int col = -3; col <= 3; col++)
         {
-            if (i == 0) continue;
-            Prim(exterior.transform, "Window", new Vector3(i * 4, 8, 19.4f), new Vector3(1.5f, 2, 0.3f),
-                new Color(0.02f, 0.02f, 0.04f));
+            if (col == 0 && row == 0) continue; // entrance gap
+            float wy = 4 + row * 3.5f;
+            bool lit = (row + col) % 5 == 0;
+            var win = Prim(ext, $"Window_{row}_{col}", new Vector3(col * 3.5f, wy, 19.3f),
+                new Vector3(1.2f, 1.8f, 0.2f), lit ? new Color(0.08f, 0.06f, 0.02f) : new Color(0.02f, 0.02f, 0.03f));
+            if (lit) SetEmission(win, new Color(0.04f, 0.03f, 0.01f));
         }
 
-        // Perimeter fence posts
-        for (int i = -5; i <= 5; i++)
+        // Perimeter fence — double row with barbed wire
+        for (int i = -8; i <= 8; i++)
         {
-            Prim(exterior.transform, "FencePost", new Vector3(i * 3, 1, 5), new Vector3(0.1f, 2, 0.1f), COL_METAL);
+            Prim(ext, $"FencePost_{i}", new Vector3(i * 2.5f, 1.2f, 5), new Vector3(0.08f, 2.4f, 0.08f), COL_METAL);
+            if (i < 8) // horizontal bars
+                Prim(ext, $"FenceBar_{i}", new Vector3(i * 2.5f + 1.25f, 2.2f, 5), new Vector3(2.5f, 0.04f, 0.04f), COL_METAL);
         }
-        // Chain link (flat stretched cube)
-        Prim(exterior.transform, "ChainLink", new Vector3(0, 1, 5), new Vector3(30, 1.8f, 0.05f), new Color(0.3f, 0.3f, 0.3f, 0.5f));
+        // Chain link sections
+        Prim(ext, "ChainL", new Vector3(-10, 1, 5), new Vector3(20, 2, 0.03f), new Color(0.25f, 0.25f, 0.27f, 0.4f));
+        Prim(ext, "ChainR", new Vector3(10, 1, 5), new Vector3(20, 2, 0.03f), new Color(0.25f, 0.25f, 0.27f, 0.4f));
+        // Barbed wire on top
+        Prim(ext, "BarbedWire", new Vector3(0, 2.5f, 5), new Vector3(40, 0.06f, 0.06f), new Color(0.4f, 0.35f, 0.3f));
 
-        // Warning signs (small cubes with color)
-        Prim(exterior.transform, "Sign1", new Vector3(-6, 1.5f, 4.8f), new Vector3(0.8f, 0.6f, 0.05f), Color.yellow);
-        Prim(exterior.transform, "Sign2", new Vector3(6, 1.5f, 4.8f), new Vector3(0.8f, 0.6f, 0.05f), Color.red);
+        // Warning signs
+        Prim(ext, "Sign_Bio", new Vector3(-5, 1.8f, 4.8f), new Vector3(0.8f, 0.6f, 0.05f), Color.yellow);
+        Prim(ext, "Sign_NoEntry", new Vector3(5, 1.8f, 4.8f), new Vector3(0.8f, 0.6f, 0.05f), Color.red);
+        Prim(ext, "Sign_Danger", new Vector3(0, 1.8f, 4.8f), new Vector3(1, 0.4f, 0.05f), new Color(0.8f, 0.4f, 0f));
 
-        // Dead trees around the facility
-        Stump(exterior.transform, new Vector3(-10, 0, 8), 3f);
-        Stump(exterior.transform, new Vector3(8, 0, 3), 2.5f);
-        Stump(exterior.transform, new Vector3(-14, 0, 2), 4f);
+        // Dead trees — gnarled, different heights
+        Stump(ext, new Vector3(-12, 0, 8), 4f);
+        Stump(ext, new Vector3(-15, 0, 3), 2.5f);
+        Stump(ext, new Vector3(9, 0, 2), 3.5f);
+        Stump(ext, new Vector3(16, 0, 7), 5f);
+        Stump(ext, new Vector3(-8, 0, -3), 2f);
+        Stump(ext, new Vector3(3, 0, -6), 1.5f);
 
-        // Searchlight (broken, tilted)
+        // Debris — fallen concrete chunks
+        Prim(ext, "Debris1", new Vector3(-7, 0.3f, 12), new Vector3(1.5f, 0.6f, 1), COL_CONCRETE);
+        Prim(ext, "Debris2", new Vector3(9, 0.2f, 14), new Vector3(0.8f, 0.4f, 1.2f), COL_CONCRETE_D);
+        Prim(ext, "Debris3", new Vector3(-3, 0.15f, 8), new Vector3(0.5f, 0.3f, 0.5f), COL_CONCRETE);
+        Prim(ext, "Debris4", new Vector3(6, 0.25f, 10), new Vector3(1, 0.5f, 0.7f), COL_CONCRETE_D);
+
+        // Overturned vehicle (simplified)
+        Prim(ext, "CarBody", new Vector3(-18, 0.8f, 8), new Vector3(4, 1.5f, 2), COL_METAL);
+        Prim(ext, "CarRoof", new Vector3(-18, 1.8f, 8), new Vector3(3, 0.3f, 1.8f), COL_METAL);
+        Prim(ext, "CarWheel1", new Vector3(-19.5f, 0.3f, 7), new Vector3(0.3f, 0.6f, 0.6f), new Color(0.1f, 0.1f, 0.1f));
+        Prim(ext, "CarWheel2", new Vector3(-16.5f, 0.3f, 7), new Vector3(0.3f, 0.6f, 0.6f), new Color(0.1f, 0.1f, 0.1f));
+
+        // Guard booth (abandoned)
+        Prim(ext, "BoothWalls", new Vector3(12, 1.2f, 3), new Vector3(2.5f, 2.4f, 2.5f), COL_CONCRETE);
+        Prim(ext, "BoothRoof", new Vector3(12, 2.5f, 3), new Vector3(3, 0.15f, 3), COL_METAL);
+        Prim(ext, "BoothWindow", new Vector3(11.8f, 1.8f, 1.8f), new Vector3(1.5f, 0.8f, 0.1f), new Color(0.03f, 0.03f, 0.05f));
+
+        // Utility poles + dangling wires
+        Prim(ext, "Pole1", new Vector3(-20, 4, 0), new Vector3(0.15f, 8, 0.15f), COL_METAL);
+        Prim(ext, "Pole2", new Vector3(20, 4, 0), new Vector3(0.15f, 8, 0.15f), COL_METAL);
+        Prim(ext, "Wire1", new Vector3(0, 7.5f, 0), new Vector3(40, 0.02f, 0.02f), COL_WIRE);
+        Prim(ext, "Wire2", new Vector3(0, 7.2f, 0), new Vector3(40, 0.02f, 0.02f), COL_WIRE);
+
+        // Searchlights — one broken, one still on
         var searchlight = new GameObject("BrokenSearchlight");
-        searchlight.transform.SetParent(exterior.transform);
-        searchlight.transform.position = new Vector3(8, 5, 10);
+        searchlight.transform.SetParent(ext);
+        searchlight.transform.position = new Vector3(8, 6, 10);
         var sl = searchlight.AddComponent<Light>();
         sl.type = LightType.Spot;
         sl.color = new Color(0.9f, 0.8f, 0.6f);
         sl.intensity = 5f;
-        sl.range = 30f;
-        sl.spotAngle = 25f;
+        sl.range = 40f;
+        sl.spotAngle = 20f;
         searchlight.transform.rotation = Quaternion.Euler(45, -30, 15);
+        Prim(ext, "SearchlightPole", new Vector3(8, 3, 10), new Vector3(0.15f, 6, 0.15f), COL_METAL);
+
+        // Second searchlight — working, slowly sweeping (simulated with angled spot)
+        var searchlight2 = new GameObject("WorkingSearchlight");
+        searchlight2.transform.SetParent(ext);
+        searchlight2.transform.position = new Vector3(-10, 8, 12);
+        var sl2 = searchlight2.AddComponent<Light>();
+        sl2.type = LightType.Spot;
+        sl2.color = new Color(0.7f, 0.7f, 0.8f);
+        sl2.intensity = 8f;
+        sl2.range = 60f;
+        sl2.spotAngle = 15f;
+        searchlight2.transform.rotation = Quaternion.Euler(50, 20, 0);
+        Prim(ext, "SearchlightPole2", new Vector3(-10, 4, 12), new Vector3(0.15f, 8, 0.15f), COL_METAL);
+
+        // Distant background buildings (silhouettes)
+        Prim(ext, "BgBuilding1", new Vector3(-35, 8, 60), new Vector3(12, 16, 8), new Color(0.04f, 0.04f, 0.05f));
+        Prim(ext, "BgBuilding2", new Vector3(30, 6, 70), new Vector3(10, 12, 6), new Color(0.03f, 0.03f, 0.04f));
+        Prim(ext, "BgBuilding3", new Vector3(-10, 10, 80), new Vector3(15, 20, 10), new Color(0.025f, 0.025f, 0.035f));
+        Prim(ext, "BgBuilding4", new Vector3(20, 5, 55), new Vector3(8, 10, 5), new Color(0.04f, 0.04f, 0.05f));
+
+        // Red warning light on building — slow blink (simulated)
+        var warningLight = new GameObject("WarningLight");
+        warningLight.transform.SetParent(ext);
+        warningLight.transform.position = new Vector3(0, 14.5f, 20);
+        var wl = warningLight.AddComponent<Light>();
+        wl.type = LightType.Point;
+        wl.color = Color.red;
+        wl.intensity = 2f;
+        wl.range = 8f;
 
         var sporePS = CreateSporeParticles(exterior.transform, new Vector3(0, 3, 12));
         var fogPS = CreateFogParticles(exterior.transform, new Vector3(0, 0.5f, 10));
 
         // ════════════════════════════════════════════════════════════════
-        // PHASE 3: CORRIDOR — brutalist hallway with flickering lights
+        // PHASE 3: CORRIDOR — long brutalist hallway, oppressive
         // ════════════════════════════════════════════════════════════════
         var corridor = new GameObject("CorridorScene");
+        var cor = corridor.transform;
 
-        Prim(corridor.transform, "Floor", Vector3.zero, new Vector3(4, 0.1f, 40), COL_CONCRETE_D);
-        Prim(corridor.transform, "Ceiling", Vector3.up * 3.5f, new Vector3(4, 0.1f, 40), COL_CONCRETE_D);
-        Prim(corridor.transform, "WallL", new Vector3(-2, 1.75f, 0), new Vector3(0.3f, 3.5f, 40), COL_CONCRETE);
-        Prim(corridor.transform, "WallR", new Vector3(2, 1.75f, 0), new Vector3(0.3f, 3.5f, 40), COL_CONCRETE);
+        // Main structure
+        Prim(cor, "Floor", Vector3.zero, new Vector3(5, 0.1f, 50), COL_CONCRETE_D);
+        Prim(cor, "Ceiling", Vector3.up * 3.5f, new Vector3(5, 0.15f, 50), COL_CONCRETE_D);
+        Prim(cor, "WallL", new Vector3(-2.5f, 1.75f, 0), new Vector3(0.4f, 3.5f, 50), COL_CONCRETE);
+        Prim(cor, "WallR", new Vector3(2.5f, 1.75f, 0), new Vector3(0.4f, 3.5f, 50), COL_CONCRETE);
 
-        // Flickering ceiling lights
+        // Floor tile lines
+        for (int i = -5; i <= 10; i++)
+            Prim(cor, $"FloorLine_{i}", new Vector3(0, 0.01f, i * 4), new Vector3(5, 0.005f, 0.02f), new Color(0.15f, 0.15f, 0.17f));
+
+        // Wall trim / baseboard
+        Prim(cor, "BaseboardL", new Vector3(-2.3f, 0.1f, 0), new Vector3(0.05f, 0.2f, 50), new Color(0.2f, 0.2f, 0.22f));
+        Prim(cor, "BaseboardR", new Vector3(2.3f, 0.1f, 0), new Vector3(0.05f, 0.2f, 50), new Color(0.2f, 0.2f, 0.22f));
+
+        // Ceiling lights — alternating working/broken/missing
+        for (int i = 0; i < 12; i++)
+        {
+            float z = i * 4 - 10;
+            bool broken = i % 4 == 2;
+            bool missing = i % 7 == 0;
+
+            // Fixture housing always present
+            Prim(cor, $"Fixture_{i}", new Vector3(0, 3.4f, z), new Vector3(0.5f, 0.06f, 0.3f), COL_METAL);
+
+            if (!missing)
+            {
+                var lightObj = new GameObject($"CeilingLight_{i}");
+                lightObj.transform.SetParent(cor);
+                lightObj.transform.position = new Vector3(0, 3.2f, z);
+                var cLight = lightObj.AddComponent<Light>();
+                cLight.type = LightType.Point;
+                cLight.color = broken ? new Color(0.5f, 0.4f, 0.3f) : new Color(0.7f, 0.8f, 0.9f);
+                cLight.intensity = broken ? 0.2f : 0.8f;
+                cLight.range = 5f;
+            }
+        }
+
+        // Pipes — multiple running along ceiling and walls
+        Prim(cor, "PipeL1", new Vector3(-2.1f, 3.3f, 0), new Vector3(0.08f, 0.08f, 50), COL_RUST);
+        Prim(cor, "PipeL2", new Vector3(-2.1f, 3.0f, 0), new Vector3(0.06f, 0.06f, 50), COL_PIPE);
+        Prim(cor, "PipeR1", new Vector3(2.1f, 3.3f, 0), new Vector3(0.08f, 0.08f, 50), COL_RUST);
+        Prim(cor, "PipeCeiling", new Vector3(0, 3.45f, 0), new Vector3(0.1f, 0.05f, 50), COL_METAL);
+        // Pipe joints / brackets
+        for (int i = 0; i < 6; i++)
+        {
+            Prim(cor, $"PipeBracketL_{i}", new Vector3(-2.1f, 3.3f, i * 8 - 15), new Vector3(0.15f, 0.15f, 0.15f), COL_METAL);
+            Prim(cor, $"PipeBracketR_{i}", new Vector3(2.1f, 3.3f, i * 8 - 15), new Vector3(0.15f, 0.15f, 0.15f), COL_METAL);
+        }
+
+        // Spore stains — more of them, varied sizes
+        for (int i = 0; i < 12; i++)
+        {
+            float z = Random.Range(-18f, 30f);
+            float side = Random.value > 0.5f ? -2.3f : 2.3f;
+            float h = Random.Range(0.3f, 2.5f);
+            Prim(cor, $"SporeStain_{i}", new Vector3(side, h, z),
+                new Vector3(0.02f, Random.Range(0.2f, 1.2f), Random.Range(0.2f, 1f)),
+                new Color(0.12f + Random.Range(0f, 0.08f), 0.2f + Random.Range(0f, 0.1f), 0.08f, 0.6f));
+        }
+
+        // Blood smear on floor
+        Prim(cor, "BloodSmear", new Vector3(0.5f, 0.01f, 8), new Vector3(1.5f, 0.01f, 3), COL_BLOOD);
+        Prim(cor, "BloodDrip", new Vector3(1.2f, 0.01f, 12), new Vector3(0.3f, 0.01f, 0.5f), COL_BLOOD);
+
+        // Doors along corridor (some open, some shut)
+        for (int i = 0; i < 4; i++)
+        {
+            float z = 5 + i * 8;
+            float side = i % 2 == 0 ? -2.3f : 2.3f;
+            float doorAngle = i == 1 ? 0.3f : 0f; // one slightly ajar
+            Prim(cor, $"DoorFrame_{i}", new Vector3(side, 1.5f, z),
+                new Vector3(i % 2 == 0 ? 0.1f : 0.1f, 3, 1.2f), COL_CONCRETE_D);
+            Prim(cor, $"Door_{i}", new Vector3(side + (i % 2 == 0 ? 0.15f : -0.15f) + doorAngle, 1.5f, z),
+                new Vector3(0.08f, 2.8f, 1), COL_DOOR);
+        }
+
+        // Wheelchair (toppled)
+        Prim(cor, "Wheelchair", new Vector3(-1, 0.3f, 15), new Vector3(0.6f, 0.8f, 0.5f), COL_METAL);
+        Prim(cor, "WheelchairWheel", new Vector3(-1.3f, 0.3f, 15), new Vector3(0.05f, 0.5f, 0.5f), new Color(0.1f, 0.1f, 0.1f));
+
+        // Paper / debris on floor
         for (int i = 0; i < 8; i++)
         {
-            var lightObj = new GameObject($"CeilingLight_{i}");
-            lightObj.transform.SetParent(corridor.transform);
-            lightObj.transform.position = new Vector3(0, 3.2f, i * 5 - 5);
-            var cLight = lightObj.AddComponent<Light>();
-            cLight.type = LightType.Point;
-            cLight.color = new Color(0.7f, 0.8f, 0.9f);
-            cLight.intensity = i % 3 == 0 ? 0.3f : 1.0f;
-            cLight.range = 6f;
-
-            // Light fixture visual
-            Prim(corridor.transform, "Fixture", lightObj.transform.position + Vector3.up * 0.2f,
-                new Vector3(0.4f, 0.05f, 0.4f), COL_METAL);
+            Prim(cor, $"Paper_{i}",
+                new Vector3(Random.Range(-1.5f, 1.5f), 0.01f, Random.Range(-5f, 25f)),
+                new Vector3(Random.Range(0.1f, 0.3f), 0.005f, Random.Range(0.1f, 0.2f)),
+                new Color(0.35f, 0.33f, 0.28f));
         }
 
-        // Pipes along ceiling
-        Prim(corridor.transform, "PipeL", new Vector3(-1.5f, 3.3f, 0), new Vector3(0.1f, 0.1f, 40), COL_RUST);
-        Prim(corridor.transform, "PipeR", new Vector3(1.5f, 3.3f, 0), new Vector3(0.1f, 0.1f, 40), COL_RUST);
-
-        // Spore stains on walls
-        for (int i = 0; i < 5; i++)
-        {
-            float z = Random.Range(-15f, 15f);
-            float side = Random.value > 0.5f ? -1.8f : 1.8f;
-            Prim(corridor.transform, "SporeStain", new Vector3(side, Random.Range(0.5f, 2f), z),
-                new Vector3(0.02f, Random.Range(0.3f, 1f), Random.Range(0.3f, 0.8f)),
-                new Color(0.15f, 0.25f, 0.10f, 0.7f));
-        }
+        // Vent grate on ceiling (something could be up there)
+        Prim(cor, "VentGrate", new Vector3(0, 3.48f, 20), new Vector3(0.8f, 0.02f, 0.8f), COL_METAL);
+        // Dark void behind the grate
+        Prim(cor, "VentVoid", new Vector3(0, 3.55f, 20), new Vector3(0.7f, 0.3f, 0.7f), new Color(0.01f, 0.01f, 0.01f));
 
         // ════════════════════════════════════════════════════════════════
         // PHASE 4: CONTROL ROOM — the Director's domain
@@ -277,12 +423,14 @@ public class IntroSceneBuilder
         var controllerObj = new GameObject("IntroSequenceController");
         var tsc = controllerObj.AddComponent<IntroSequenceController>();
 
-        // Wire audio — find the intro track
-        var introClip = AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/Audio/Music/WhispersInTheLoadingScreen.mp3");
+        // Wire audio — Daisy Bell (first computer to sing, 1961)
+        var introClip = AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/Audio/Music/DaisyBell.mp3");
         if (introClip == null)
-            introClip = FindAsset<AudioClip>("WhispersInTheLoadingScreen");
+            introClip = FindAsset<AudioClip>("DaisyBell");
         if (introClip == null)
-            introClip = FindAsset<AudioClip>("Whispers in the Loading Screen");
+            introClip = FindAsset<AudioClip>("First computer to sing");
+        if (introClip == null)
+            introClip = FindAsset<AudioClip>("Daisy Bell");
         if (introClip != null)
         {
             tsc.mainThemeClip = introClip;
