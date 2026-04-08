@@ -244,7 +244,8 @@ namespace MimicFacility.Entities
 
         private void OnTriggerEnter(Collider other)
         {
-            if (!isServer) return;
+            var id = GetComponent<Mirror.NetworkIdentity>();
+            if (id != null && !id.isServer) return;
 
             var player = other.GetComponent<PlayerCharacter>();
             if (player == null) return;

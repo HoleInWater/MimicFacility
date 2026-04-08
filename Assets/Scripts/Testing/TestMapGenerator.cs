@@ -172,7 +172,7 @@ namespace MimicFacility.Testing
             var col = trigger.AddComponent<BoxCollider>();
             col.size = new Vector3(8f, 3f, 8f);
             col.isTrigger = true;
-            trigger.tag = "ExtractionZone";
+            trigger.name = "ExtractionZone";
 
             var marker = new GameObject("ExtractionLight");
             marker.transform.SetParent(zone);
