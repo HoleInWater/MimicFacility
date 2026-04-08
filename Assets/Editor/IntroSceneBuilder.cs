@@ -605,6 +605,142 @@ public class IntroSceneBuilder
         al.range = crSize;
 
         // ════════════════════════════════════════════════════════════════
+        // SCENE 3: LOBBY — abandoned reception area
+        // ════════════════════════════════════════════════════════════════
+        var lobby = new GameObject("LobbyScene");
+        var lb = lobby.transform;
+
+        Prim(lb, "Floor", Vector3.zero, new Vector3(14, 0.1f, 10), COL_CONCRETE_D);
+        Prim(lb, "Ceiling", Vector3.up * 3.5f, new Vector3(14, 0.1f, 10), COL_CEILING);
+        Prim(lb, "WallBack", new Vector3(0, 1.75f, 5), new Vector3(14, 3.5f, 0.4f), COL_CONCRETE);
+        Prim(lb, "WallLeft", new Vector3(-7, 1.75f, 0), new Vector3(0.4f, 3.5f, 10), COL_CONCRETE);
+        Prim(lb, "WallRight", new Vector3(7, 1.75f, 0), new Vector3(0.4f, 3.5f, 10), COL_CONCRETE);
+
+        // Reception desk — overturned
+        Prim(lb, "Desk", new Vector3(-1, 0.5f, 2), new Vector3(4, 1, 1.5f), COL_METAL);
+        Prim(lb, "DeskTop", new Vector3(-0.5f, 0.8f, 2.5f), new Vector3(3, 0.1f, 0.8f), COL_METAL);
+
+        // Overturned chairs
+        Prim(lb, "Chair1", new Vector3(2, 0.25f, 0), new Vector3(0.5f, 0.5f, 0.5f), COL_METAL);
+        Prim(lb, "Chair2", new Vector3(3, 0.15f, -1), new Vector3(0.5f, 0.4f, 0.5f), COL_METAL);
+        Prim(lb, "Chair3", new Vector3(-3, 0.2f, -2), new Vector3(0.5f, 0.5f, 0.5f), COL_METAL);
+
+        // Blood trail leading deeper
+        Prim(lb, "Blood1", new Vector3(0, 0.01f, 0), new Vector3(0.5f, 0.01f, 3), COL_BLOOD);
+        Prim(lb, "Blood2", new Vector3(0.3f, 0.01f, -1.5f), new Vector3(1.5f, 0.01f, 1), COL_BLOOD);
+
+        // Broken monitor on desk
+        var monitor = Prim(lb, "Monitor", new Vector3(-2, 1.2f, 2), new Vector3(0.8f, 0.6f, 0.1f), COL_SCREEN);
+        SetEmission(monitor, new Color(0.02f, 0.08f, 0.02f));
+        monitor.AddComponent<IntroScreenGlitch>();
+
+        // Scattered papers
+        for (int i = 0; i < 10; i++)
+        {
+            var p = Prim(lb, $"Paper_{i}",
+                new Vector3(Random.Range(-5f, 5f), 0.01f, Random.Range(-3f, 3f)),
+                new Vector3(Random.Range(0.1f, 0.25f), 0.005f, Random.Range(0.1f, 0.2f)),
+                new Color(0.35f, 0.33f, 0.28f));
+            p.AddComponent<IntroPaperFloat>();
+        }
+
+        // Flickering overhead light
+        var lobbyLight = new GameObject("LobbyLight");
+        lobbyLight.transform.SetParent(lb);
+        lobbyLight.transform.position = new Vector3(0, 3.2f, 0);
+        var ll = lobbyLight.AddComponent<Light>();
+        ll.type = LightType.Point;
+        ll.color = new Color(0.7f, 0.7f, 0.8f);
+        ll.intensity = 2f;
+        ll.range = 12f;
+        var lobbyFlicker = lobbyLight.AddComponent<IntroLightFlicker>();
+        lobbyFlicker.isBroken = true;
+
+        // "INTAKE PROCESSING" sign on wall — broken, hanging
+        var sign = Prim(lb, "IntakeSign", new Vector3(0, 2.5f, 4.7f), new Vector3(4, 0.6f, 0.05f), COL_METAL);
+        SetEmission(sign, new Color(0.05f, 0.02f, 0.02f));
+
+        // ════════════════════════════════════════════════════════════════
+        // SCENE 5: LABORATORY — containment tanks, failed experiments
+        // ════════════════════════════════════════════════════════════════
+        var lab = new GameObject("LabScene");
+        var lbt = lab.transform;
+
+        Prim(lbt, "Floor", Vector3.zero, new Vector3(16, 0.1f, 12), COL_CONCRETE_D);
+        Prim(lbt, "Ceiling", Vector3.up * 4, new Vector3(16, 0.1f, 12), COL_CEILING);
+        Prim(lbt, "WallBack", new Vector3(0, 2, 6), new Vector3(16, 4, 0.4f), COL_CONCRETE);
+        Prim(lbt, "WallLeft", new Vector3(-8, 2, 0), new Vector3(0.4f, 4, 12), COL_CONCRETE);
+        Prim(lbt, "WallRight", new Vector3(8, 2, 0), new Vector3(0.4f, 4, 12), COL_CONCRETE);
+        Prim(lbt, "WallFront", new Vector3(0, 2, -6), new Vector3(16, 4, 0.4f), COL_CONCRETE);
+
+        // Containment tanks — tall cylinders with green glow
+        for (int i = 0; i < 5; i++)
+        {
+            float tx = -6 + i * 3;
+            var tank = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
+            tank.name = $"Tank_{i}";
+            tank.transform.SetParent(lbt);
+            tank.transform.position = new Vector3(tx, 1.5f, 3);
+            tank.transform.localScale = new Vector3(1.2f, 3, 1.2f);
+            tank.isStatic = true;
+            ApplyColor(tank, new Color(0.08f, 0.15f, 0.08f, 0.7f));
+
+            // Green glow from inside each tank
+            var tankLight = new GameObject($"TankLight_{i}");
+            tankLight.transform.SetParent(lbt);
+            tankLight.transform.position = new Vector3(tx, 1.5f, 3);
+            var tl = tankLight.AddComponent<Light>();
+            tl.type = LightType.Point;
+            tl.color = new Color(0.1f, 0.5f, 0.1f);
+            tl.intensity = 1.5f;
+            tl.range = 3f;
+        }
+
+        // Lab tables with equipment
+        Prim(lbt, "Table1", new Vector3(-4, 0.5f, -2), new Vector3(3, 1, 1.5f), COL_METAL);
+        Prim(lbt, "Table2", new Vector3(4, 0.5f, -2), new Vector3(3, 1, 1.5f), COL_METAL);
+
+        // Broken equipment on tables
+        Prim(lbt, "Equipment1", new Vector3(-4, 1.1f, -2), new Vector3(0.5f, 0.4f, 0.5f), COL_WIRE);
+        Prim(lbt, "Equipment2", new Vector3(-3, 1.1f, -1.8f), new Vector3(0.3f, 0.6f, 0.3f), COL_METAL);
+        Prim(lbt, "Equipment3", new Vector3(4.5f, 1.1f, -2), new Vector3(0.4f, 0.3f, 0.4f), COL_WIRE);
+
+        // Spilled liquid on floor (green — from tanks)
+        Prim(lbt, "Spill1", new Vector3(3, 0.01f, 1), new Vector3(2, 0.01f, 1.5f), new Color(0.05f, 0.15f, 0.05f));
+        Prim(lbt, "Spill2", new Vector3(-3, 0.01f, 2), new Vector3(1.5f, 0.01f, 2), new Color(0.05f, 0.12f, 0.05f));
+
+        // Blood stains
+        Prim(lbt, "LabBlood1", new Vector3(2, 0.01f, -3), new Vector3(1, 0.01f, 0.5f), COL_BLOOD);
+        Prim(lbt, "LabBlood2", new Vector3(-5, 0.01f, 0), new Vector3(0.5f, 0.01f, 1.5f), COL_BLOOD);
+
+        // Wall screens with data
+        for (int i = 0; i < 3; i++)
+        {
+            var scr = Prim(lbt, $"LabScreen_{i}",
+                new Vector3(-7.7f, 2 + i * 0.8f, -2 + i * 2), new Vector3(0.1f, 0.6f, 0.8f), COL_SCREEN);
+            SetEmission(scr, new Color(0.03f, 0.12f, 0.03f));
+            scr.AddComponent<IntroScreenGlitch>();
+        }
+
+        // Cables from tanks to the walls
+        for (int i = 0; i < 5; i++)
+        {
+            float tx2 = -6 + i * 3;
+            Prim(lbt, $"TankCable_{i}", new Vector3(tx2, 0.05f, 1.5f),
+                new Vector3(0.03f, 0.03f, 3), COL_WIRE);
+        }
+
+        // Overhead surgical light (bright, clinical)
+        var labMainLight = new GameObject("LabLight");
+        labMainLight.transform.SetParent(lbt);
+        labMainLight.transform.position = new Vector3(0, 3.5f, 0);
+        var lml = labMainLight.AddComponent<Light>();
+        lml.type = LightType.Point;
+        lml.color = new Color(0.5f, 0.8f, 0.5f);
+        lml.intensity = 3f;
+        lml.range = 14f;
+
+        // ════════════════════════════════════════════════════════════════
         // UI CANVAS
         // ════════════════════════════════════════════════════════════════
         var canvasObj = new GameObject("IntroCanvas");
@@ -677,14 +813,14 @@ public class IntroSceneBuilder
         var voiceLibObj = new GameObject("DirectorVoiceLibrary");
         voiceLibObj.AddComponent<DirectorVoiceLibrary>();
 
-        // Wire audio — Daisy Bell (first computer to sing, 1961)
-        var introClip = AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/Audio/Music/DaisyBell.mp3");
+        // Wire audio — INTAKE title music (1:45)
+        var introClip = AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/Audio/Music/IntakeTitle.mp3");
+        if (introClip == null)
+            introClip = FindAsset<AudioClip>("IntakeTitle");
+        if (introClip == null)
+            introClip = FindAsset<AudioClip>("Mimic title");
         if (introClip == null)
             introClip = FindAsset<AudioClip>("DaisyBell");
-        if (introClip == null)
-            introClip = FindAsset<AudioClip>("First computer to sing");
-        if (introClip == null)
-            introClip = FindAsset<AudioClip>("Daisy Bell");
         if (introClip != null)
         {
             tsc.mainThemeClip = introClip;
@@ -702,7 +838,9 @@ public class IntroSceneBuilder
         tsc.sporeParticles = sporePS;
         tsc.fogParticles = fogPS;
         tsc.studioLogoGroup = logoGroup;
+        tsc.lobbyScene = lobby;
         tsc.corridorScene = corridor;
+        tsc.labScene = lab;
         tsc.controlRoomScene = controlRoom;
         tsc.cameraController = camCtrl;
         camCtrl.corridorSceneRoot = corridor.transform;

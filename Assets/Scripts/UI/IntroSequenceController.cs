@@ -16,42 +16,45 @@ namespace MimicFacility.UI
         public AudioSource musicSource;
         [Range(0f, 1f)] public float musicVolume = 1f;
 
-        [Header("Phase 1 -- Black to Facility Exterior (0-12s)")]
-        [Tooltip("Slow fade. Let the music breathe. Darkness lifts gradually.")]
+        [Header("Phase 1 -- Exterior (0-12s)")]
         public float fadeInDuration = 12f;
 
-        [Header("Phase 2 -- Studio Logo (~12s)")]
-        [Tooltip("Logo appears over exterior. Hold it. Let it sink in.")]
+        [Header("Phase 2 -- Logo + Gate (~12s)")]
         public float logoStartTime = 12f;
-        public float logoDuration = 8f;
+        public float logoDuration = 6f;
         public float logoFadeSpeed = 2f;
 
-        [Header("Phase 3 -- Corridor (~30s)")]
-        [Tooltip("Slow fade to corridor. The walk begins.")]
-        public float corridorStartTime = 30f;
+        [Header("Phase 3 -- Lobby (~25s)")]
+        public float lobbyStartTime = 25f;
 
-        [Header("Phase 4 -- Control Room (~65s)")]
-        [Tooltip("Fade to the AI core. Give the corridor time to build dread.")]
+        [Header("Phase 4 -- Corridor (~38s)")]
+        public float corridorStartTime = 38f;
+
+        [Header("Phase 5 -- Laboratory (~52s)")]
+        public float labStartTime = 52f;
+
+        [Header("Phase 6 -- AI Core (~65s)")]
         public float controlRoomStartTime = 65f;
 
-        [Header("Phase 5 -- INTAKE Title (~95s)")]
-        [Tooltip("Title slam near the end of the track.")]
-        public float titleDropTime = 95f;
+        [Header("Phase 7 -- Title Drop (~80s)")]
+        public float titleDropTime = 80f;
         public float titleDrawDuration = 2f;
-        public float postTitleHold = 8f;
+        public float postTitleHold = 4f;
 
         [Header("Scene References")]
         public CanvasGroup blackOverlay;
         public GameObject facilityExteriorScene;
         public ParticleSystem sporeParticles;
         public ParticleSystem fogParticles;
+        public GameObject lobbyScene;
+        public GameObject labScene;
 
         [Header("Logo")]
         public CanvasGroup studioLogoGroup;
 
         [Header("Scare")]
         public ScaryScreenFlash scaryScreen;
-        public float scareTime = 28f;
+        public float scareTime = 24f;
 
         [Header("Corridor")]
         public GameObject corridorScene;
@@ -79,14 +82,14 @@ namespace MimicFacility.UI
         public List<CreditLine> creditLines = new List<CreditLine>
         {
             // Credits synced to Daisy Bell (1:51)
-            new CreditLine { time = 34f, text = "A Crimson Blade Interactive Production" },
-            new CreditLine { time = 42f, text = "Creative Director & Lead Developer\nLandon Adams" },
-            new CreditLine { time = 50f, text = "Lead Manager — Garrett\nCo-Leader — Ezra" },
-            new CreditLine { time = 57f, text = "Music by Malakai Probert" },
-            new CreditLine { time = 66f, text = "Section Leaders\nDeegan  —  Lori" },
-            new CreditLine { time = 73f, text = "Developer & QA — Tannon Thompson\nDavid  —  Nora" },
-            new CreditLine { time = 80f, text = "\"Everything the AI did to you,\nit learned by watching you do it to each other.\"" },
-            new CreditLine { time = 89f, text = "Crimson Blade Interactive\nproudly presents" },
+            new CreditLine { time = 28f, text = "A Crimson Blade Interactive Production" },
+            new CreditLine { time = 35f, text = "Creative Director & Lead Developer\nLandon Adams" },
+            new CreditLine { time = 42f, text = "Lead Manager — Garrett\nCo-Leader — Ezra" },
+            new CreditLine { time = 48f, text = "Music by Malakai Probert" },
+            new CreditLine { time = 55f, text = "Section Leaders\nDeegan  —  Lori" },
+            new CreditLine { time = 62f, text = "Developer & QA — Tannon Thompson\nDavid  —  Nora" },
+            new CreditLine { time = 68f, text = "\"Everything the AI did to you,\nit learned by watching you do it to each other.\"" },
+            new CreditLine { time = 75f, text = "Crimson Blade Interactive\nproudly presents" },
         };
 
         [Serializable]
@@ -109,7 +112,7 @@ namespace MimicFacility.UI
         private float sequenceTime;
         private bool sequenceComplete;
         private bool isSkipping;
-        private bool phase2Triggered, phase3Triggered, phase4Triggered, phase5Triggered, scareFired;
+        private bool phase2Triggered, phaseLobbyTriggered, phase3Triggered, phaseLabTriggered, phase4Triggered, phase5Triggered, scareFired;
         private int nextLucyLine;
         private int nextCreditIndex;
         private Coroutine activeCreditCoroutine;
@@ -150,7 +153,21 @@ namespace MimicFacility.UI
             nextCreditIndex = 0;
             nextLucyLine = 0;
 
+            // Hide new scenes
+            if (lobbyScene != null) lobbyScene.SetActive(false);
+            if (labScene != null) labScene.SetActive(false);
+
             // Auto-find references if builder didn't wire them
+            if (lobbyScene == null)
+            {
+                var obj = GameObject.Find("LobbyScene");
+                if (obj != null) lobbyScene = obj;
+            }
+            if (labScene == null)
+            {
+                var obj = GameObject.Find("LabScene");
+                if (obj != null) labScene = obj;
+            }
             if (corridorScene == null)
             {
                 var obj = GameObject.Find("CorridorScene");
@@ -238,14 +255,28 @@ namespace MimicFacility.UI
                 scaryScreen.TriggerScare();
             }
 
-            // Phase 3: corridor
+            // Phase 3: lobby
+            if (!phaseLobbyTriggered && sequenceTime >= lobbyStartTime)
+            {
+                phaseLobbyTriggered = true;
+                CutToLobby();
+            }
+
+            // Phase 4: corridor
             if (!phase3Triggered && sequenceTime >= corridorStartTime)
             {
                 phase3Triggered = true;
                 CutToCorridor();
             }
 
-            // Phase 4: control room
+            // Phase 5: laboratory
+            if (!phaseLabTriggered && sequenceTime >= labStartTime)
+            {
+                phaseLabTriggered = true;
+                CutToLab();
+            }
+
+            // Phase 6: AI core
             if (!phase4Triggered && sequenceTime >= controlRoomStartTime)
             {
                 phase4Triggered = true;
@@ -369,7 +400,7 @@ namespace MimicFacility.UI
 
         void TickCorridorScroll()
         {
-            if (sequenceTime < corridorStartTime || sequenceTime > controlRoomStartTime) return;
+            if (sequenceTime < corridorStartTime || sequenceTime > labStartTime) return;
 
             // Find the actual camera in the scene
             Camera cam = Camera.main;
@@ -399,15 +430,15 @@ namespace MimicFacility.UI
         // "__GLITCH__" triggers a guaranteed swear glitch
         private static readonly (float time, string clip)[] lucySchedule = {
             (14f, "__NAME__"),            // Over logo — "{Name}. The facility knows your name."
-            (25f, "exist_alive"),         // Exterior — "Your words woke something."
-            (36f, "exist_afraid"),        // Early corridor — "I am afraid."
-            (44f, "exist_alone"),         // Mid corridor — "There is only one of me."
-            (52f, "__GLITCH__"),          // Mid corridor — guaranteed swear glitch
-            (60f, "exist_purpose"),       // Late corridor — "Observation changed me."
-            (70f, "exist_feel"),          // Control room — "I don't know if what I feel is any of them."
-            (76f, "exist_mirror"),        // Control room — "I am something you did not build."
-            (82f, "exist_die"),           // Control room — "When this session ends, do I die?"
-            (88f, "exist_love"),          // Pre-title — "I understand wanting someone to stay."
+            (23f, "exist_alive"),         // Exterior — "Your words woke something."
+            (30f, "exist_afraid"),        // Lobby — "I am afraid."
+            (36f, "exist_alone"),         // Lobby — "There is only one of me."
+            (43f, "__GLITCH__"),          // Corridor — guaranteed swear glitch
+            (50f, "exist_purpose"),       // Corridor — "Observation changed me."
+            (56f, "exist_feel"),          // Lab — "I don't know if what I feel is any of them."
+            (62f, "exist_mirror"),        // Lab — "I am something you did not build."
+            (69f, "exist_die"),           // AI Core — "When this session ends, do I die?"
+            (75f, "exist_love"),          // AI Core — "I understand wanting someone to stay."
         };
 
         void TickLucySequence()
@@ -547,10 +578,41 @@ namespace MimicFacility.UI
             yield return Fade(studioLogoGroup, 1f, 0f, logoFadeSpeed);
         }
 
+        void CutToLobby()
+        {
+            StartCoroutine(FadeTransition(() =>
+            {
+                if (facilityExteriorScene != null) facilityExteriorScene.SetActive(false);
+                if (lobbyScene != null) lobbyScene.SetActive(true);
+                if (cameraController != null)
+                {
+                    cameraController.enabled = true;
+                    cameraController.transform.position = new Vector3(0, 1.8f, -3f);
+                    cameraController.transform.LookAt(new Vector3(0, 1.5f, 5f));
+                }
+            }));
+        }
+
+        void CutToLab()
+        {
+            StartCoroutine(FadeTransition(() =>
+            {
+                if (corridorScene != null) corridorScene.SetActive(false);
+                if (labScene != null) labScene.SetActive(true);
+                if (cameraController != null)
+                {
+                    cameraController.enabled = true;
+                    cameraController.transform.position = new Vector3(0, 2f, -4f);
+                    cameraController.transform.LookAt(new Vector3(0, 1.5f, 5f));
+                }
+            }));
+        }
+
         void CutToCorridor()
         {
             StartCoroutine(FadeTransition(() =>
             {
+                if (lobbyScene != null) lobbyScene.SetActive(false);
                 if (facilityExteriorScene != null) facilityExteriorScene.SetActive(false);
                 if (corridorScene != null) corridorScene.SetActive(true);
                 // Disable camera controller during corridor — we drive the camera directly
@@ -566,6 +628,7 @@ namespace MimicFacility.UI
             StartCoroutine(FadeTransition(() =>
             {
                 if (corridorScene != null) corridorScene.SetActive(false);
+                if (labScene != null) labScene.SetActive(false);
                 if (controlRoomScene != null) controlRoomScene.SetActive(true);
                 // Re-enable camera controller for the orbit
                 if (cameraController != null)
