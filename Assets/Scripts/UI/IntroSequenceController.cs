@@ -43,6 +43,10 @@ namespace MimicFacility.UI
         [Header("Logo")]
         public CanvasGroup studioLogoGroup;
 
+        [Header("Scare")]
+        public ScaryScreenFlash scaryScreen;
+        public float scareTime = 18f;
+
         [Header("Corridor")]
         public GameObject corridorScene;
 
@@ -88,7 +92,7 @@ namespace MimicFacility.UI
         private float sequenceTime;
         private bool sequenceComplete;
         private bool isSkipping;
-        private bool phase2Triggered, phase3Triggered, phase4Triggered, phase5Triggered;
+        private bool phase2Triggered, phase3Triggered, phase4Triggered, phase5Triggered, scareFired;
         private int nextCreditIndex;
         private Coroutine activeCreditCoroutine;
 
@@ -144,6 +148,13 @@ namespace MimicFacility.UI
             {
                 phase2Triggered = true;
                 StartCoroutine(PlayLogo());
+            }
+
+            // Scare flash — monster face on black between logo and corridor
+            if (!scareFired && sequenceTime >= scareTime && scaryScreen != null)
+            {
+                scareFired = true;
+                scaryScreen.TriggerScare();
             }
 
             // Phase 3: corridor
