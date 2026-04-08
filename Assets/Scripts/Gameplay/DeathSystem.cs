@@ -12,7 +12,7 @@ namespace MimicFacility.Gameplay
     public class DeathSystem : NetworkBehaviour
     {
         public event Action<string> OnPlayerDied;
-        public event Action<string> OnPlayerConverted;
+        public event Action<string> OnPlayerConvertedEvent;
         public event Action OnAllPlayersDead;
 
         [Header("Spectator")]
@@ -213,7 +213,7 @@ namespace MimicFacility.Gameplay
         [ClientRpc]
         private void RpcNotifyConverted(string playerName)
         {
-            OnPlayerConverted?.Invoke(playerName);
+            OnPlayerConvertedEvent?.Invoke(playerName);
 
             var hud = FindObjectOfType<MimicFacility.UI.HUDManager>();
             if (hud != null)
