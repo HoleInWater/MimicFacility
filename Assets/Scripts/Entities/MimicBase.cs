@@ -70,6 +70,10 @@ namespace MimicFacility.Entities
         {
             health = maxHealth;
 
+            // Register with the hive mind — all mimics are one organism
+            if (MimicHiveMind.Instance != null)
+                MimicHiveMind.Instance.RegisterMimic(this);
+
             if (agent == null) agent = GetComponent<NavMeshAgent>();
             if (agent != null)
             {
