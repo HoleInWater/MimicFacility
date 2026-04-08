@@ -15,7 +15,7 @@ namespace MimicFacility.UI
         [Header("Phase 3 -- Corridor (scene moves, camera stays)")]
         public Vector3 corridorCamPos = new Vector3(0f, 1.8f, 0f);
         public Vector3 corridorLookAt = new Vector3(0f, 1.6f, 30f);
-        public float corridorScrollSpeed = 0.8f;
+        public float corridorScrollSpeed = 3f;
         public float corridorPushDuration = 26f;
         [Tooltip("The corridor scene root — moves backward to create infinite hallway effect")]
         public Transform corridorSceneRoot;

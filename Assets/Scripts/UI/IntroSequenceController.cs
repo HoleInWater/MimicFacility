@@ -164,6 +164,12 @@ namespace MimicFacility.UI
                 return;
             }
 
+            // Debug: Right Alt plays a random HAL voice line
+            if (Input.GetKeyDown(KeyCode.RightAlt))
+            {
+                PlayRandomHALLine();
+            }
+
             sequenceTime += Time.deltaTime;
 
             // Phase 1: fade from black
@@ -310,11 +316,67 @@ namespace MimicFacility.UI
             }
         }
 
+        private static readonly string[] debugVoiceClips = {
+            "miranda", "opening", "helpful_01", "helpful_02", "revealing_01",
+            "revealing_03", "manipulative_01", "manipulative_02",
+            "confrontational_01", "confrontational_03", "transcendent_01",
+            "transcendent_03", "tannon_egg", "welcome_back"
+        };
+        private int debugClipIndex;
+
+        void PlayRandomHALLine()
+        {
+            if (DirectorVoiceLibrary.Instance != null)
+            {
+                string clipName = debugVoiceClips[debugClipIndex % debugVoiceClips.Length];
+                debugClipIndex++;
+                bool played = DirectorVoiceLibrary.Instance.PlayClip(clipName);
+                Debug.Log($"[Debug] HAL voice: {clipName} (played: {played})");
+                return;
+            }
+
+            // Fallback: load directly
+            string name = debugVoiceClips[debugClipIndex % debugVoiceClips.Length];
+            debugClipIndex++;
+            var clip = Resources.Load<AudioClip>($"Voice/{name}");
+            if (clip != null)
+            {
+                var src = gameObject.AddComponent<AudioSource>();
+                src.clip = clip;
+                src.spatialBlend = 0f;
+                src.volume = 0.9f;
+                src.Play();
+                Destroy(src, clip.length + 0.5f);
+                Debug.Log($"[Debug] HAL voice (direct): {name}");
+            }
+            else
+            {
+                Debug.LogWarning($"[Debug] Voice clip not found: Voice/{name}");
+            }
+        }
+
         IEnumerator TannonEasterEggDelayed()
         {
             yield return new WaitForSecondsRealtime(3f);
+
+            // Try the voice library first
             if (DirectorVoiceLibrary.Instance != null)
+            {
                 DirectorVoiceLibrary.Instance.PlayTannonEasterEgg();
+                yield break;
+            }
+
+            // Fallback: load and play directly from Resources
+            var clip = Resources.Load<AudioClip>("Voice/tannon_egg");
+            if (clip != null && musicSource != null)
+            {
+                var tempSource = gameObject.AddComponent<AudioSource>();
+                tempSource.clip = clip;
+                tempSource.spatialBlend = 0f;
+                tempSource.volume = 0.9f;
+                tempSource.Play();
+                Destroy(tempSource, clip.length + 0.5f);
+            }
         }
 
         IEnumerator PlayLogo()
