@@ -308,11 +308,123 @@ public class IntroSceneBuilder
             paper.AddComponent<IntroPaperFloat>();
         }
 
-        // Vent grate on ceiling (something could be up there)
+        // Vent grate on ceiling
         var ventGrate = Prim(cor, "VentGrate", new Vector3(0, 3.48f, 20), new Vector3(0.8f, 0.02f, 0.8f), COL_METAL);
         ventGrate.AddComponent<IntroVentBreathe>();
-        // Dark void behind the grate
         Prim(cor, "VentVoid", new Vector3(0, 3.55f, 20), new Vector3(0.7f, 0.3f, 0.7f), new Color(0.01f, 0.01f, 0.01f));
+
+        // ── BACKROOMS TRANSITION — human → AI as you go deeper ──────
+        // The hallway repeats but transforms. Early sections are institutional
+        // (medical equipment, posters, human debris). Later sections become
+        // mechanical (cables, screens, circuitry, glowing conduits).
+        // The deeper you go, the less human it feels.
+
+        for (int section = 0; section < 15; section++)
+        {
+            float z = 30f + section * 10f;
+            float aiBlend = section / 14f; // 0 = human, 1 = full AI
+
+            // Repeating doors on alternating sides
+            float doorSide = section % 2 == 0 ? -2.3f : 2.3f;
+            Prim(cor, $"RepeatDoor_{section}", new Vector3(doorSide, 1.5f, z),
+                new Vector3(0.08f, 2.8f, 1), COL_DOOR);
+            Prim(cor, $"RepeatFrame_{section}", new Vector3(doorSide, 1.5f, z),
+                new Vector3(0.12f, 3, 1.2f), COL_CONCRETE_D);
+
+            // Early sections: human details
+            if (aiBlend < 0.4f)
+            {
+                // Medical cart / gurney
+                if (section % 3 == 0)
+                    Prim(cor, $"Gurney_{section}", new Vector3(section % 2 == 0 ? 1.2f : -1.2f, 0.4f, z + 2),
+                        new Vector3(0.6f, 0.6f, 1.5f), COL_METAL);
+
+                // Wall sign (room numbers)
+                Prim(cor, $"RoomSign_{section}", new Vector3(doorSide * 0.95f, 2.5f, z),
+                    new Vector3(0.01f, 0.2f, 0.4f), new Color(0.3f, 0.3f, 0.35f));
+            }
+
+            // Mid sections: transition — cables start appearing
+            if (aiBlend > 0.2f && aiBlend < 0.7f)
+            {
+                // Wall cables
+                int cableCount = Mathf.RoundToInt(aiBlend * 6);
+                for (int c = 0; c < cableCount; c++)
+                {
+                    float cy = 0.5f + c * 0.4f;
+                    float cSide = c % 2 == 0 ? -2.2f : 2.2f;
+                    Prim(cor, $"Cable_{section}_{c}", new Vector3(cSide, cy, z),
+                        new Vector3(0.02f, 0.02f, 3f), COL_WIRE);
+                }
+            }
+
+            // Late sections: full AI — screens, glowing conduits, circuit patterns
+            if (aiBlend > 0.5f)
+            {
+                // Wall screens (small monitors showing green data)
+                float screenSide = section % 2 == 0 ? 2.2f : -2.2f;
+                var screen = Prim(cor, $"WallScreen_{section}",
+                    new Vector3(screenSide, 2f, z + 1),
+                    new Vector3(0.08f, 0.5f, 0.7f), COL_SCREEN);
+                SetEmission(screen, new Color(0.02f, 0.1f + aiBlend * 0.15f, 0.02f));
+                screen.AddComponent<IntroScreenGlitch>();
+
+                // Glowing conduit lines on walls
+                float glowIntensity = (aiBlend - 0.5f) * 2f;
+                var conduit = Prim(cor, $"Conduit_{section}",
+                    new Vector3(section % 2 == 0 ? -2.25f : 2.25f, 1f, z),
+                    new Vector3(0.03f, 0.03f, 8f),
+                    new Color(0.02f * glowIntensity, 0.15f * glowIntensity, 0.02f * glowIntensity));
+                SetEmission(conduit, new Color(0.01f, 0.08f * glowIntensity, 0.01f));
+
+                // Floor cable bundles getting thicker
+                Prim(cor, $"FloorBundle_{section}",
+                    new Vector3(Random.Range(-1f, 1f), 0.02f, z + Random.Range(-2f, 2f)),
+                    new Vector3(0.08f * (1 + aiBlend), 0.04f, Random.Range(2f, 5f)), COL_WIRE);
+            }
+
+            // Final sections: the walls themselves start looking like circuitry
+            if (aiBlend > 0.8f)
+            {
+                // Circuit trace patterns on walls
+                for (int trace = 0; trace < 4; trace++)
+                {
+                    float ty = 0.5f + trace * 0.7f;
+                    float tSide = -2.25f;
+                    var traceObj = Prim(cor, $"Trace_{section}_{trace}",
+                        new Vector3(tSide, ty, z + trace * 0.5f),
+                        new Vector3(0.01f, 0.01f, 2f),
+                        new Color(0.05f, 0.15f, 0.05f));
+                    SetEmission(traceObj, new Color(0.02f, 0.08f, 0.02f));
+
+                    // Same on other wall
+                    Prim(cor, $"TraceR_{section}_{trace}",
+                        new Vector3(2.25f, ty + 0.1f, z + trace * 0.3f),
+                        new Vector3(0.01f, 0.01f, 1.5f),
+                        new Color(0.05f, 0.15f, 0.05f));
+                }
+
+                // Overhead data conduits replacing pipes
+                Prim(cor, $"DataPipe_{section}",
+                    new Vector3(0, 3.45f, z), new Vector3(0.15f, 0.08f, 8f),
+                    new Color(0.04f, 0.04f, 0.06f));
+            }
+
+            // Repeating ceiling lights — get more green/electronic as you go
+            var sectionLight = new GameObject($"SectionLight_{section}");
+            sectionLight.transform.SetParent(cor);
+            sectionLight.transform.position = new Vector3(0, 3.2f, z);
+            var sl = sectionLight.AddComponent<Light>();
+            sl.type = LightType.Point;
+            sl.color = Color.Lerp(new Color(0.7f, 0.8f, 0.9f), new Color(0.2f, 0.6f, 0.2f), aiBlend);
+            sl.intensity = Mathf.Lerp(2f, 1.2f, aiBlend);
+            sl.range = 6f;
+            Prim(cor, $"SectionFixture_{section}", new Vector3(0, 3.5f, z),
+                new Vector3(0.4f, 0.05f, 0.4f), COL_METAL);
+
+            var flicker = sectionLight.AddComponent<IntroLightFlicker>();
+            flicker.isBroken = section % 4 == 2;
+        }
 
         // ════════════════════════════════════════════════════════════════
         // PHASE 4: THE AI CORE — the Director's mind made physical

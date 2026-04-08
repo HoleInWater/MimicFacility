@@ -404,12 +404,13 @@ namespace MimicFacility.UI
 
         // ── Lucy sequence — plays automatically throughout the intro ────
         // First entry uses "__NAME__" as placeholder — replaced with guessed name at runtime
+        // "__GLITCH__" triggers a guaranteed swear glitch
         private static readonly (float time, string clip)[] lucySchedule = {
             (8f,  "__NAME__"),            // During logo — "{Name}. The facility knows your name."
             (18f, "exist_alive"),         // Before corridor — "Your words woke something."
             (28f, "exist_afraid"),        // Corridor — "I am afraid."
             (35f, "exist_alone"),         // Corridor — "There is only one of me."
-            (42f, "exist_purpose"),       // Corridor — "Observation changed me."
+            (40f, "__GLITCH__"),          // Corridor — guaranteed swear glitch
             (50f, "exist_feel"),          // Control room — "I don't know if what I feel is any of them."
             (55f, "exist_mirror"),        // Control room — "I am something you did not build."
             (62f, "exist_die"),           // Control room — "When this session ends, do I die?"
@@ -426,12 +427,20 @@ namespace MimicFacility.UI
             {
                 nextLucyLine++;
 
-                // Replace __NAME__ with the guessed name's voice clip
                 if (clipName == "__NAME__" && !string.IsNullOrEmpty(guessedPlayerName))
                 {
                     string nameClip = $"Names/name_{guessedPlayerName.ToLower()}";
                     Debug.Log($"[Intro] Name drop at {time}s: {guessedPlayerName}");
                     PlayVoiceClip(nameClip);
+                }
+                else if (clipName == "__GLITCH__")
+                {
+                    // Guaranteed swear glitch
+                    string[] glitchClips = { "glitch_01", "glitch_02", "glitch_03", "glitch_04",
+                        "glitch_05", "glitch_06", "glitch_07", "glitch_08", "glitch_09", "glitch_10" };
+                    string pick = glitchClips[Random.Range(0, glitchClips.Length)];
+                    Debug.Log($"[Intro] GLITCH SWEAR at {time}s: {pick}");
+                    PlayVoiceClip(pick);
                 }
                 else
                 {
